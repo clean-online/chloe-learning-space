@@ -1,32 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta name="robots" content="noindex, nofollow" /><meta name="repo-base" content=".." />
-<!-- Auth Guard -->
-<script>
-(function(){
-  var AUTH_KEY='chloe_ls_auth';
-  var AUTH_TS_KEY='chloe_ls_auth_ts';
-  var SESSION_DURATION=86400000;
-  var token=localStorage.getItem(AUTH_KEY);
-  var ts=localStorage.getItem(AUTH_TS_KEY);
-  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
-    // Find root index.html
-    var path=window.location.pathname;
-    var depth=(path.match(/\//g)||[]).length;
-    // Count how many dirs deep from repo root
-    var parts=path.split('/').filter(Boolean);
-    // pages/ is 1 level deep, ai-digest/2026/05/01/ is 3 levels deep
-    var basePath='.';
-    if(parts.includes('pages')) basePath='..';
-    else if(parts.includes('ai-digest')) {
-      var idx=parts.indexOf('ai-digest');
-      var levels=parts.length-idx-2; // subtract index and filename
-      basePath=Array(levels+1).join('../')||'./';
-    }
-    window.location.replace(basePath+'/index.html');
-  }
-})();
-</script>
+
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

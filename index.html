@@ -3,10 +3,10 @@
 <head>
 <meta name="robots" content="noindex, nofollow" />
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Chloe's Learning Space</title>
 <style>
-/* ===== CSS Variables (与A/B测试指南统一) ===== */
+/* ===== CSS Variables ===== */
 :root {
   --c-primary: #0f766e;
   --c-primary-light: #14b8a6;
@@ -36,65 +36,53 @@
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-gray-900);background:var(--c-gray-50);-webkit-font-smoothing:antialiased}
-
-/* ===== LOGIN GATE ===== */
-#login-gate{position:fixed;inset:0;z-index:9999;background:var(--c-navy);display:flex;align-items:center;justify-content:center;transition:opacity .5s ease}
-#login-gate.hidden{opacity:0;pointer-events:none}
-
-.login-box{width:420px;max-width:90vw;background:var(--c-white);border-radius:var(--radius-lg);padding:48px 40px;text-align:center;box-shadow:var(--shadow-lg)}
-.login-box .lock-icon{width:64px;height:64px;margin:0 auto 24px;background:var(--c-primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px}
-.login-box h2{font-size:20px;font-weight:700;color:var(--c-navy);margin-bottom:8px}
-.login-box p{color:var(--c-gray-500);font-size:14px;margin-bottom:32px}
-.login-input-group{position:relative;margin-bottom:20px}
-.login-input-group input{width:100%;padding:14px 48px 14px 16px;background:var(--c-gray-50);border:1px solid var(--c-gray-200);border-radius:var(--radius);color:var(--c-gray-900);font-size:15px;outline:none;transition:border-color .2s}
-.login-input-group input:focus{border-color:var(--c-primary-light);box-shadow:0 0 0 3px var(--c-primary-bg)}
-.login-input-group .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--c-gray-500);cursor:pointer;font-size:18px;padding:4px}
-.login-btn{width:100%;padding:14px;background:var(--c-primary);color:var(--c-white);font-size:15px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s}
-.login-btn:hover{background:#0d6b63;transform:translateY(-1px)}
-.login-btn:active{transform:translateY(0)}
-.login-error{color:var(--c-danger);font-size:13px;margin-top:12px;min-height:20px}
-
-/* ===== LAYOUT (与A/B指南统一) ===== */
-.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--c-navy);color:var(--c-gray-300);overflow-y:auto;z-index:100;transition:transform .3s ease}
-.sidebar::-webkit-scrollbar{width:4px}
-.sidebar::-webkit-scrollbar-thumb{background:var(--c-gray-500);border-radius:4px}
-.main-content{margin-left:var(--sidebar-w);min-height:100vh}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-gray-900);background:var(--c-gray-50);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
 /* ===== SIDEBAR ===== */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--c-navy);color:var(--c-gray-300);overflow-y:auto;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--c-gray-500);border-radius:4px}
 .sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
 .sidebar-header h2{font-size:15px;font-weight:700;color:var(--c-primary-light);letter-spacing:.5px;margin-bottom:4px}
 .sidebar-header p{font-size:12px;color:var(--c-gray-500);line-height:1.5}
 .sidebar nav{padding:16px 0}
-.sidebar nav a{display:block;padding:8px 24px;font-size:13px;color:var(--c-gray-300);text-decoration:none;transition:all .15s ease;border-left:3px solid transparent}
+.sidebar nav a{display:block;padding:10px 24px;font-size:13px;color:var(--c-gray-300);text-decoration:none;transition:all .15s ease;border-left:3px solid transparent}
 .sidebar nav a:hover{color:var(--c-white);background:rgba(255,255,255,.05);border-left-color:var(--c-primary-light)}
 .sidebar nav a.active{color:var(--c-primary-light);background:rgba(20,184,166,.08);border-left-color:var(--c-primary-light);font-weight:600}
 .sidebar nav .nav-chapter{padding:12px 24px 6px;font-size:11px;font-weight:700;color:var(--c-gray-500);text-transform:uppercase;letter-spacing:1px;border-left:none}
-.sidebar-logout{position:fixed;bottom:20px;left:20px;display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);font-size:12px;color:var(--c-gray-500);cursor:pointer;transition:all .2s;z-index:101}
-.sidebar-logout:hover{background:rgba(255,255,255,.1);color:var(--c-gray-300)}
-.sidebar-badge{position:fixed;bottom:60px;left:20px;display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(20,184,166,.15);border-radius:20px;font-size:11px;color:var(--c-primary-light)}
+.sidebar-badge{position:fixed;bottom:20px;left:20px;display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(20,184,166,.15);border-radius:20px;font-size:11px;color:var(--c-primary-light)}
 .sidebar-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c-primary-light);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ===== MOBILE TOGGLE ===== */
-.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:44px;height:44px;border-radius:var(--radius);background:var(--c-navy);border:none;cursor:pointer;align-items:center;justify-content:center}
-.mobile-toggle span{display:block;width:20px;height:2px;background:var(--c-white);margin:3px 0;transition:.3s}
+/* ===== OVERLAY (mobile) ===== */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;opacity:0;transition:opacity .3s}
+.sidebar-overlay.show{display:block;opacity:1}
 
-/* ===== HERO (与A/B指南统一) ===== */
-.hero{background:linear-gradient(135deg,var(--c-navy) 0%,#134e4a 100%);color:var(--c-white);padding:80px 60px 60px;position:relative;overflow:hidden}
+/* ===== MOBILE TOGGLE ===== */
+.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:44px;height:44px;border-radius:var(--radius);background:var(--c-navy);border:none;cursor:pointer;align-items:center;justify-content:center;box-shadow:var(--shadow-md)}
+.mobile-toggle span{display:block;width:20px;height:2px;background:var(--c-white);margin:3px 0;transition:.3s}
+.mobile-toggle.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.mobile-toggle.active span:nth-child(2){opacity:0}
+.mobile-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+/* ===== MAIN LAYOUT ===== */
+.main-content{margin-left:var(--sidebar-w);min-height:100vh}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(135deg,var(--c-navy) 0%,#134e4a 100%);color:var(--c-white);padding:72px 60px 56px;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;top:-50%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 70%);pointer-events:none}
-.hero h1{font-size:42px;font-weight:800;line-height:1.2;margin-bottom:16px;letter-spacing:-.5px}
+.hero h1{font-size:40px;font-weight:800;line-height:1.2;margin-bottom:14px;letter-spacing:-.5px}
 .hero h1 span{color:var(--c-primary-light)}
-.hero .subtitle{font-size:18px;color:rgba(255,255,255,.7);max-width:640px;line-height:1.6;margin-bottom:24px}
-.hero-meta{display:flex;gap:16px;flex-wrap:wrap}
+.hero .subtitle{font-size:17px;color:rgba(255,255,255,.7);max-width:640px;line-height:1.7;margin-bottom:24px}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap}
 .hero-meta .tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;font-size:13px;color:rgba(255,255,255,.8)}
 
-/* ===== STAT CARDS (与A/B指南统一) ===== */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}
-.stat-card{background:var(--c-white);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+/* ===== STAT CARDS ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+.stat-card{background:var(--c-white);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:20px 16px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.stat-card .stat-val{font-size:28px;font-weight:800;color:var(--c-primary);line-height:1.2}
+.stat-card .stat-val{font-size:26px;font-weight:800;color:var(--c-primary);line-height:1.2}
 .stat-card .stat-label{font-size:12px;color:var(--c-gray-500);margin-top:6px;line-height:1.4}
 
 /* ===== CONTENT CONTAINER ===== */
@@ -107,7 +95,7 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
 .section-desc{color:var(--c-gray-500);font-size:15px;margin-bottom:28px;line-height:1.7}
 
 /* ===== CONTENT CARDS ===== */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px}
 .content-card{background:var(--c-white);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:28px;transition:all .3s ease;cursor:pointer;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
 .content-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 .content-card.teal::before{background:var(--c-primary-light)}
@@ -116,75 +104,75 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
 .content-card:hover{border-color:var(--c-gray-300);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 
 .card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.card-icon{width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:22px}
+.card-icon{width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .card-icon.teal{background:var(--c-primary-bg)}
 .card-icon.rose{background:var(--c-danger-bg)}
 .card-icon.amber{background:var(--c-accent-bg)}
-.card-tag{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.card-tag{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
 .card-tag.teal{background:var(--c-primary-bg);color:var(--c-primary)}
 .card-tag.rose{background:var(--c-danger-bg);color:var(--c-danger)}
 .card-tag.amber{background:var(--c-accent-bg);color:#92400e}
 
 .card-title{font-size:18px;font-weight:700;color:var(--c-navy);margin-bottom:8px}
 .card-desc{font-size:14px;color:var(--c-gray-500);line-height:1.7;margin-bottom:16px}
-.card-meta{display:flex;gap:16px;font-size:12px;color:var(--c-gray-500)}
+.card-meta{display:flex;gap:16px;font-size:12px;color:var(--c-gray-500);flex-wrap:wrap}
 .card-meta span{display:flex;align-items:center;gap:4px}
 .card-arrow{position:absolute;bottom:20px;right:20px;color:var(--c-gray-300);font-size:18px;transition:all .3s}
 .content-card:hover .card-arrow{color:var(--c-primary-light);transform:translate(3px,-3px)}
 
-/* ===== FOOTER (与A/B指南统一) ===== */
+/* ===== FOOTER ===== */
 .doc-footer{text-align:center;padding:32px;font-size:12px;color:var(--c-gray-500);border-top:1px solid var(--c-gray-200)}
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE: TABLET ===== */
+@media(max-width:1024px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.show{display:block;opacity:1}
   .main-content{margin-left:0}
   .mobile-toggle{display:flex}
-  .hero{padding:60px 24px 40px}
-  .hero h1{font-size:28px}
-  .content-wrap{padding:24px 20px 60px}
+  .hero{padding:68px 24px 40px}
+  .hero h1{font-size:30px}
+  .hero .subtitle{font-size:15px}
+  .content-wrap{padding:28px 20px 60px}
   .card-grid{grid-template-columns:1fr}
   .stat-grid{grid-template-columns:1fr 1fr}
-  .sidebar-logout,.sidebar-badge{left:auto;right:20px}
+  .sidebar-badge{display:none}
 }
+
+/* ===== RESPONSIVE: MOBILE ===== */
 @media(max-width:500px){
-  .stat-grid{grid-template-columns:1fr}
+  .hero{padding:64px 18px 32px}
   .hero h1{font-size:24px}
+  .hero .subtitle{font-size:14px}
+  .hero-meta .tag{font-size:12px;padding:4px 10px}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:14px 10px}
+  .stat-card .stat-val{font-size:22px}
+  .stat-card .stat-label{font-size:11px}
+  .content-wrap{padding:20px 16px 48px}
+  .content-wrap section{margin-bottom:40px}
+  .section-title{font-size:20px}
+  .section-desc{font-size:14px}
+  .card-grid{gap:14px}
+  .content-card{padding:20px}
+  .card-title{font-size:16px}
+  .card-desc{font-size:13px}
+  .card-icon{width:38px;height:38px;font-size:18px}
+  .doc-footer{padding:20px 16px}
 }
 
 /* ===== PRINT ===== */
 @media print{
-  .sidebar,.mobile-toggle,.sidebar-logout,.sidebar-badge{display:none!important}
+  .sidebar,.mobile-toggle,.sidebar-badge,.sidebar-overlay{display:none!important}
   .main-content{margin-left:0!important}
   .hero{background:var(--c-navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-
-/* ===== AUTH CONTENT ===== */
-#main-content{display:none;opacity:0;transition:opacity .5s ease}
-#main-content.visible{display:block;opacity:1}
 </style>
 </head>
 <body>
-
-<!-- ========== LOGIN GATE ========== -->
-<div id="login-gate">
-  <div class="login-box">
-    <div class="lock-icon">🔒</div>
-    <h2>Chloe's Learning Space</h2>
-    <p>私有学习空间，请输入访问密码</p>
-    <div class="login-input-group">
-      <input type="password" id="password-input" placeholder="输入密码..." autocomplete="off" />
-      <button class="eye-btn" onclick="togglePassword()" title="显示/隐藏密码">👁</button>
-    </div>
-    <button class="login-btn" onclick="tryLogin()">进 入</button>
-    <div class="login-error" id="login-error"></div>
-    <p style="margin-top:20px;font-size:12px;color:var(--c-gray-500);">
-      默认密码: chloe2026<br/>
-      <span style="color:var(--c-gray-500);font-size:11px;">建议登录后修改</span>
-    </p>
-  </div>
-</div>
 
 <!-- ========== SIDEBAR ========== -->
 <div class="sidebar" id="sidebar">
@@ -197,23 +185,21 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
     <a href="#top" class="active" data-section="top">🏠 首页</a>
     <div class="nav-chapter">面试备考</div>
     <a href="#interview" data-section="interview">📋 面试备考</a>
-    <a href="pages/ab-testing-guide.html" target="_blank">🧪 A/B测试指南</a>
-    <a href="pages/tt-ds-hr-handbook.html" target="_blank">💼 HR沟通手册</a>
+    <a href="pages/ab-testing-guide.html">🧪 A/B测试指南</a>
+    <a href="pages/tt-ds-hr-handbook.html">💼 HR沟通手册</a>
   </nav>
-  <button class="sidebar-logout" id="sidebar-logout" onclick="doLogout()">
-    ↪ 退出
-  </button>
-  <div class="sidebar-badge">Private</div>
+  <div class="sidebar-badge">Personal</div>
 </div>
 
+<!-- ========== SIDEBAR OVERLAY (mobile) ========== -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 <!-- ========== MOBILE TOGGLE ========== -->
-<button class="mobile-toggle" id="mobile-toggle" onclick="toggleSidebar()">
+<button class="mobile-toggle" id="mobile-toggle" onclick="toggleSidebar()" aria-label="菜单">
   <span></span><span></span><span></span>
 </button>
 
 <!-- ========== MAIN CONTENT ========== -->
-<div id="main-content">
-
 <div class="main-content" id="top">
 
   <!-- Hero -->
@@ -226,12 +212,12 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
     <div class="hero-meta">
       <span class="tag">📊 数据分析</span>
       <span class="tag">🎯 面试备考</span>
-      <span class="tag">🔒 私有空间</span>
+      <span class="tag">🔬 实战案例</span>
     </div>
   </div>
 
   <!-- Stats -->
-  <div class="stat-grid" style="max-width:880px;margin:-30px auto 0;padding:0 48px;position:relative;z-index:2">
+  <div class="stat-grid" style="max-width:880px;margin:-28px auto 0;padding:0 48px;position:relative;z-index:2">
     <div class="stat-card">
       <div class="stat-val">2</div>
       <div class="stat-label">学习模块</div>
@@ -245,8 +231,8 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
       <div class="stat-label">数据基准</div>
     </div>
     <div class="stat-card">
-      <div class="stat-val" style="font-size:20px">Private</div>
-      <div class="stat-label">访问权限</div>
+      <div class="stat-val" style="font-size:18px">2026</div>
+      <div class="stat-label">更新年份</div>
     </div>
   </div>
 
@@ -307,82 +293,40 @@ body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-
 
 </div>
 
-</div>
-
 <script>
-// ========== AUTH LOGIC ==========
-const AUTH_KEY = 'chloe_ls_auth';
-const AUTH_TS_KEY = 'chloe_ls_auth_ts';
-const SESSION_DURATION = 24 * 60 * 60 * 1000;
-
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function togglePassword() {
-  const input = document.getElementById('password-input');
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
-
-async function tryLogin() {
-  const input = document.getElementById('password-input').value;
-  const errorEl = document.getElementById('login-error');
-  if (!input) { errorEl.textContent = '请输入密码'; return; }
-
-  const hash = await sha256(input);
-  const correctHash = await sha256('chloe2026');
-
-  if (hash === correctHash) {
-    localStorage.setItem(AUTH_KEY, 'authenticated');
-    localStorage.setItem(AUTH_TS_KEY, Date.now().toString());
-    showContent();
-  } else {
-    errorEl.textContent = '密码错误，请重试';
-    document.getElementById('password-input').value = '';
-    document.getElementById('password-input').focus();
-  }
-}
-
-function showContent() {
-  document.getElementById('login-gate').classList.add('hidden');
-  const main = document.getElementById('main-content');
-  main.style.display = 'block';
-  setTimeout(() => main.classList.add('visible'), 50);
-}
-
-function doLogout() {
-  localStorage.removeItem(AUTH_KEY);
-  localStorage.removeItem(AUTH_TS_KEY);
-  location.reload();
-}
-
-function checkAuth() {
-  const token = localStorage.getItem(AUTH_KEY);
-  const ts = localStorage.getItem(AUTH_TS_KEY);
-  if (token && ts && (Date.now() - parseInt(ts) < SESSION_DURATION)) {
-    showContent();
-  }
-}
-
 // ========== SIDEBAR TOGGLE ==========
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const toggle = document.getElementById('mobile-toggle');
+  const isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('show', isOpen);
+  toggle.classList.toggle('active', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
 }
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+  document.getElementById('mobile-toggle').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close sidebar on nav link click (mobile)
+document.querySelectorAll('.sidebar nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) closeSidebar();
+  });
+});
 
 // ========== SCROLL SPY ==========
 function updateScrollSpy() {
   const sections = document.querySelectorAll('[id]');
   const links = document.querySelectorAll('.sidebar nav a[data-section]');
   let current = '';
-
   sections.forEach(section => {
-    const top = section.getBoundingClientRect().top;
-    if (top < 200) current = section.id;
+    if (section.getBoundingClientRect().top < 200) current = section.id;
   });
-
   links.forEach(link => {
     link.classList.toggle('active', link.dataset.section === current);
   });
@@ -390,10 +334,6 @@ function updateScrollSpy() {
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
-  document.getElementById('password-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') tryLogin();
-  });
   window.addEventListener('scroll', updateScrollSpy);
 });
 </script>
