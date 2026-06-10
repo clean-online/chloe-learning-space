@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-06-08</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-06-08 · 周日</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">17</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">9 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host / a16z</span>
+    </div>
+    <p class="summary-en">A provocative theory: research paper publishing effectively died when researchers realized they could walk out the door and monetize their tacit knowledge for $100M+. California's non-compete ban has done more to spread AI knowledge than GitHub, ArXiv, and HuggingFace combined. Also notes that this dynamic motivated him to build <em>a16z Agent Summit</em> as a product-centric industry conference to complement paper-centric academic conferences.</p>
+    <p class="summary-zh zh">一个颇具挑衅性的理论：研究论文发表实际上已经死亡——当研究者意识到他们可以走出大门、以 legally protected tacit knowledge 换取到 1 亿美元以上对价时。加州的非竞业禁止令在知识扩散方面的影响力，超过了 GitHub、ArXiv 和 HuggingFace 的总和。还提到这个动力促使他把 a16z Agent Summit 打造成以产品为中心的产业会议，以补充以论文为中心的学术会议。</p>
+    <div class="urls"><a href="https://x.com/swyx/status/2063432747432268259">https://x.com/swyx/status/2063432747432268259</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Agentic coding is more addictive than video games — a succinct observation on the psychological pull of AI-assisted development. Also requesting better Codex thread management: filters/sorts for threads waiting for approval vs currently working, as he's trying to keep it to 10 threads but it's already unwieldy. And a late-night "Good night" post with a cozy setup photo.</p>
+    <p class="summary-zh zh">Agent 式编程比电子游戏还让人上瘾——对 AI 辅助开发的心理吸引力做了精辟观察。同时请求改进 Codex 线程管理：希望可以按"等待审批"和"正在运行"来筛选/排序线程，因为他正努力控制在 10 个线程以内，但已经快管不过来了。还有一张深夜"晚安"配图，展示了舒适的 workspace。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2063486871037153558">https://x.com/petergyang/status/2063486871037153558</a>
+      <a href="https://x.com/petergyang/status/2063475353335869922">https://x.com/petergyang/status/2063475353335869922</a>
+      <a href="https://x.com/petergyang/status/2063491534339936584">https://x.com/petergyang/status/2063491534339936584</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Madhu Guru</span>
+      <span class="builder-role">Ex-Google Gemini PM</span>
+    </div>
+    <p class="summary-en">Model routing is genuinely hard — it means mapping each task to the right model, which requires benchmarking against product-specific tasks and dialing in the quality/cost trade-off. Outlines the enterprise progression he witnessed with Gemini: Phase 1 (2024) everyone defaulted to the "it" model regardless of task; Phase 2 (early 2025) teams over-optimized and burned cycles without sophisticated evals; Phase 3 is nuanced routing — the most sophisticated AI-native startups now break their product into sub-agents and route each task to the right model (hardest reasoning to Claude, simplest to Gemini Flash-Lite or open-weight models). Enterprises follow AI-native builders by 6-9 months.</p>
+    <p class="summary-zh zh">模型路由真的很难——意味着要把每个任务映射到正确的模型，这需要对产品特定任务做基准测试，还要权衡质量与成本。概述了他在 Gemini 亲历的企业演进三阶段：第一阶段（2024 年）所有人默认用"那个"模型，不管什么任务都用它，因为它是最闪亮的新东西；第二阶段（2025 年初）过度优化，团队在没有足够精细 eval 的情况下烧周期，反而交付变慢；第三阶段是精细化路由——最成熟的 AI 原生创业公司已经成功把产品拆成子 agent，把不同任务路由到不同模型，比如最难的推理任务给 Claude，最简单的给 Gemini Flash-Lite 或开源权重模型。企业通常会比 AI 原生建设者晚 6-9 个月跟上这个节奏。</p>
+    <div class="urls"><a href="https://x.com/realmadhuguru/status/2063342268472574268">https://x.com/realmadhuguru/status/2063342268472574268</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">When he spoke out against the Gaza genocide, a bunch of midwit VCs ganged up on him both publicly and privately. Many of those who stood by him were also VCs — just the better ones, both morally and in return profile. The best way to avoid sociopaths is to have them self-select out of your life by standing for your beliefs. Also sharing "Vibecon" — a vibe coding conference coming up.</p>
+    <p class="summary-zh zh">当他公开反对加沙种族灭绝时，一群中等智商的 VC 在公开和私下场合都联合起来攻击他。而那些站在他这边的也有很多是 VC——只是更好那些，无论在道德还是回报表现上都是。避免反社会人格者最好的方式，就是坚持自己的信念，让他们自己选择退出你的生活。同时还分享了"Vibecon"——一个即将举行的 vibe coding 大会。</p>
+    <div class="urls">
+      <a href="https://x.com/amasad/status/2063344460705288401">https://x.com/amasad/status/2063344460705288401</a>
+      <a href="https://x.com/amasad/status/2063300737296400516">https://x.com/amasad/status/2063300737296400516</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Token costs are becoming one of the hottest topics for any enterprise he talks with right now. This is very bullish for AI generally because it means these systems are being used at a scale that wasn't contemplated before. It also gives way to another form of differentiation at the applied AI layer: model routing. As tokens take on a significant amount of the cost of any given workflow, companies will inevitably want to ensure their dollars go into the most efficient use of tokens for the particular job at hand. The applied AI layer needs to understand workflows in their domain better than anyone else, and be able to mix and match models to different jobs. This will become one of the bigger differentiation points over time.</p>
+    <p class="summary-zh zh">Token 成本正在成为他聊过的每一家企业最热门的话题之一。这对 AI 整体来说非常利好，因为这意味着这些系统正在以前所未有的规模被使用。这也为应用层 AI 带来了另一种差异化方式：模型路由。随着 token 在任何工作流成本中占据显著比例，企业不可避免地希望确保他们的每一美元都花在最适合当前任务的 token 使用上。应用层 AI 需要比任何人都更了解自己领域的工作流，并能够将不同模型混合匹配到不同任务上。随着时间推移，这将成为更重要的差异化点之一。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2063320673217609936">https://x.com/levie/status/2063320673217609936</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Defending Paxel against criticism: "We never said we don't upload any user data to the cloud. We said the code (file contents) specifically doesn't." Paxel is here to help you, and as local models improve, more will be done locally. Can't wait. Also promoting Paxel as a tool to help people become more legit, and commenting on Oakland local government — comparing it to SF's resurgence under better management.</p>
+    <p class="summary-zh zh">为 Paxel 辩护，回应批评："我们从来没说过不把任何用户数据上传到云端。我们说 specifically 不上传代码（文件内容）。"Paxel 是为了帮助用户，随着本地模型变得更好，更多工作将在本地完成。迫不及待了。同时还推广 Paxel 作为一个帮助人们变得更专业的工具，并评论了奥克兰的地方治理——将其与旧金山在更好管理下的复苏做对比。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2063418130714800487">https://x.com/garrytan/status/2063418130714800487</a>
+      <a href="https://x.com/garrytan/status/2063409501706018903">https://x.com/garrytan/status/2063409501706018903</a>
+      <a href="https://x.com/garrytan/status/2063280482922663980">https://x.com/garrytan/status/2063280482922663980</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Harvard '17</span>
+    </div>
+    <p class="summary-en">Really enjoyed a talk that drove home: the value of static content is going down, the value of live interaction is going up. People want to connect with the human being behind a piece of work, whether it's content or software. Raw & opinionated > polished & generic. This is a fundamental shift in how builders should think about distribution and audience building.</p>
+    <p class="summary-zh zh">非常喜欢一个演讲，核心观点是：静态内容的價值正在下降，实时互动的價值正在上升。人们想要与作品背后的人建立连接，无论是内容还是软件。原始且有观点 > 精致且通用。这是建设者思考分发和受众建设方式的一个根本性转变。</p>
+    <div class="urls"><a href="https://x.com/zarazhangrui/status/2063391758189572266">https://x.com/zarazhangrui/status/2063391758189572266</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Promoting his podcast "A Walk In The Park (part II)" with TaUti, covering: what world models are, the origin story from text-to-3D to ReAct or World, deciding to start the company, GTA/games and the path into programming, building in stealth and keeping secrets, picking investors with independent conviction, where world models will grow first, why low latency matters, becoming CEO and scaling the team. A comprehensive founder journey conversation.</p>
+    <p class="summary-zh zh">推广他的播客"A Walk In The Park（第二部分）"，嘉宾是 TaUti，涵盖了：世界模型是什么，从文本生成 3D 到 ReAct or World 的起源故事，决定创业，GTA/游戏和进入编程的路径， stealth 模式下建设并保持秘密，选择有独立信念的投资人，世界模型将首先在哪些领域成长，为什么低延迟很重要，成为 CEO 并扩展团队。一场全面创始人旅程对话。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2063381764782116914">https://x.com/nikunj/status/2063381764782116914</a>
+      <a href="https://x.com/nikunj/status/2063263389238087745">https://x.com/nikunj/status/2063263389238087745</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">His absolute favorite of Plato's Dialogues is a deep discussion of the limits of techne and the necessity of aidos and dike. Protagoras here, in the way he talks about where knowledge comes from and whether virtue can be taught, pre-sages LLMs. Also: "LLMs are not conscious. LLMs are not <em>not</em> conscious. Both true." A characteristically philosophical take on AI consciousness that refuses to take a binary position. He also adds two more ancient Greek concepts that are increasing in value: Aidōs — reverence and responsiveness to others; Dikē — the capacity to perceive what is right.</p>
+    <p class="summary-zh zh">他最喜欢《柏拉图对话录》中的一篇，深入讨论了 techne（技艺）的局限，以及 aidos 和 dike 的必要性。普罗泰戈拉在这里谈到了知识的来源以及美德是否可以被教导，预演了 LLM 的核心问题。还有："LLM 不是有意识的。LLM 也不是<em>不是</em>有意识的。两者都为真。"一个标志性的哲学式 AI 意识讨论，拒绝采取二元立场。他还补充了两个越来越值钱的古希腊概念：Aidōs——对他人的敬畏和回应能力；Dikē——感知何为正确的能力。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2063438262841094604">https://x.com/danshipper/status/2063438262841094604</a>
+      <a href="https://x.com/danshipper/status/2063436919967522848">https://x.com/danshipper/status/2063436919967522848</a>
+      <a href="https://x.com/danshipper/status/2063426632824562167">https://x.com/danshipper/status/2063426632824562167</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== PODCASTS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Unsupervised Learning</div>
+    <h3 class="podcast-title">Ep 89: AI Research Legend's Honest Assessment of Where We Are</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Lucas Kaiser, Transformer paper co-author, argues that reasoning alone won't get us to generalization — and that Anthropic's early bet on coding-focused models, while OpenAI was all-in on ChatGPT, is the reason they led the coding wave. The Transformer will persist, but something else that generalizes much better is coming.
+    </div>
+
+    <div class="podcast-body">
+      <p>Lucas Kaiser is one of the authors of the Transformer paper and has had amazing roles at both Google and OpenAI. On <em>Unsupervised Learning</em>, the host got to ask him all the top-of-mind questions of what's happening in AI today. Of course, they had to talk about the Transformer and how he thinks about its persistence and whether it will remain the dominant architecture and what its shortcomings are.</p>
+
+      <p>They also got his thoughts on what changed in the fall to really make coding models so much better and why Anthropic was really first to code. Kaiser's assessment is honest and unvarnished: Anthropic made the very good decision to focus on coding. OpenAI was like, "we're doing ChatGPT." Partway through, Anthropic made this decision because they just could not compete on the general chat front. So they picked coding and owned it. That bet is paying off spectacularly now.</p>
+
+      <p>On the question of whether reasoning is enough to get to generalization, or whether another method is needed, Kaiser's intuition is that "it does feel like there is something else that possibly could generalize much better." The Transformer has been incredibly successful, but he sees its limitations clearly. The next architecture may not be a replacement so much as an augmentation — but it will come, and it will generalize better.</p>
+
+      <p>On the gap between closed source and open source models, Kaiser thinks it's a fair question but doesn't take a binary stance. The ecosystem will evolve in interesting ways from both open and closed model to application companies. The most interesting dynamics will be at the application layer, where domain-specific knowledge and workflow integration matter more than raw model capability.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh zh">
+      <p>Lucas Kaiser 是 Transformer 论文的作者之一，曾在 Google 和 OpenAI 担任重要角色。在<em>无监督学习</em>播客中，主持人得以向他提出所有当下最热门的问题。当然，他们必须聊聊 Transformer，以及他对它持续性的看法——它是否会保持主导架构，以及它的缺点是什么。</p>
+
+      <p>他们还讨论了去年秋天发生了什么变化，让编程模型真的变得好那么多，以及为什么 Anthropic 真的在编程方面率先突破。Kaiser 的评估坦诚且不修饰：Anthropic 做了一个非常好的决定，专注于编程。OpenAI 当时的态度是"我们在做 ChatGPT"。某种程度上，Anthropic 做出这个决定是因为他们在通用聊天前端真的竞争不过。所以他们选了编程，并且深耕。这个赌注现在正在获得惊人的回报。</p>
+
+      <p>关于推理是否足以实现泛化，或者是否需要另一种方法，Kaiser 的直觉是"确实感觉可能有别的东西能够泛化得好得多"。Transformer 已经取得了令人难以置信的成功，但他清楚地看到了它的局限性。下一个架构也许不是取代，而是增强——但它会来，而且它会泛化得更好。</p>
+
+      <p>关于闭源和开源模型之间的差距，Kaiser 认为这是一个合理的问题，但不采取二元立场。生态系统将以有趣的方式从开源和闭源模型演进到应用公司。最有趣的动态将出现在应用层，在那里领域特定知识工作流集成比原始模型能力更重要。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=N1geOimmdDo">▶️ https://www.youtube.com/watch?v=N1geOimmdDo</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

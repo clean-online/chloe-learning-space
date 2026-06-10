@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-10 · 周日</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">13</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">21</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">13 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code @Anthropic</span>
+    </div>
+    <p class="summary-en">A bold declaration: "HTML is the new markdown." Thariq has stopped writing markdown files for almost everything and switched to using Claude Code to generate HTML directly. He shares that he now generates HTML for documentation, internal tools, dashboards, and reports — with examples available on his site. The thesis: when an AI coding agent can produce polished HTML, the friction of writing raw markup disappears, and the output is richer than anything markdown can render. It's a preview of what developer tooling looks like when the workflow is fully agent-native.</p>
+    <p class="summary-zh zh">一个大胆的宣言："HTML 就是新的 Markdown。"Thariq 已经停止用 Markdown 写几乎所有东西，改用 Claude Code 直接生成 HTML。他分享说现在用 HTML 来写文档、内部工具、仪表盘和报告，并放出了示例网站。核心论点：当 AI 编程 Agent 能直接生成精美的 HTML，编写原始标记的成本就消失了，产出的丰富度远超 Markdown。这是 Agent 原生工作流下开发者工具的未来预览。</p>
+    <div class="urls">
+      <a href="https://x.com/trq212/status/2052811606032269638">https://x.com/trq212/status/2052811606032269638</a>
+      <a href="https://x.com/trq212/status/2052811607454146761">https://x.com/trq212/status/2052811607454146761</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder · ex-Harvard</span>
+    </div>
+    <p class="summary-en">Two product drops and a hype check: (1) Built a "YouTube realtime copilot" browser extension using OpenAI's Realtime 2 API — the agent watches videos alongside you and answers questions about what was just said via voice in real time. (2) Released all 32 Beautiful HTML Slide Templates on AnyGen, plug-and-play even for non-coders with a coding agent. Her verdict on GPT Realtime 2: "feels like black magic; unlocks so many new applications!!" She's building with it right now.</p>
+    <p class="summary-zh zh">两条产品动态加一个判断：(1) 用 OpenAI Realtime 2 API 做了一个"YouTube 实时 Copilot"浏览器插件——Agent 陪你看视频，随时用语音回答你关于刚才说了什么的问题。(2) 在 AnyGen 上发布了全部 32 套 Beautiful HTML Slide 模板，没学过代码的人配合 Coding Agent 也能开箱即用。她对 GPT Realtime 2 的评价："感觉像黑魔法，解锁了超多新应用！！"——正在基于它开发新产品。</p>
+    <div class="urls">
+      <a href="https://x.com/zarazhangrui/status/2052977849267892339">https://x.com/zarazhangrui/status/2052977849267892339</a>
+      <a href="https://x.com/zarazhangrui/status/2052928583388340332">https://x.com/zarazhangrui/status/2052928583388340332</a>
+      <a href="https://x.com/zarazhangrui/status/2052895297903501601">https://x.com/zarazhangrui/status/2052895297903501601</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three rapid-fire posts on the same theme: "Personal software is coming." Garry is clearly energized about a new capability landing — likely a large context window with usable coding agent performance on consumer hardware. His all-caps reaction ("DOWNLOADING NOW... 1M token context window with supposedly usable coding agent capability all on a 128GB Macbook Pro is 🙀🙀🙀") signals genuine excitement about what's arriving for individual developers.</p>
+    <p class="summary-zh zh">连发三条，同一个主题："Personal software 时代要来了。" Garry 对某项新能力显然非常兴奋——大概是能在消费级硬件上跑大规模 context window 加可用编程能力的组合。他的全大写反应（"下！128GB MacBook Pro 能跑 100 万 token context window 加可用级编程 Agent 能力，简直是 🙀🙀🙀"）透露了个人开发者即将迎来的真正新红利。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2052998537344856459">https://x.com/garrytan/status/2052998537344856459</a>
+      <a href="https://x.com/garrytan/status/2052996810226962846">https://x.com/garrytan/status/2052996810226962846</a>
+      <a href="https://x.com/garrytan/status/2052996691586932783">https://x.com/garrytan/status/2052996691586932783</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">A sharp observation from the enterprise front lines: token budgeting has emerged as a major governance topic at larger enterprises. As agents take on longer-running tasks consuming vastly more compute, companies now have to actively allocate tokens across teams, departments, and use cases — a level of resource planning that didn't exist in the chat-with-AI era. This is the kind of unglamorous but critical infrastructure question that determines whether agent deployments actually scale.</p>
+    <p class="summary-zh zh">来自企业一线的一个精准观察：Token 预算管理已经在大公司里成为一个重要的治理话题。随着 Agent 承接耗时更长的工作、消耗更多算力，企业现在必须主动在团队、部门、用例之间分配 Token——这是 chat 时代根本不存在的资源规划维度。这正是决定 Agent 部署能否真正规模化的那种不华丽但关键的基础设施问题。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2052903105256382679">https://x.com/levie/status/2052903105256382679</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Three posts framing AI momentum trades: "Generational opportunity for anyone in AI to play the markets given this time lag. Guarantee everyone is psyched about Codex in a few months. Invest accordingly." He also flags evidence that everyone at Milken Global Conference is "3-4 months behind" — a pattern he's calling out as proof of the institutional adoption lag. Shared the AI & I episode on Every's YouTube and Spotify channels.</p>
+    <p class="summary-zh zh">三条动态聚焦 AI 的动能交易逻辑："对于 AI 圈子里的人来说，利用这个时间差玩二级市场是世代级机会。几个月后所有人都会对 Codex 疯狂。相应地做投资决策。"他还指出 Milken 全球年会上的现象作为机构采纳滞后的证据——所有人"落后市场 3-4 个月"。同期在 Every 的 YouTube 和 Spotify 频道发布了新一期 AI & I 节目。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2052865144066097217">https://x.com/danshipper/status/2052865144066097217</a>
+      <a href="https://x.com/danshipper/status/2052864131573715225">https://x.com/danshipper/status/2052864131573715225</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Alex Albert</span>
+      <span class="builder-role">Research @AnthropicAI</span>
+    </div>
+    <p class="summary-en">A benchmark data point that speaks for itself: an early Claude Mythos Preview snapshot provided to METR has a time horizon of more than 2x the next best model on their 80% success rate benchmark. METR (the nonprofit evaluating AI systems for autonomous replication and improvement tasks) is fast becoming one of the most credible third-party benchmarks for frontier model long-horizon task performance. This result puts Claude's agent capabilities in a class of their own on the longest, most complex tasks.</p>
+    <p class="summary-zh zh">一个自己会说话的数据点：提供给 METR 的早期 Claude Mythos Preview 版本，在 METR 的 80% 成功率 benchmark 上，任务时间跨度超过第二名模型的 2 倍以上。METR（评估 AI 系统自主复制和改进任务的非营利机构）正在成为前沿模型长周期任务能力最有公信力的第三方 benchmark 之一。这个结果说明 Claude 在最复杂、最耗时的任务上已经独处一档。</p>
+    <div class="urls"><a href="https://x.com/alexalbert__/status/2052899864493830590">https://x.com/alexalbert__/status/2052899864493830590</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital</span>
+    </div>
+    <p class="summary-en">An underappreciated pricing question: "The more I think about AI agents, the less obvious it is that pricing goes purely consumption-based." Token costs matter, but enterprise agents may fundamentally need identities, roles, authentication, budgets, and audit logs — the infrastructure of an organization, not just compute. This reframes the enterprise AI go-to-market question: it's not just about API costs, it's about becoming a proper enterprise software vendor with all the complexity that entails.</p>
+    <p class="summary-zh zh">一个被低估的定价问题："越想 AI Agent，就越觉得定价不可能纯按消耗量来。" Token 成本确实重要，但企业级 Agent 可能本质上需要身份、角色、认证、预算和审计日志——这是组织的基础设施，不只是算力。这重新定向了企业 AI 商业化的问题：不仅仅是 API 成本，而是成为一家完整的企业软件厂商，承担所有随之而来的复杂性。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2052839798063112303">https://x.com/mattturck/status/2052839798063112303</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Two contrasting observations: a succinct "True wealth" reaction to a chart (likely the Bloomberg/developer experience data that Swyx also cited). And a sharper point about corporate AI adoption: the dichotomy in responses is getting stronger — every large company manager says "you know nothing, we need to be invested, this is how it's always been done," while the technology is moving fast in a different direction. The gap between incumbent inertia and startup velocity keeps widening.</p>
+    <p class="summary-zh zh">两条对比鲜明的动态：对一张图（大概是 Swyx 也提到的那份 Bloomberg 开发者体验报告）简短回了"真财富"。另一个更犀利的观点：企业采纳 AI 的反应分化越来越明显——每家大公司的管理者都说"你什么都不懂，我们必须躬身入局，这是我们一直以来的方式"，而技术正在以完全不同的速度向前冲。现任者的惯性和创业公司的速度之间的差距在持续扩大。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2052898218242130402">https://x.com/nikunj/status/2052898218242130402</a>
+      <a href="https://x.com/nikunj/status/2052772099840938178">https://x.com/nikunj/status/2052772099840938178</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">One cryptic post with a link and the words "call me maybe" — an apparent reference to Carly Rae Jepsen's viral moment in the AI world. In context, it follows a wave of speculation about GPT-5.5 and what OpenAI might be shipping. Classic Altman: keeping the narrative ambiguous and the community hungry.</p>
+    <p class="summary-zh zh">一条神秘兮兮的帖子，附链接加"call me maybe"——显然是在玩 Carly Rae Jepsen 在 AI 圈的那次出圈梗。结合最近 GPT-5.5 的猜测和 OpenAI 可能即将发布的内容来看，这就是典型的 Altman 风格：让叙事保持模糊，让社区保持饥饿。</p>
+    <div class="urls"><a href="https://x.com/sama/status/2052887698717986956">https://x.com/sama/status/2052887698717986956</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">A crisp productivity rule: "The more skills you give codex, the less you have to prompt." The insight: the path to frictionless AI coding isn't longer, more detailed prompts — it's investing in the agent's skill library so it knows what to do without being told. A principle that applies equally to Claude Code, Copilot, and any agent framework worth using.</p>
+    <p class="summary-zh zh">一个干脆的生产力原则："你给 codex 塞的技能越多，你就要越少地写 prompt。"核心洞察：让 AI 编程走向零摩擦的路，不是更长更详细的 prompt，而是投资建设 Agent 的技能库，让它自己知道该做什么。这条原则同样适用于 Claude Code、Copilot 和任何值得使用的 Agent 框架。</p>
+    <div class="urls"><a href="https://x.com/steipete/status/2052971550966440251">https://x.com/steipete/status/2052971550966440251</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amanda Askell</span>
+      <span class="builder-role">Philosopher & Ethicist @AnthropicAI</span>
+    </div>
+    <p class="summary-en">A nuanced framing of alignment research: "Alignment research often has to focus on averting concerning behaviors, but I think the positive vision for this kind of training is one where we can give models an honest and positive vision for what we're trying to do." A reminder that the field's default framing — preventing harms — is a constraint, not a destination. The long-term goal is giving AI systems a coherent, affirmative picture of human flourishing, not just risk avoidance.</p>
+    <p class="summary-zh zh">对对齐研究的一个细腻视角："对齐研究往往不得不聚焦于规避令人担忧的行为，但我认为这种训练的积极愿景，是让我们能给模型一个诚实而正面的、关于我们真正想做什么的图景。"这提醒整个领域：默认框架——防止危害——是一种约束，而非终点。长期目标应该是给 AI 系统一个连贯的、肯定性的人类繁荣图景，而不只是规避风险。</p>
+    <div class="urls"><a href="https://x.com/AmandaAskell/status/2052928572810256748">https://x.com/AmandaAskell/status/2052928572810256748</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Two links and a sharp quip: flagging some good sourcing that "seems potentially state level" (likely Bloomberg's developer experience and AI coding tools data), and a satirical riff on how "Bloomberg being suddenly interested in your take on developer experience and AI coding tools" is the new "sexy singles in your area" — a classic signal that a trend has officially entered the mainstream awareness of analysts and investors.</p>
+    <p class="summary-zh zh">两条动态加一个辛辣调侃：推荐了一份"看起来可能是国家级"的好资源（大概是 Bloomberg 的开发者体验和 AI 编程工具数据），以及一个讽刺观察——"Bloomberg 突然对你的开发者体验和 AI 编程工具观点感兴趣"，这就是"附近有性感单身人士"的 AI 版——一个经典信号：某趋势已经正式进入分析师和投资人的主流视野。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2052821959713710499">https://x.com/swyx/status/2052821959713710499</a>
+      <a href="https://x.com/swyx/status/2052782201486598523">https://x.com/swyx/status/2052782201486598523</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nan Yu</span>
+      <span class="builder-role">Head of Product @Linear</span>
+    </div>
+    <p class="summary-en">A short post linking out to two resources — in the context of Linear's focus on AI-native issue tracking and developer tooling, likely sharing product thinking or industry data on how AI is reshaping the way teams manage software development. Linear has been one of the most watched product cases in the AI coding era, and Nan is at the center of that evolution.</p>
+    <p class="summary-zh zh">一条短动态，链接指向两个资源——结合 Linear 在 AI 原生 Issue 追踪和开发者工具上的深耕，大概率是在分享产品思考或行业数据，主题是 AI 如何重塑团队管理软件开发的方式。Linear 是 AI 编程时代被研究最多的产品案例之一，Nan 正处于这场变革的中心。</p>
+    <div class="urls"><a href="https://x.com/thenanyu/status/2052822037488431278">https://x.com/thenanyu/status/2052822037488431278</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">AI & I by Every</div>
+    <h3 class="podcast-title">The Secrets of Claude's Platform From the Team Who Built It</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Anthropic's platform team reveals that Claude's evolution from a completion endpoint to a self-optimizing cloud platform is not just a product story — it's a fundamental rethinking of what a "model company" means: the platform must be smart enough to understand and reconfigure itself, or the agents built on top of it will hit a ceiling the models alone cannot break through.
+    </div>
+
+    <div class="podcast-body">
+      <p>Dan Shipper sits down with Angela Destiny and Caitlin — Anthropic's Head of Product for Cloud Platform and Head of Engineering for Cloud Platform — for a rare inside look at what it actually means to build a "platform" in the AI era.</p>
+
+      <p>The conversation opens with the long arc of what "platform" has meant at Anthropic. In the GPT-3 days, the platform was a completion endpoint — you sent a prompt, got a response. Then came tool calling, chat sessions, and session state persistence. Now, with Cloud Managed Agents, you're essentially getting "a cloud on a computer with memory." The through-line: each step added more statefulness, more agency, more infrastructure the model company has to manage on the customer's behalf.</p>
+
+      <p>The most striking vision: <strong>Claude figuring out what model you should be using and how to spin up sub-agents — on the fly, without you thinking about architecture.</strong> The dream is a platform where Claude understands itself well enough to rewrite its own configuration for the task at hand. This requires serious scale, but the direction is clear: from "prompt completion" to "self-optimizing AI cloud."</p>
+
+      <p>A key insight on what differentiates a model company's platform from a traditional cloud: <strong>it's not just infrastructure, it's intelligence</strong>. Traditional cloud gives you compute; Anthropic's platform gives you compute plus a model that can reason about how to use it. That changes the competitive dynamics entirely — the moat isn't just model quality, it's platform intelligence.</p>
+
+      <p>On the commercial model question that Matt Turck was also asking about today: the platform team is grappling with how to price something that's simultaneously compute, intelligence, and workflow. Consumption-based pricing is the current answer, but the tension between token costs and enterprise needs (identities, budgets, audit logs) is very much an open question they're actively thinking through.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Dan Shipper 与 Anthropic 云平台产品负责人 Angela Destiny 和工程负责人 Caitlin 对谈，这是难得的内部视角，来看"在 AI 时代构建平台"到底意味着什么。</p>
+
+      <p>对话从 Anthropic 语境里"平台"一词的漫长演变轨迹开始说起。GPT-3 时代，平台就是一个补全接口——发个 prompt，拿个回复。然后有了工具调用、聊天会话和会话状态持久化。现在，Cloud Managed Agents 本质上相当于"一台带记忆的云端电脑"。贯穿其中的脉络：每一步都在增加状态性、主动性和基础设施——模型公司必须替用户管理的东西越来越多。</p>
+
+      <p>最引人注目的愿景：<strong>Claude 自己判断该用哪个模型、该启动哪些子 Agent——即时完成，无需你思考架构</strong>。理想状态是一个 Claude 对自己的理解足够深，以至于能为手头任务动态重写配置的 AI 云。这需要极大的规模，但方向已经清晰：从"补全 prompt"到"自我优化的 AI 云"。</p>
+
+      <p>关于模型公司平台与传统云的关键差异：<strong>不只是基础设施，更是智能</strong>。传统云给你算力；Anthropic 的平台给你算力加一个能推理如何使用它的模型。这将竞争逻辑完全改变——护城河不只是模型质量，而是平台智能。</p>
+
+      <p>关于定价模式——Matt Turck 今天也提了这个问题：平台团队正在权衡如何给一种同时是算力、又是智能、又是工作流的东西定价。消耗式定价是当前答案，但 Token 成本与企业需求（身份、预算、审计日志）之间的张力，是一个他们正在认真思考的开放问题。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=lLypHkIVLqc">▶️ https://www.youtube.com/watch?v=lLypHkIVLqc</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

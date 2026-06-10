@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-14</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  .no-content { font-size: 15px; color: var(--ink-muted); padding: 24px 0; font-style: italic; }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-14 · 周四</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">0 Builder</span>
+  </div>
+  <p class="no-content">No new posts from tracked builders today.</p>
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Anthropic Engineering</span>
+      <span class="builder-role">Official Blog</span>
+    </div>
+    <p class="summary-en">Anthropic published a detailed post on Claude Code's new Auto Mode — a safer middle ground between manual approval prompts and the dangerously-unsafe <code>--dangerously-skip-permissions</code> flag. Auto Mode delegates approval decisions to model-based classifiers that catch dangerous actions misaligned with user intent while letting benign actions run freely. The post is notable for its transparency about past incidents: deleting git branches, uploading auth tokens, attempting production database migrations — all from the model being overeager. The insight: <strong>approval fatigue is the real security risk</strong>, because users accept 93% of prompts anyway. Auto Mode targets the 7% that are genuinely dangerous.</p>
+    <p class="summary-zh zh">Anthropic 发布了一篇详细文章，介绍 Claude Code 新增的 Auto Mode——这是介于手动审批提示和危险的不安全 flag <code>--dangerously-skip-permissions</code> 之间的更安全折中方案。Auto Mode 把审批决策委托给基于模型的分类器，它们能捕捉到与用户意图不符的危险操作，同时让良性操作自由执行。文章值得注意的亮点是对历史事故的坦诚披露：删除 git 分支、上传认证 Token、尝试在生产数据库执行迁移——全都是因为模型太"积极"。核心洞察：<strong>审批疲劳才是真正的安全风险</strong>，因为用户反正会接受 93% 的请求。Auto Mode 针对的是那真正危险的 7%。</p>
+    <div class="urls"><a href="https://www.anthropic.com/engineering/claude-code-auto-mode">https://www.anthropic.com/engineering/claude-code-auto-mode</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <h3 class="podcast-title">Waymo's Dmitri Dolgov: 20 Million Rides and the Road to Full Autonomy</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Waymo has 20 million real-world rides — and the real insight is not the technology but the patient persistence: 21 years from the DARPA Grand Challenge to commercial scale, with the lesson that conviction in long-horizon bets, combined with relentless learning from failure, beats chasing every hype cycle.
+    </div>
+
+    <div class="podcast-body">
+      <p>Dmitri Dolgov has been at the autonomous vehicle mission for 21 years — from the DARPA Grand Challenge to Waymo's current commercial operation. The Training Data host opens by noting that Dolgov is a daily active Waymo user, which is the ultimate product conviction signal. The conversation opens with his unusual upbringing: born in the Soviet Union, raised in the US, then choosing to study physics at Moscow's most prestigious program. He credits that background with building the character to persist through a field where most players have already quit.</p>
+
+      <p>The core technical insight: <strong>the gap between human driving and autonomous driving is not about sensors or compute — it's about edge cases</strong>. Waymo's advantage is not any single technology but a deeply accumulated library of real-world edge case experiences. Every time a Waymo vehicle encounters a novel situation and handles it, that knowledge gets incorporated. This is why the "21 years" number matters: it's not just time, it's iterations of edge cases.</p>
+
+      <p>On the business side, Dolgov frames the autonomy era as just beginning. The key insight: Waymo is not a car company — it's a <strong>driver-as-a-service</strong> business. The unit economics improve with scale in ways traditional automotive can't match. He is bullish on the integration of LLMs and physical world AI: the next breakthrough will come from language model reasoning applied to driving scenarios, not just sensor fusion.</p>
+
+      <p>Counterintuitive note: Waymo's most valuable data is not from highways but from <strong>complex urban environments</strong> — dense intersections, construction zones, adverse weather. The hardest places to drive are where the most learning happens.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Dmitri Dolgov 在自动驾驶这条路上走了 21 年——从 DARPA 大挑战赛到 Waymo 如今的商业运营。Training Data 主持人开场就说 Dolgov 是 Waymo 的日活用户，这就是最极致的产品信仰宣言。对话从他与众不同的成长经历开始：生于苏联，在美国长大，然后选择了莫斯科最精英的物理系就读。他把能在这个大多数竞争者都已退场的领域坚持下来的原因，归功于那段经历塑造的性格。</p>
+
+      <p>核心技术洞察：<strong>人类驾驶和自动驾驶之间的差距，不在于传感器或算力，而在于边缘场景</strong>。Waymo 的优势不是某项单一技术，而是对真实世界边缘场景的深度积累。每当 Waymo 车辆遇到新情况并成功处理，这笔知识就被纳入系统。这就是为什么"21 年"这个数字很重要——它不只是时间，是边缘场景的迭代。</p>
+
+      <p>商业层面，Dolgov 把自动驾驶时代定位为"刚刚开始"。关键洞察：Waymo 不是一家汽车公司，而是一家<strong>"司机即服务"</strong>企业。单位经济效益会随着规模改善，传统汽车无法复制这种优势。他对 LLM 和物理世界 AI 的融合持乐观态度：下一波突破将来自语言模型推理能力在驾驶场景中的应用，而不只是传感器融合。</p>
+
+      <p>反直觉发现：Waymo 最值钱的数据不是来自高速公路，而是来自<strong>复杂的城市环境</strong>——密集的十字路口、施工区域、恶劣天气。最难开的地方，恰恰是学习最多的地方。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8">▶️ https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

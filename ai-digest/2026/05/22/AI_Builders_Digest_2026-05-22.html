@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-22</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-22 · 周四</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">15</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">27</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">15 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">A landmark double-header: OpenAI's model solved a major open problem in mathematics (unit distance result), and Altman frames it as "a general-purpose model solved a major open problem in mathematics — we'll be saying this a lot over the coming years." He calls it a "kinda big milestone" while admitting "complicated feelings today." Alongside, he outlines three things OpenAI is most excited about: AGI accelerating research, AGI accelerating companies, and personal AGI accelerating everyone. On the company front, he announces OpenAI will invest $2M in credits into every YC company — a token economics play at scale (5,942 likes).</p>
+    <p class="summary-zh zh">里程碑式的双重发布：OpenAI 模型解决了一个数学重大开放问题（单位距离问题），Altman 说"一个通用模型解决了一个重大开放数学问题——未来我们会频繁听到这句话"，称之为"一个算得上重大的里程碑"，同时坦言"今天心情复杂"。他还列出了 OpenAI 最兴奋的三件事：AGI 加速科研、AGI 加速公司、个人 AGI 加速每个人。在公司层面，宣布 OpenAI 将给每家 YC 公司投资 200 万美元的 credits——一次规模化的 Token 经济布局（5,942 赞）。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2057218997503086888">https://x.com/sama/status/2057218997503086888</a>
+      <a href="https://x.com/sama/status/2057203171198636251">https://x.com/sama/status/2057203171198636251</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">A deep thread on why FDE (Forward Deployed Engineer) is a durable job category, not a passing trend. The key argument: unlike cloud adoption which affected a concentrated set of developers/IT and required minimal workflow change, AI agents are both highly technical to implement <em>and</em> directly reshape employee workflows. Every model change means something new is possible or some scaffolding is now redundant. "This is why it's commonly easier for a vendor or partner that's seen the implementation hundreds or thousands of times help do the work." FDEs aren't going away — and they're a great path for early-career technical talent (556 likes).</p>
+    <p class="summary-zh zh">一条深度推文解释为什么 FDE（前沿部署工程师）是持久的岗位类型，而非短期现象。核心论点：云时代影响的是集中的开发者/IT 人群，几乎不需要改变员工工作流；但 AI Agent 的部署既高度技术化，<em>又</em>直接重塑员工的工作流程。每次模型升级都可能意味着新能力解锁，或者某些脚手架变成累赘。"这就是为什么通常由见过成百上千次实施的供应商或合作伙伴来做这件事更容易。" FDE 不会消失——对早期技术人才来说是个好方向（556 赞）。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2057315272156135501">https://x.com/levie/status/2057315272156135501</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three posts: an emphatic endorsement of Exa as the only search option for agents — "There is no other option that is as fast, as reliable, and as complete" — used across all YC, OpenClaw, and Hermes Agents (1,102 likes). A philosophical riff on "idea fusion with LSD (lateral synaptic drift)" as a creative methodology. And a political take arguing AI's real benefits will be blocked unless the media's "mass smokescreen" problem is solved.</p>
+    <p class="summary-zh zh">三条动态：对 Exa 搜索引擎的强力背书——"在速度、可靠性和完整性上没有其他选项能比"——YC、OpenClaw、Hermes Agent 全线在用（1,102 赞）。一段哲学式思考："idea fusion 搭配 LSD（横向突触漂移）更有趣"，把创意方法当实验。还有一个政治观点：AI 的真实效益正在被"大规模烟幕"阻挡，如果不解决媒体问题，美国将失去领导地位。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2057202833251000503">https://x.com/garrytan/status/2057202833251000503</a>
+      <a href="https://x.com/garrytan/status/2057238298805129383">https://x.com/garrytan/status/2057238298805129383</a>
+      <a href="https://x.com/garrytan/status/2057168328226230520">https://x.com/garrytan/status/2057168328226230520</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">A single glowing endorsement of cotypist: "Can't recommend enough. Autocomplete everywhere." — a tool that brings AI-powered autocomplete across all applications, not just the editor (1,362 likes).</p>
+    <p class="summary-zh zh">一条对 cotypist 的热烈推荐："极力推荐。全局自动补全。"——一个把 AI 自动补全带到所有应用（不只是编辑器）的工具（1,362 赞）。</p>
+    <div class="urls"><a href="https://x.com/steipete/status/2057040636449116222">https://x.com/steipete/status/2057040636449116222</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Vercel's AI infrastructure is now reaching 42% of the web: "Every model, every provider, every modality (text, image, video, audio)." The framing is deliberate — Vercel isn't just a deployment platform anymore; it's becoming the default AI runtime for the internet (229 likes).</p>
+    <p class="summary-zh zh">Vercel 的 AI 基础设施现在覆盖了互联网的 42%："每个模型、每个供应商、每种模态（文本、图像、视频、音频）。"这个定位很刻意——Vercel 不再只是部署平台，正在成为互联网的默认 AI 运行时（229 赞）。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2057212335811620987">https://x.com/rauchg/status/2057212335811620987</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host / AI Engineer</span>
+    </div>
+    <p class="summary-en">Three posts: an endorsement of Exa after a 1.5-hour bake-off where the team unanimously converged on it — "so proud to see my former landlords crush it" (222 likes). A retrospective connecting Sam Altman's "build a business that gets better when models get better" to his own "Agent Labs" concept, citing a direct correlation between model performance and agent lab revenue with a discontinuity in Q4 2025. Also shared a pod link with additional context.</p>
+    <p class="summary-zh zh">三条动态：对 Exa 搜索的背书——团队只花了 1.5 小时 bake-off 就一致选择了 Exa，"很自豪看到我前房东们大杀四方"（222 赞）。一个回顾思考：把 Sam Altman 的"建一个模型越好业务就越好的公司"与自己的"Agent Labs"概念关联起来，指出模型性能与 Agent Lab 收入之间存在直接相关，2025 Q4 出现不连续跳跃。另外分享了一个播客链接及补充上下文。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2057180080078791036">https://x.com/swyx/status/2057180080078791036</a>
+      <a href="https://x.com/swyx/status/2057119153337545096">https://x.com/swyx/status/2057119153337545096</a>
+      <a href="https://x.com/swyx/status/2057180464524456201">https://x.com/swyx/status/2057180464524456201</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Kevin Weil</span>
+      <span class="builder-role">OpenAI Science VP</span>
+    </div>
+    <p class="summary-en">Pointing to "the next in a series of firsts for AI and mathematics" — referencing the unit distance result that Sam Altman also highlighted. A quiet but significant signal from OpenAI's science leadership that math is becoming the new benchmark for AI capability.</p>
+    <p class="summary-zh zh">指向"AI 和数学领域一系列第一中的下一个"——就是 Sam Altman 也重点提及的单位距离问题。来自 OpenAI 科学领导层的低调但重要信号：数学正在成为 AI 能力的新基准。</p>
+    <div class="urls"><a href="https://x.com/kevinweil/status/2057206749552066805">https://x.com/kevinweil/status/2057206749552066805</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">A pointed take on workplace mental health: "Maybe not working at a company that's doing layoffs and PSC every few months is better for mental health." A subtle but sharp critique of the tech industry's perpetual restructuring culture (98 likes).</p>
+    <p class="summary-zh zh">一个关于职场心理健康的尖锐观点："也许不在一个每隔几个月就裁员和搞 PSC 的公司工作，对心理健康更好。"对科技行业无休止重组文化的含蓄但犀利的批评（98 赞）。</p>
+    <div class="urls"><a href="https://x.com/petergyang/status/2057281238722072912">https://x.com/petergyang/status/2057281238722072912</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Two deeply personal posts: a Claude-assisted summary of the 308-page SpaceX S-1 for those short on time. And a raw reflection on founder life: "Being a founder is so freaking hard man.. chewing glass every day. If you fail, no one cares. If you succeed, you are given way more problems." He admits he never had the courage to start a company himself, and salutes those who do — a vulnerable and widely resonant thread (791 likes).</p>
+    <p class="summary-zh zh">两条深度内容：一条是用 Claude 帮忙整理的 308 页 SpaceX S-1 摘要。另一条是关于创始人生活的真实独白："当创始人真的太难了……每天都在嚼玻璃。失败了没人在意，成功了给你更多问题。"他坦承自己从未有勇气创业，并向正在经历这些的人致敬——一段脆弱而引发广泛共鸣的话（791 赞）。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2057242868293816569">https://x.com/nikunj/status/2057242868293816569</a>
+      <a href="https://x.com/nikunj/status/2057134939875991973">https://x.com/nikunj/status/2057134939875991973</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital VC</span>
+    </div>
+    <p class="summary-en">A pop-culture-meets-VC moment: "When Kendall buys Vaulter" — a Succession reference that perfectly captures the dynamic of tech acquisition mania (79 likes).</p>
+    <p class="summary-zh zh">一个流行文化与 VC 交汇的时刻："当 Kendall 买下 Vaulter"——《继承之战》梗，精准地捕捉了科技收购狂潮的动态（79 赞）。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2057090887268643187">https://x.com/mattturck/status/2057090887268643187</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Harvard '17</span>
+    </div>
+    <p class="summary-en">Two posts with sharp organizational insight: in an AI-native team, "ICs should start thinking like managers: how to delegate tasks to agents, how to set standards and verify output" while "managers should start thinking like ICs: how to be more hands-on builders instead of just doing people management." Also sharing a Google I/O slide on the "T-shape" for AI-era developers: go deeper with domain expertise, go wider with adjacent skills, and learn to use AI well on top (151 likes).</p>
+    <p class="summary-zh zh">两条带有犀利组织洞察的动态：在 AI 原生团队中，"IC 应该开始像管理者一样思考：如何给 Agent 分配任务、如何设定标准和验证输出"，而"管理者应该开始像 IC 一样思考：如何成为更亲手的 builder，而不是只做人员管理"。还分享了 Google I/O 上关于 AI 时代开发者"T 型能力"的幻灯片：在领域专长上更深、在相邻技能上更广、在上面学会用好 AI（151 赞）。</p>
+    <div class="urls">
+      <a href="https://x.com/zarazhangrui/status/2057324988009685208">https://x.com/zarazhangrui/status/2057324988009685208</a>
+      <a href="https://x.com/zarazhangrui/status/2057267931025957348">https://x.com/zarazhangrui/status/2057267931025957348</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">A detailed thread on Anthropic's $300M acquisition of Stainless, whose biggest customers were OpenAI and Google. Shipper had interviewed CEO Alex Rattray back in October about MCP servers and "the unglamorous plumbing that makes AI agents actually work." Key highlights: design MCP servers to be lean and precise (small toolset, precise names, minimal I/O); use "dynamic mode" for complex APIs (3 tools: list endpoints, pick one, execute); MCP servers as business copilots connecting Notion and HubSpot; and Alex's "company brain" concept using Claude Code to build a curated team archive on GitHub.</p>
+    <p class="summary-zh zh">一条关于 Anthropic 3 亿美元收购 Stainless 的详细推文——Stainless 最大的客户居然是 OpenAI 和 Google。Shipper 在去年 10 月就采访过 CEO Alex Rattray，聊的是 MCP 和"让 AI Agent 真正跑起来的不起眼管道"。核心要点：MCP Server 设计要精简（小工具集、精确命名、最小化输入输出）；复杂 API 用"动态模式"（3 个工具：列端点、选一个、执行）；MCP Server 作为商业副驾连接 Notion 和 HubSpot；还有 Alex 用 Claude Code 打造的"公司大脑"——在 GitHub 上构建精选团队知识库。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2057122805657821240">https://x.com/danshipper/status/2057122805657821240</a>
+      <a href="https://x.com/danshipper/status/2057123430776902031">https://x.com/danshipper/status/2057123430776902031</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">South Park Commons GP</span>
+    </div>
+    <p class="summary-en">Three posts: a cryptic "This is a really big deal" quote-tweet (context suggests a major industry move). Celebrating Feross's journey at South Park Commons and being an early partner. And a simple call to apply to South Park Commons.</p>
+    <p class="summary-zh zh">三条动态：一条神秘的"这真的是件大事"引推（上下文暗示有重大行业变动）。庆祝 Feross 在 South Park Commons 的历程，以及自己作为早期合作伙伴的骄傲。还有一个简单的 South Park Commons 招募链接。</p>
+    <div class="urls">
+      <a href="https://x.com/adityaag/status/2057187787242426555">https://x.com/adityaag/status/2057187787242426555</a>
+      <a href="https://x.com/adityaag/status/2057141903334990327">https://x.com/adityaag/status/2057141903334990327</a>
+      <a href="https://x.com/adityaag/status/2057125943773180348">https://x.com/adityaag/status/2057125943773180348</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Josh Woodward</span>
+      <span class="builder-role">Google VP, Labs / Gemini</span>
+    </div>
+    <p class="summary-en">Two engagement-focused replies: "You found it! :)" and "Glad you're liking it!" — pointing to new Google features that the community has discovered, likely related to the Project Genie global rollout. The tone is warm and collaborative, signaling Google's more open approach to AI product launches.</p>
+    <p class="summary-zh zh">两条互动回复："你找到了！:)" 和 "很高兴你喜欢！"——指向社区发现的新 Google 功能，可能与 Project Genie 的全球上线有关。语气温暖而协作，信号着 Google 对 AI 产品发布采取了更开放的态度。</p>
+    <div class="urls">
+      <a href="https://x.com/joshwoodward/status/2057297559643922609">https://x.com/joshwoodward/status/2057297559643922609</a>
+      <a href="https://x.com/joshwoodward/status/2057280348158063071">https://x.com/joshwoodward/status/2057280348158063071</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Google Labs</span>
+      <span class="builder-role">Official</span>
+    </div>
+    <p class="summary-en">Project Genie is now fully available to all Google AI Ultra subscribers globally (18+). The demo shows going from playing games to designing games in minutes — choose characters, set the scene, and let Genie do the rest. Also available at the Google I/O sandbox this year (177 + 148 likes across two posts).</p>
+    <p class="summary-zh zh">Project Genie 现已面向全球所有 Google AI Ultra 订阅用户开放（18+）。演示展示了从玩游戏到设计游戏的跨越——选角色、设场景，Genie 帮你搞定剩下的。今年 Google I/O 的沙盒区也可以现场体验（两条推文共 177 + 148 赞）。</p>
+    <div class="urls">
+      <a href="https://x.com/GoogleLabs/status/2057218835074437573">https://x.com/GoogleLabs/status/2057218835074437573</a>
+      <a href="https://x.com/GoogleLabs/status/2057179491693470166">https://x.com/GoogleLabs/status/2057179491693470166</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">AI & I by Every</div>
+    <h3 class="podcast-title">Inside Stainless: The Developer Tools Startup Anthropic Just Bought for $300 Million</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      The $300M Stainless acquisition isn't about a product — it's about owning the plumbing layer of the AI-native internet. Whoever controls how APIs and MCP servers are built decides how every AI agent talks to every service. Anthropic just bought themselves a seat at that table, and they got it from under OpenAI and Google, who were Stainless' biggest customers.
+    </div>
+
+    <div class="podcast-body">
+      <p>Alex Rattray built Stainless into the behind-the-scenes infrastructure for the AI era: they write the APIs and SDKs that OpenAI, Anthropic, and every major AI company use to expose their services. Before Stainless, Rattray worked at Stripe building their API — the attention to developer experience carried over. The conversation with Dan Shipper was recorded before the acquisition, but reads like a blueprint for what Anthropic just bought.</p>
+
+      <p>The core technical insight: <strong>MCP servers are deceptively hard to build well</strong>. The temptation is to expose every API endpoint as a tool, but that overwhelms the model. Rattray's approach: keep toolsets small, give each tool a precise name and description, minimize inputs/outputs, and add a JSON filter to strip unnecessary data. For complex APIs, Stainless uses "dynamic mode" — three tools only: list endpoints, pick one and learn about it, execute it.</p>
+
+      <p>On MCP as business infrastructure: Rattray uses MCP servers to connect Notion and HubSpot, creating a "business copilot" where queries like "which customers signed up last week?" cross multiple databases and return a synthesized answer. More ambitiously, he built a shared "company brain" using Claude Code — saving useful inputs (customer feedback, SQL queries) into GitHub, creating a curated archive the whole team can query.</p>
+
+      <p>The forward-looking take: <strong>MCP's future is code execution, not tool-calling</strong>. Instead of giving models hundreds of tools, the direction is letting them write and execute code that calls APIs — more flexible, more auditable, and more scalable. The current MCP spec has real limitations around security, state management, and discoverability that the ecosystem is still working through.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Alex Rattray 把 Stainless 做成了 AI 时代的幕后基础设施：他们为 OpenAI、Anthropic 和所有主流 AI 公司编写 API 和 SDK。在创立 Stainless 之前，Rattray 在 Stripe 做 API——对开发者体验的执念延续了下来。这段与 Dan Shipper 的对话录制于收购之前，但读起来就像 Anthropic 刚买下的那张蓝图。</p>
+
+      <p>核心技术洞察：<strong>MCP Server 做好非常困难</strong>。诱惑是把每个 API 端点都暴露为工具，但那样会把模型淹没。Rattray 的方法：保持工具集精简，给每个工具精确的名称和描述，最小化输入/输出，加 JSON 过滤器去掉冗余数据。对于复杂 API，Stainless 用"动态模式"——只有三个工具：列出端点、选一个了解它、执行它。</p>
+
+      <p>关于 MCP 作为商业基础设施：Rattray 用 MCP Server 连接 Notion 和 HubSpot，创造了一个"商业副驾"，像"上周哪些客户注册了？"这样的查询能跨数据库返回综合答案。更有野心的是，他用 Claude Code 构建了一个共享的"公司大脑"——把有用的输入（客户反馈、SQL 查询）保存到 GitHub，形成团队可查询的精选知识库。</p>
+
+      <p>前瞻判断：<strong>MCP 的未来是代码执行，而非工具调用</strong>。方向不是给模型成百上千个工具，而是让它们写代码来调用 API——更灵活、更可审计、更可扩展。当前 MCP 规范在安全、状态管理和可发现性方面还有真实限制，生态系统仍在摸索中。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/playlist?list=PLuMcoKK9mKgHtW_o9h5sGO2vXrffKHwJL">▶️ https://www.youtube.com/playlist?list=PLuMcoKK9mKgHtW_o9h5sGO2vXrffKHwJL</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

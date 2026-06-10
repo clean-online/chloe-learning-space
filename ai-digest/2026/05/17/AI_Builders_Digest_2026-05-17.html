@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-17</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-17 · 周六</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">11</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">26</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">11 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">A viral thread revealing the scale of AI-first engineering at OpenClaw: they run ~100 Codex instances in the cloud continuously, reviewing every PR and commit for security, de-duplicating issues, scanning for spam, verifying performance benchmarks, and even listening in on meetings to proactively create PRs while features are being discussed. He frames the core question: "How would we build software in the future if tokens don't matter?" Also shipped Clawpatch 0.1.0, which maps codebases into semantic feature slices and reviews them for bugs, and praised Svelte as a React alternative that Codex handles really well.</p>
+    <p class="summary-zh zh">一条引发轰动的推文，揭示了 OpenClaw 的 AI 优先工程规模：他们在云端持续运行约 100 个 Codex 实例，审查每个 PR 和 commit 的安全问题、去重 issue、扫描垃圾评论、验证性能基准，甚至在开会时监听讨论并主动创建 PR。他提出了核心问题："如果 token 不再是成本考量，未来的软件开发会是什么样？"同时发布了 Clawpatch 0.1.0，它能将代码库映射为语义功能切片并审查 bug，还称赞 Svelte 是 Codex 处理得非常好的 React 替代方案。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2055405041843052792">https://x.com/steipete/status/2055405041843052792</a>
+      <a href="https://x.com/steipete/status/2055402519841411165">https://x.com/steipete/status/2055402519841411165</a>
+      <a href="https://x.com/steipete/status/2055364630709448970">https://x.com/steipete/status/2055364630709448970</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">A single but characteristically candid post: appreciating how seriously the team takes user reports, "even when the answer turns out to be 'i got used to the current level of magic and now i'd like more please.'" The line captures the perpetual expectation escalation in AI — users normalize yesterday's breakthroughs almost instantly and start asking for more. Altman's framing is both self-aware and strategic: acknowledging the pattern while signaling that OpenAI takes even "magic fatigue" as valid feedback.</p>
+    <p class="summary-zh zh">一条推文，一如既往的坦率：感谢团队对用户反馈的重视，"即使答案最终是'我已经习惯了当前的魔法水平，现在想要更多'。"这句话精准捕捉了 AI 领域的永恒期待膨胀——用户几乎瞬间就习惯了昨天的突破，然后开始要求更多。Altman 的表述既自省又策略性：承认这个模式，同时释放信号，OpenAI 连"魔法疲劳"也视为有效反馈。</p>
+    <div class="urls"><a href="https://x.com/sama/status/2055356452286640630">https://x.com/sama/status/2055356452286640630</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Three major posts: Grok CLI now supports Plugins and Skills — installing the Vercel Plugin gives Grok cloud deployment superpowers, demoing a creative coding website generated with Grok and hosted seamlessly on Vercel (853 likes). Also highlighting Vercel's SSO protection for agent deployments, creating a secure "intranet" of AI-generated apps behind Okta. His philosophy tweet (1,863 likes): "If you become exceptional at managing agents, but are also exceptional in your understanding of the fundamentals, you will be unstoppable." The new equilibrium is not agents OR fundamentals — it's agents AND fundamentals.</p>
+    <p class="summary-zh zh">三条重要动态：Grok CLI 现在支持插件和技能——安装 Vercel 插件就能给 Grok 云端部署超能力，演示了用 Grok 生成并无缝托管到 Vercel 的创意编程网站（853 赞）。另外强调了 Vercel 为 Agent 部署提供的 SSO 保护，在 Okta 后面构建 AI 生成应用的安全"内网"。他的哲学推文（1,863 赞）："如果你在管理 Agent 上做到卓越，同时对基础原理的理解也做到卓越，你将势不可挡。"新的平衡不是 Agent 或基础——而是 Agent 加基础。</p>
+    <div class="urls">
+      <a href="https://x.com/rauchg/status/2055491454307582454">https://x.com/rauchg/status/2055491454307582454</a>
+      <a href="https://x.com/rauchg/status/2055440326765244742">https://x.com/rauchg/status/2055440326765244742</a>
+      <a href="https://x.com/rauchg/status/2055278852931530784">https://x.com/rauchg/status/2055278852931530784</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Two posts on the future of AI deployment. The long one argues that AI is fundamentally different from software — models change so much they can meaningfully alter workflows with each upgrade, so the "deliver stable tech and they adopt it" playbook breaks down. The logical conclusion: Forward Deployed Engineering (FDE) becomes a core competency at scale, because one vendor sharing best practices across thousands of companies is more efficient than every company learning them alone. Also: "Headless software is the future" — the interface layer detaches from the intelligence layer.</p>
+    <p class="summary-zh zh">两条关于 AI 部署未来的推文。长推论证 AI 和软件有本质区别——模型变化大到每次升级都可能显著改变工作流，"交付稳定技术、客户采纳"的打法失效了。逻辑结论：Forward Deployed Engineering（FDE）在大规模部署时成为核心竞争力，因为一个供应商跨数千家公司分享最佳实践，比每家公司自己摸索高效得多。另外："无头软件是未来"——界面层与智能层正在分离。</p>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2055501840419328286">https://x.com/levie/status/2055501840419328286</a>
+      <a href="https://x.com/levie/status/2055357619888595271">https://x.com/levie/status/2055357619888595271</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three posts: criticizing SF's "Overpaid CEO Tax" as bad anti-business policy that passes gross receipts taxes to consumers and reduces city revenue, sharing his California voter guide as a trusted resource, and a brief "Many such cases" comment on a related political issue. The political engagement is consistent with his ongoing advocacy for SF's tech ecosystem — framing pro-business policy as pro-city prosperity.</p>
+    <p class="summary-zh zh">三条动态：批评旧金山"CEO 高薪税"是糟糕的反商业政策，将毛收入税转嫁给消费者且会减少城市收入；分享加州投票指南作为可信赖的参考资源；简短评论"这种情况太多了"。政治参与度与他持续为旧金山科技生态发声的立场一致——把支持商业的政策框架为支持城市繁荣。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2055446378596474891">https://x.com/garrytan/status/2055446378596474891</a>
+      <a href="https://x.com/garrytan/status/2055384351307858390">https://x.com/garrytan/status/2055384351307858390</a>
+      <a href="https://x.com/garrytan/status/2055320066577891415">https://x.com/garrytan/status/2055320066577891415</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Three posts. The standout: a jaw-dropping account of what /goal (OpenClaw's agent goal mode) can do — it went through an entire database of 2,000+ line items, fixed product images and frontend bugs, used browser harness for real-time web info, web search for fact-checking, wrote scripts for future reuse, and ran for 2 hours while he met founders for coffee (304 likes). Also teasing a "second phase" side project that parents will be excited about, and recommending his partner's writing.</p>
+    <p class="summary-zh zh">三条推文。最抢眼的是对 /goal（OpenClaw 的 Agent 目标模式）能力的震撼描述——它遍历了 2000 多行的整个数据库，修复了产品图片和前端 bug，用浏览器工具获取实时网络信息，用网络搜索做事实核查，写了脚本供后续复用，在他和创始人喝咖啡的 2 小时里自动运行（304 赞）。另外预告了一个"第二阶段"的副项目，说家长们会兴奋的；还推荐了伴侣的文章。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2055428193398780296">https://x.com/nikunj/status/2055428193398780296</a>
+      <a href="https://x.com/nikunj/status/2055426430654439485">https://x.com/nikunj/status/2055426430654439485</a>
+      <a href="https://x.com/nikunj/status/2055288369958289536">https://x.com/nikunj/status/2055288369958289536</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Three posts on the Codex ecosystem: praising Codex as "completely unrecognizable from 3 months ago" after the team went "extreme founder mode," flagging that Singapore's head of AI Govtech estimates 1.3 billion agents in the country in the next 2 years and is building a national MCP gateway, and sharing early hints about the Codex roadmap from a keynote. The Singapore angle is the signal — national-scale agent infrastructure is becoming a government priority.</p>
+    <p class="summary-zh zh">三条关于 Codex 生态的动态：称赞 Codex "和三个月前完全认不出来了"，团队进入了"极端创始人模式"；指出新加坡 AI 政务负责人估计未来 2 年国内将有 13 亿 Agent，正在构建国家级 MCP 网关；还分享了主题演讲中关于 Codex 路线图的早期提示。新加坡的动向才是信号——国家级 Agent 基础设施正在成为政府优先事项。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2055494400252481687">https://x.com/swyx/status/2055494400252481687</a>
+      <a href="https://x.com/swyx/status/2055470634331750588">https://x.com/swyx/status/2055470634331750588</a>
+      <a href="https://x.com/swyx/status/2055467498888118647">https://x.com/swyx/status/2055467498888118647</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Three posts on ChatGPT Finances: praising it as "pretty awesome" but noting AI still has trouble classifying transactions correctly, flagging the privacy concern that there's no separate toggle to prevent financial data from being used for ad targeting (only an "improve the model for everyone" toggle), and a lighthearted reaction. The privacy observation is the real signal — financial data in AI assistants creates a new category of data governance tension that hasn't been resolved yet.</p>
+    <p class="summary-zh zh">三条关于 ChatGPT Finances 的动态：称赞它"相当不错"，但指出 AI 在交易分类上仍然有问题；标记了隐私担忧——没有单独的开关阻止金融数据被用于广告定向，只有一个"为所有人改进模型"的选项；还有一条轻松的反应。隐私观察才是真正的信号——AI 助手中的金融数据创造了一个尚未解决的新型数据治理张力。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2055450577094738018">https://x.com/petergyang/status/2055450577094738018</a>
+      <a href="https://x.com/petergyang/status/2055436179643019395">https://x.com/petergyang/status/2055436179643019395</a>
+      <a href="https://x.com/petergyang/status/2055396161910194395">https://x.com/petergyang/status/2055396161910194395</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Three posts. The substantive one: a deep-dive on building an agent-as-a-service platform on OpenClaw. Two key takeaways — (1) OpenClaw is awesome but EXTREMELY hard to build on as a platform because it moves super fast with tons of regressions, making it tough to be the layer between OpenClaw and end users; (2) One super agent for a company beats 1:1 agents for everyone, because agents still require significant technical work to maintain, and people with jobs don't want to mess with agent internals all day. Also declaring "Codex-native apps are the future."</p>
+    <p class="summary-zh zh">三条动态。最有实质内容的是：关于在 OpenClaw 上构建 Agent 即服务平台的深度复盘。两个关键洞察——（1）OpenClaw 很棒，但作为平台构建极其困难，因为它迭代太快、回归太多，夹在 OpenClaw 和终端用户之间的那一层很痛苦；（2）一个公司的超级 Agent 打败每人一个 1:1 Agent，因为 Agent 仍需大量技术工作来维护，有工作的人不想整天折腾 Agent 内部。还宣称"Codex 原生应用是未来"。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2055451869841965154">https://x.com/danshipper/status/2055451869841965154</a>
+      <a href="https://x.com/danshipper/status/2055412891910586516">https://x.com/danshipper/status/2055412891910586516</a>
+      <a href="https://x.com/danshipper/status/2055347527457886336">https://x.com/danshipper/status/2055347527457886336</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Madhu Guru</span>
+      <span class="builder-role">Google Gemini PM</span>
+    </div>
+    <p class="summary-en">A single but powerful thread: "A generation of PMs is struggling to adapt to AI because they were trained to execute playbooks. AI requires inventing them." He argues that for two decades, a few teams invented product patterns and everyone else repurposed them, making PM work dry and mechanical — and why so much software feels the same. The verdict: PMs need to be inventors now, not framework executors. You can't A/B test your way to a breakthrough AI product. Doable, but requires unlearning.</p>
+    <p class="summary-zh zh">一条但有冲击力的推文："一代产品经理正在努力适应 AI，因为他们被训练执行套路，而 AI 需要发明套路。"他论证了二十年来，少数团队发明产品模式，其他人复用——这让 PM 工作变得干瘪机械化——也解释了为什么这么多软件感觉千篇一律。结论：PM 现在需要做发明者，而非框架执行者。你没法靠 A/B 测试做出突破性 AI 产品。可行，但需要先忘掉旧习惯。</p>
+    <div class="urls"><a href="https://x.com/realmadhuguru/status/2055414865146327088">https://x.com/realmadhuguru/status/2055414865146327088</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital</span>
+    </div>
+    <p class="summary-en">A cryptic but fun one: "Some personal news: He slid into my DMs, don't say prayers don't work y'all." Classic Matt Turck — turning a professional milestone into a meme. The specifics remain under wraps, but the VC community reading between the lines suggests a significant deal or partnership in the making.</p>
+    <p class="summary-zh zh">一条神秘但有趣的推文："一些个人消息：他主动私信了我，别说祈祷没用。"典型的 Matt Turck 风格——把职业里程碑变成梗。具体细节尚未公开，但 VC 圈的解读暗示可能有重大交易或合作在酝酿。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2055404881024848056">https://x.com/mattturck/status/2055404881024848056</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Unsupervised Learning (Redpoint AI)</div>
+    <h3 class="podcast-title">Ep 86: Yann LeCun on Leaving Meta, Breaking The LLM Paradigm, &amp; Why Hinton is Wrong</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Yann LeCun is leaving Meta to start his own company, AMI — not because of conflict, but because the LLM paradigm has hit its ceiling. He argues that autoregressive text prediction can never achieve true intelligence; the future lies in JEPA (Joint Embedding Predictive Architecture), which learns world models through observation, not language. His divergence from Hinton and Bengio is not academic — it's architectural.
+    </div>
+
+    <div class="podcast-body">
+      <p>Yann LeCun, one of the three Turing Award winners and a founding father of deep learning, is spinning out from Meta to launch AMI. He clarifies the biggest misconception: his departure wasn't about conflict with Mark Zuckerberg or Alex, but about a fundamental disagreement on research direction. At Meta, the organizational momentum had shifted toward scaling LLMs, while LeCun believes that path is fundamentally limited.</p>
+
+      <p>His core thesis: <strong>autoregressive LLMs can never achieve true intelligence because they only model the surface statistics of language, not the underlying world</strong>. They have no understanding of physics, no persistent memory of experiences, and no ability to plan. He calls the current LLM paradigm "a dead end for intelligence" — useful for tools, insufficient for agents.</p>
+
+      <p>The alternative: <strong>JEPA (Joint Embedding Predictive Architecture)</strong>, which learns internal world models by predicting abstract representations of observations, not pixel-level or token-level reconstructions. LeCun argues this is how biological intelligence works — babies learn physics before language. JEPA-style systems could build persistent world models, reason about cause and effect, and plan multi-step actions without language as a crutch.</p>
+
+      <p>On his divergence from Hinton and Bengio: LeCun says their views started splitting in 2023. Hinton believes scaling current architectures with more data and compute will eventually produce intelligence. LeCun disagrees — <strong>"more of the same won't get you to something fundamentally different."</strong> He's equally skeptical of the AI safety doom narrative, calling it "science fiction" that distracts from real near-term risks like bias and job displacement.</p>
+
+      <p>On Meta's FAIR legacy: he's proud of what the lab built — PyTorch, the Llama models, fundamental research in self-supervised learning — but the company's priorities shifted toward product-driven LLM scaling, leaving less room for the kind of blue-sky research he wants to pursue.</p>
+
+      <p>The most provocative line: <strong>"Five years, complete world domination."</strong> When asked about the path of progress, LeCun half-jokes that the best way to get breakthrough research is to "hire the best people and get the fuck out of the way." AMI will be his vehicle to prove that JEPA can do what LLMs can't.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Yann LeCun，深度学习三巨头之一、图灵奖得主，正在从 Meta 离职创办 AMI。他澄清了最大的误解：离职不是因为与扎克伯格或 Alex 的冲突，而是对研究方向的根本分歧。在 Meta，组织势能已经转向扩展 LLM，而 LeCun 认为这条路有根本性局限。</p>
+
+      <p>核心论点：<strong>自回归 LLM 永远无法实现真正的智能，因为它们只建模语言的表面统计规律，而非底层世界</strong>。它们不理解物理，没有持久的体验记忆，也没有规划能力。他称当前 LLM 范式是"智能的死胡同"——作为工具有用，作为 Agent 不够。</p>
+
+      <p>替代方案：<strong>JEPA（联合嵌入预测架构）</strong>，通过预测观测的抽象表示（而非像素级或 token 级重建）来学习内部世界模型。LeCun 认为这正是生物智能的工作方式——婴儿先学物理，再学语言。JEPA 类系统能构建持久的世界模型，推理因果关系，并规划多步行动，无需依赖语言。</p>
+
+      <p>关于与 Hinton 和 Bengio 的分歧：LeCun 说他们的观点从 2023 年开始分化。Hinton 认为用更多数据和算力扩展当前架构终将产生智能。LeCun 不同意——<strong>"更多同样的东西不会让你得到根本不同的东西。"</strong>他同样对 AI 安全末日论持怀疑态度，称其为"科幻"，分散了对偏见和失业等真实近期风险的注意力。</p>
+
+      <p>关于 Meta FAIR 的遗产：他为实验室的成果自豪——PyTorch、Llama 模型、自监督学习基础研究——但公司重心已转向产品驱动的 LLM 扩展，给他想追求的蓝天研究留下的空间越来越少。</p>
+
+      <p>最挑衅的一句话：<strong>"五年，完全的世界统治。"</strong>当被问及进步路径时，LeCun 半开玩笑说，获得突破性研究的最好方式是"雇最好的人，然后滚蛋让他们干活"。AMI 将是他证明 JEPA 能做到 LLM 做不到之事的载体。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/@RedpointAI">▶️ https://www.youtube.com/@RedpointAI</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="repo-base" content=".." />
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    // Find root index.html
+    var path=window.location.pathname;
+    var depth=(path.match(/\//g)||[]).length;
+    // Count how many dirs deep from repo root
+    var parts=path.split('/').filter(Boolean);
+    // pages/ is 1 level deep, ai-digest/2026/05/01/ is 3 levels deep
+    var basePath='.';
+    if(parts.includes('pages')) basePath='..';
+    else if(parts.includes('ai-digest')) {
+      var idx=parts.indexOf('ai-digest');
+      var levels=parts.length-idx-2; // subtract index and filename
+      basePath=Array(levels+1).join('../')||'./';
+    }
+    window.location.replace(basePath+'/index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TT DS岗 · HR沟通准备手册 | Chloe</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --c-primary: #0f766e;
+  --c-primary-light: #14b8a6;
+  --c-primary-bg: #f0fdfa;
+  --c-accent: #f59e0b;
+  --c-accent-bg: #fffbeb;
+  --c-danger: #ef4444;
+  --c-danger-bg: #fef2f2;
+  --c-navy: #1e293b;
+  --c-navy-light: #334155;
+  --c-gray-50: #f8fafc;
+  --c-gray-100: #f1f5f9;
+  --c-gray-200: #e2e8f0;
+  --c-gray-300: #cbd5e1;
+  --c-gray-500: #64748b;
+  --c-gray-700: #334155;
+  --c-gray-900: #0f172a;
+  --c-white: #ffffff;
+  --c-code-bg: #1e293b;
+  --c-code-text: #e2e8f0;
+  --c-highlight: #fef08a;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "JetBrains Mono", Consolas, monospace;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --sidebar-w: 280px;
+}
+
+/* ===== Reset & Base ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-gray-900);background:var(--c-gray-50);-webkit-font-smoothing:antialiased}
+
+/* ===== Layout ===== */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--c-navy);color:var(--c-gray-300);overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--c-gray-500);border-radius:4px}
+.main-content{margin-left:var(--sidebar-w);min-height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-header h2{font-size:15px;font-weight:700;color:var(--c-primary-light);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.sidebar-header p{font-size:12px;color:var(--c-gray-500);line-height:1.5}
+.sidebar nav{padding:16px 0}
+.sidebar nav a{display:block;padding:8px 24px;font-size:13px;color:var(--c-gray-300);text-decoration:none;transition:all .15s ease;border-left:3px solid transparent}
+.sidebar nav a:hover{color:var(--c-white);background:rgba(255,255,255,.05);border-left-color:var(--c-primary-light)}
+.sidebar nav a.active{color:var(--c-primary-light);background:rgba(20,184,166,.08);border-left-color:var(--c-primary-light);font-weight:600}
+.sidebar nav .nav-chapter{padding:12px 24px 6px;font-size:11px;font-weight:700;color:var(--c-gray-500);text-transform:uppercase;letter-spacing:1px;border-left:none}
+.sidebar nav .nav-sub{padding:6px 24px 6px 40px;font-size:12.5px}
+.sidebar-badge{position:fixed;bottom:20px;left:20px;display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(20,184,166,.15);border-radius:20px;font-size:11px;color:var(--c-primary-light)}
+.sidebar-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c-primary-light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ===== Mobile Toggle ===== */
+.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:44px;height:44px;border-radius:var(--radius);background:var(--c-navy);border:none;cursor:pointer;align-items:center;justify-content:center}
+.mobile-toggle span{display:block;width:20px;height:2px;background:var(--c-white);margin:3px 0;transition:.3s}
+
+/* ===== Hero ===== */
+.hero{background:linear-gradient(135deg,var(--c-navy) 0%,#134e4a 100%);color:var(--c-white);padding:80px 60px 60px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;top:-50%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:42px;font-weight:800;line-height:1.2;margin-bottom:16px;letter-spacing:-.5px}
+.hero h1 span{color:var(--c-primary-light)}
+.hero .subtitle{font-size:18px;color:rgba(255,255,255,.7);max-width:640px;line-height:1.6;margin-bottom:24px}
+.hero-meta{display:flex;gap:20px;flex-wrap:wrap}
+.hero-meta .tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;font-size:13px;color:rgba(255,255,255,.8)}
+.hero-meta .tag svg{width:14px;height:14px;fill:var(--c-primary-light)}
+
+/* ===== Content Container ===== */
+.content-wrap{max-width:880px;margin:0 auto;padding:40px 48px 80px}
+.content-wrap section{margin-bottom:48px}
+
+/* ===== Headings ===== */
+h2.chapter-title{font-size:28px;font-weight:800;color:var(--c-navy);margin:64px 0 8px;padding-top:32px;border-top:3px solid var(--c-primary-light);position:relative}
+h2.chapter-title .ch-num{position:absolute;top:-18px;left:0;background:var(--c-primary-light);color:var(--c-white);font-size:13px;font-weight:700;padding:2px 12px;border-radius:0 0 6px 6px;letter-spacing:.5px}
+h3{font-size:20px;font-weight:700;color:var(--c-navy);margin:36px 0 12px;line-height:1.4}
+h4{font-size:16px;font-weight:700;color:var(--c-navy-light);margin:24px 0 8px}
+
+/* ===== Paragraphs ===== */
+p{margin-bottom:16px;color:var(--c-gray-700);line-height:1.8}
+
+/* ===== Tables ===== */
+.table-wrap{overflow-x:auto;margin:20px 0;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:1px solid var(--c-gray-200)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead{background:var(--c-navy)}
+thead th{padding:12px 16px;text-align:left;font-weight:600;color:var(--c-white);font-size:13px;letter-spacing:.3px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--c-gray-200);transition:background .15s}
+tbody tr:hover{background:var(--c-primary-bg)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:10px 16px;color:var(--c-gray-700);vertical-align:top}
+tbody td strong{color:var(--c-navy);font-weight:600}
+
+/* ===== Callout Blocks ===== */
+.callout{padding:20px 24px;border-radius:var(--radius-lg);margin:24px 0;position:relative}
+.callout-interview{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-left:4px solid var(--c-primary-light)}
+.callout-interview::before{content:"🎤 面试话术";display:block;font-size:12px;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.callout-interview p{color:var(--c-gray-700);font-style:italic;font-size:14.5px;line-height:1.8;margin:0}
+.callout-warning{background:var(--c-danger-bg);border-left:4px solid var(--c-danger)}
+.callout-warning::before{content:"⚠️ 注意";display:block;font-size:12px;font-weight:700;color:var(--c-danger);margin-bottom:8px}
+.callout-key{background:var(--c-accent-bg);border-left:4px solid var(--c-accent)}
+.callout-key::before{content:"💡 关键洞察";display:block;font-size:12px;font-weight:700;color:#b45309;margin-bottom:8px}
+.callout-tip{background:#eff6ff;border-left:4px solid #3b82f6}
+.callout-tip::before{content:"💡 提示";display:block;font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:8px}
+.callout p{margin:0}
+
+/* ===== Stat Cards ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}
+.stat-card{background:var(--c-white);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card .stat-val{font-size:28px;font-weight:800;color:var(--c-primary);line-height:1.2}
+.stat-card .stat-label{font-size:12px;color:var(--c-gray-500);margin-top:6px;line-height:1.4}
+.stat-card .stat-trend{font-size:11px;margin-top:4px;font-weight:600}
+.stat-card .trend-down{color:var(--c-danger)}
+.stat-card .trend-up{color:var(--c-primary)}
+
+/* ===== Flow Diagram ===== */
+.flow{display:flex;align-items:center;gap:12px;margin:20px 0;flex-wrap:wrap}
+.flow-step{background:var(--c-primary-bg);border:1px solid rgba(20,184,166,.2);border-radius:var(--radius);padding:10px 18px;font-size:13px;font-weight:600;color:var(--c-primary);text-align:center}
+.flow-arrow{color:var(--c-gray-400);font-size:18px;flex-shrink:0}
+
+/* ===== Lists ===== */
+ul,ol{margin:12px 0 16px 24px;color:var(--c-gray-700)}
+li{margin-bottom:6px;line-height:1.7}
+li strong{color:var(--c-navy)}
+
+/* ===== Badge ===== */
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-teal{background:#ccfbf1;color:#0f766e}
+
+/* ===== Inline Highlight ===== */
+mark{background:var(--c-highlight);padding:1px 4px;border-radius:2px}
+
+/* ===== Divider ===== */
+hr{border:none;border-top:1px solid var(--c-gray-200);margin:40px 0}
+
+/* ===== Dialogue Box ===== */
+.dialogue-box{background:linear-gradient(135deg,#f8fafc 0%,#fff 100%);border-radius:var(--radius-lg);padding:20px 24px;margin:14px 0;border:1px solid var(--c-gray-200);position:relative}
+.dialogue-box::before{content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:4px;background:var(--c-primary-light);border-radius:4px}
+.dialogue-label{font-size:11px;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.dialogue-text{font-size:15px;color:var(--c-gray-700);line-height:1.85}
+.dialogue-text strong{color:var(--c-navy)}
+.dialogue-hint{font-size:13px;color:var(--c-gray-500);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px dashed var(--c-gray-200)}
+
+/* ===== STAR Block ===== */
+.star-block{background:#fefefe;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--c-gray-200);margin:14px 0}
+.star-header{display:flex;gap:0}
+.star-letter{padding:10px 16px;font-weight:800;font-size:15px;color:white;text-align:center;min-width:60px}
+.star-s{background:var(--c-primary)}
+.star-t{background:var(--c-accent)}
+.star-a{background:#8b5cf6}
+.star-r{background:#10b981}
+.star-body{padding:18px 22px;font-size:14.5px;line-height:1.8}
+.star-body p{margin-bottom:8px}
+.star-body ul{padding-left:20px;margin:8px 0}
+.star-body li{margin-bottom:4px}
+.star-highlight{background:var(--c-highlight);padding:2px 6px;border-radius:4px;font-weight:600}
+
+/* ===== Checklist ===== */
+.checklist{list-style:none;padding:0}
+.checklist li{padding:8px 0 8px 32px;position:relative;font-size:14.5px;border-bottom:1px solid rgba(0,0,0,.04)}
+.checklist li:last-child{border-bottom:none}
+.checklist li::before{content:"✓";position:absolute;left:8px;color:#10b981;font-weight:800;font-size:16px}
+
+/* ===== Appendix ===== */
+.appendix{background:var(--c-gray-100);border-radius:var(--radius-lg);padding:32px;margin:24px 0}
+.appendix h3{margin-top:0}
+
+/* ===== Footer ===== */
+.doc-footer{text-align:center;padding:32px;font-size:12px;color:var(--c-gray-500);border-top:1px solid var(--c-gray-200)}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .mobile-toggle{display:flex}
+  .hero{padding:60px 24px 40px}
+  .hero h1{font-size:28px}
+  .content-wrap{padding:24px 20px 60px}
+  h2.chapter-title{font-size:22px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  .stat-grid{grid-template-columns:1fr}
+  .hero h1{font-size:24px}
+}
+
+/* ===== Print ===== */
+@media print{
+  .sidebar,.mobile-toggle{display:none!important}
+  .main-content{margin-left:0!important}
+  .hero{background:var(--c-navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile Toggle -->
+<button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" role="navigation" aria-label="文档导航">
+  <div class="sidebar-header">
+    <h2>TT DS岗</h2>
+    <p>HR沟通准备手册<br>AB实验 + 分析策略方向</p>
+  </div>
+  <nav>
+    <a href="#ch1" class="nav-chapter">第一章</a>
+    <a href="#s11" class="nav-sub">1.1 岗位情报</a>
+    <a href="#s12" class="nav-sub">1.2 能力匹配矩阵</a>
+
+    <a href="#ch2" class="nav-chapter">第二章</a>
+    <a href="#s21" class="nav-sub">2.1 开场话术</a>
+    <a href="#s22" class="nav-sub">2.2 DA→DS 转型论证</a>
+    <a href="#s23" class="nav-sub">2.3 增长方向理解</a>
+    <a href="#s24" class="nav-sub">2.4 为什么选TT</a>
+
+    <a href="#ch3" class="nav-chapter">第三章</a>
+    <a href="#s31" class="nav-sub">3.1 案例1 用户分层模型</a>
+    <a href="#s32" class="nav-sub">3.2 案例2 内容消费漏斗</a>
+
+    <a href="#ch4" class="nav-chapter">第四章</a>
+    <a href="#s41" class="nav-sub">4.1 反问清单</a>
+
+    <a href="#ch5" class="nav-chapter">第五章</a>
+    <a href="#s51" class="nav-sub">5.1 无AB实操经验</a>
+    <a href="#s52" class="nav-sub">5.2 跨行业差异</a>
+    <a href="#s53" class="nav-sub">5.3 最大短板</a>
+
+    <a href="#ch6" class="nav-chapter">第六章</a>
+    <a href="#s61" class="nav-sub">6.1 沟通前Checklist</a>
+    <a href="#s62" class="nav-sub">6.2 沟通流程</a>
+  </nav>
+  <div class="sidebar-badge">2026-06-10</div>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>TT DS岗 · <span>HR沟通准备手册</span></h1>
+    <p class="subtitle">深圳 · AB实验 + 分析策略方向 · 配合算法团队 — 从DA经验到分析策略型DS的精准匹配叙事</p>
+    <div class="hero-meta">
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        增长方向
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        DA → DS 转型
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m6 0v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/></svg>
+        AB实验 + 分析策略
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        2026-06-10 准备
+      </span>
+    </div>
+  </header>
+
+  <div class="content-wrap">
+
+    <!-- Key Stats Overview -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">⭐⭐⭐⭐</div>
+        <div class="stat-label">AB实验设计匹配度</div>
+        <div class="stat-trend trend-up">高</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">⭐⭐⭐⭐⭐</div>
+        <div class="stat-label">用户增长分析匹配度</div>
+        <div class="stat-trend trend-up">很高</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">⭐⭐⭐⭐</div>
+        <div class="stat-label">数据基建 & 归因</div>
+        <div class="stat-trend trend-up">高</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">⭐⭐⭐</div>
+        <div class="stat-label">算法模型深度</div>
+        <div class="stat-trend trend-down">够用</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">分析策略型</div>
+        <div class="stat-label">DS岗位定位</div>
+        <div class="stat-trend trend-up">DA经验是优势</div>
+      </div>
+    </div>
+
+    <div class="callout callout-key">
+      <p><strong>核心定位：这个岗位是「分析策略型DS」而非「算法研究型DS」。</strong>你的DA经验不仅不拖后腿，反而是优势——你比纯学术背景的人更懂业务、更懂如何把分析结论变成落地动作。关键是：用"增长分析"的包装来讲你的故事。</p>
+    </div>
+
+    <hr>
+
+    <!-- ===== CHAPTER 1: 岗位情报 ===== -->
+    <h2 class="chapter-title" id="ch1"><span class="ch-num">CH.1</span> 岗位情报 & 匹配度分析</h2>
+
+    <!-- 1.1 -->
+    <section id="s11">
+      <h3>1.1 岗位情报</h3>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:16px">Data Scientist</div>
+          <div class="stat-label">岗位名称 · TikTok 深圳</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:16px;color:#10b981">A/B 实验 + 分析策略</div>
+          <div class="stat-label">核心方向</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:16px;color:var(--c-accent)">配合算法团队</div>
+          <div class="stat-label">协作模式 · 非独立建模</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="font-size:14px;color:var(--c-danger)">"以AB实验、分析策略这块相关的"</div>
+          <div class="stat-label">HR原话定位</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1.2 -->
+    <section id="s12">
+      <h3>1.2 能力匹配度矩阵</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>能力维度</th><th>岗位要求</th><th>你的储备</th><th>匹配度</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>A/B 实验设计</strong></td>
+              <td>实验设计、假设提出、指标体系</td>
+              <td>已系统学习完整流程（含样本量计算、分组策略、显著性检验），有炫舞营销复盘实战场景可迁移</td>
+              <td><span class="badge badge-green">⭐⭐⭐⭐ 高</span></td>
+            </tr>
+            <tr>
+              <td><strong>A/B 结果分析与决策</strong></td>
+              <td>p-value解读、置信区间、业务决策</td>
+              <td>掌握统计检验方法 + 效果量估计 + 细分分析；理解"统计显著≠业务显著"的核心判断框架</td>
+              <td><span class="badge badge-green">⭐⭐⭐⭐ 高</span></td>
+            </tr>
+            <tr>
+              <td><strong>用户增长分析</strong></td>
+              <td>漏斗优化、留存分析、Cohort</td>
+              <td>"内容消费深度漏斗"模型 + 用户流失分析项目 + AARRR/RARRA/Growth Loop 理论体系</td>
+              <td><span class="badge badge-teal">⭐⭐⭐⭐⭐ 很高</span></td>
+            </tr>
+            <tr>
+              <td><strong>数据基建 & 归因</strong></td>
+              <td>指标体系建设、数据看板搭建</td>
+              <td>P值分层模型（2000万+用户）、宏观/微观归因体系、日均1000万+条SQL处理</td>
+              <td><span class="badge badge-green">⭐⭐⭐⭐ 高</span></td>
+            </tr>
+            <tr>
+              <td><strong>用户分层建模</strong></td>
+              <td>RFM/Cohort/生命周期模型</td>
+              <td>"P值"高价值用户识别模型、循环池子框架（含付费二维拆分方案）、留存预测特征工程</td>
+              <td><span class="badge badge-green">⭐⭐⭐⭐ 高</span></td>
+            </tr>
+            <tr>
+              <td><strong>跨团队协同推动</strong></td>
+              <td>与产品/运营/算法团队协作</td>
+              <td>腾讯多款S级产品经验 + 字节抖音电商实习 + 决策周期从7天缩短至3天的推动记录</td>
+              <td><span class="badge badge-green">⭐⭐⭐⭐ 高</span></td>
+            </tr>
+            <tr>
+              <td><strong>算法模型深度</strong></td>
+              <td>配合算法团队（非主导）</td>
+              <td>掌握XGBoost/逻辑回归/随机森林等基础建模方法；能做特征工程和结果解读；但不是独立建模型的角色</td>
+              <td><span class="badge badge-amber">⭐⭐⭐ 够用</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 2: 核心话术 ===== -->
+    <h2 class="chapter-title" id="ch2"><span class="ch-num">CH.2</span> 沟通话术框架（逐段准备）</h2>
+
+    <!-- 2.1 -->
+    <section id="s21">
+      <h3>2.1 开场：主动亮明方向偏好</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">推荐开场白</div>
+        <div class="dialogue-text">
+          "谢谢帮我对接！我了解了一下这个DS岗的信息，<strong>AB实验 + 分析策略</strong>这个方向其实跟我现在的兴趣非常契合。<br><br>
+          我目前在腾讯做的是游戏产品的数据分析，核心工作包括<strong>用户增长策略、漏斗分析、归因体系搭建</strong>这些——本质上就是在做'用数据驱动业务决策'的事情。<br><br>
+          所以我对TT的这个岗位，特别感兴趣的方向是<strong>增长相关的分析策略</strong>：比如用户获取效率优化、留存提升实验、漏斗各环节转化率改进这一类。不知道这个组目前主要聚焦在哪个增长环节？"
+        </div>
+        <div class="dialogue-hint">💬 这段话的作用：① 直接回应HR说的"AB实验+分析策略"，表明你做过功课 ② 用"增长分析"重新定义自己的工作定位 ③ 自然引出反问，让TA多说</div>
+      </div>
+    </section>
+
+    <!-- 2.2 -->
+    <section id="s22">
+      <h3>2.2 核心问题："你主要是DA经验，怎么看待跟DS岗的匹配度？"</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">必答话术</div>
+        <div class="dialogue-text">
+          "这个问题我自己也认真想过，我的看法是：<br><br>
+          <strong>第一，我对'DS'的理解是分类型的。</strong>有一种DS是偏算法建模的（比如推荐系统模型开发），确实不是我过去工作的重心。但还有一种DS是<strong>偏分析和策略的</strong>——通过实验设计、因果推断来驱动业务决策，这恰好是我每天都在做的事情。<br><br>
+          <strong>第二，我从DA到这个方向的DS，核心增量是'实验思维'和'方法论沉淀'。</strong>我在腾讯的工作中已经深度参与了：
+          <ul style="margin:8px 0;padding-left:20px;">
+            <li>搭建了覆盖2000万+用户的<strong>'P值'分层模型</strong>，用来识别高价值用户并制定差异化运营策略</li>
+            <li>构建了<strong>内容消费深度漏斗</strong>，找到用户流失的关键节点并提出优化方案</li>
+            <li>建立了<strong>宏观+微观归因评估体系</strong>，把决策反馈周期从7天缩短到3天</li>
+          </ul>
+          这些工作的本质就是<strong>发现问题 → 提出假设 → 用数据分析验证 → 推动落地</strong>，跟AB实验驱动的分析策略工作是非常同构的。<br><br>
+          <strong>第三，关于算法模型的配合能力。</strong>我在哥大的应用分析硕士项目中系统学过机器学习方法论（逻辑回归、XGBoost、SVM等），在工作中也用过XGB做过用户流失预测的特征工程。虽然我不是'独立建模型'的角色，但我完全具备<strong>和算法团队高效协作</strong>的能力——我能把业务问题翻译成算法可以理解的语言，也能把算法输出翻译成业务侧可执行的建议。"
+        </div>
+        <div class="dialogue-hint">💡 关键策略：不回避"主要是DA经验"，而是把它重新定义为"分析策略型DS的核心训练场"。用三个层次递进：① 对DS的理解 ② 已有的方法论积累 ③ 算法协作能力</div>
+      </div>
+    </section>
+
+    <!-- 2.3 -->
+    <section id="s23">
+      <h3>2.3 展示对"增长方向"的理解</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">如果被问到"你对增长分析怎么看"</div>
+        <div class="dialogue-text">
+          "我对增长分析的理解是：<strong>它不是一个工具或者一个模型，而是一套完整的思维方式和行动闭环</strong>。<br><br>
+          具体来说，我认为增长分析师的核心工作包含三层：<br><br>
+          <strong>第一层：度量层 —— 知道'现在怎么样'</strong><br>
+          不只是看DAU/留存率这种汇总指标，而是建立完整的<strong>用户生命周期视角</strong>。比如我现在在做的事情之一就是从传统的AARRR漏斗升级到<strong>循环池子模型</strong>（培养→存续⇄预警→流失→回流），因为游戏用户本身就是反复流失又回流的人群，用线性漏斗会丢掉很多信息。我觉得TikTok的用户行为可能也有类似的非线性特征。<br><br>
+          <strong>第二层：归因层 —— 知道'为什么这样'</strong><br>
+          这是区分'看报表的人'和'驱动决策的人'的关键。我在工作中搭建的归因体系，核心思路是<strong>从相关性到因果性</strong>：先用多维下钻找到关联因子，再用AB实验或准实验设计验证因果关系。这也是我对TT这个岗位最感兴趣的部分——能够系统性地做因果推断。<br><br>
+          <strong>第三层：干预层 —— 知道'怎么让它变好'</strong><br>
+          分析的最终目的是产出可执行的策略。我在腾讯推动过版本转化率提升5%的项目，关键不只是发现转化率低在哪一步，而是设计具体的优化方案、说服相关团队落地、然后用数据追踪效果。这个过程让我体会到：<strong>好的分析师不仅要会算数，还要会推动事情发生</strong>。<br><br>
+          所以总结一下，我对增长方向的热情来自于：<strong>它是一个'有明确反馈闭环'的工作——你做的每一个分析、每一个实验，最终都能在数据上看到影响。这是我最喜欢的工作方式。</strong>"
+        </div>
+      </div>
+    </section>
+
+    <!-- 2.4 -->
+    <section id="s24">
+      <h3>2.4 "为什么想来TT/TikTok？"</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">动机表达</div>
+        <div class="dialogue-text">
+          "主要有三点：<br><br>
+          <strong>第一，产品和数据的体量级。</strong>TikTok是全球级的短视频产品，用户规模和数据量远超我现在接触的游戏产品。这意味着我可以接触到更复杂的增长场景、更精细化的实验设计、更有挑战性的分析问题。<br><br>
+          <strong>第二，数据文化。</strong>字节系的产品以数据驱动著称，AB实验是产品迭代的核心机制。我非常向往在一个'实验即日常'的环境中工作——不是偶尔做一个AB测试来验证想法，而是每天的工作都围绕'设计实验→分析结果→指导决策'展开。<br><br>
+          <strong>第三，职业成长路径。</strong>我希望从'支持业务的数据分析'成长为'驱动增长的策略角色'。TT的DS岗位——特别是AB实验和分析策略方向——正好是这个转型的最佳平台。而且我之前在字节抖音电商做过策略分析实习，对字节的做事风格和文化有一定了解，觉得是很适合我的环境。"
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 3: STAR 案例 ===== -->
+    <h2 class="chapter-title" id="ch3"><span class="ch-num">CH.3</span> STAR案例：增长分析相关项目</h2>
+
+    <!-- 3.1 -->
+    <section id="s31">
+      <h3>3.1 案例1：用户分层模型驱动的高价值用户增长策略</h3>
+
+      <div class="star-block">
+        <div class="star-header">
+          <div class="star-letter star-s">S</div>
+          <div class="star-letter star-t">T</div>
+          <div class="star-letter star-a">A</div>
+          <div class="star-letter star-r">R</div>
+        </div>
+        <div class="star-body">
+          <p><strong>S — 背景：</strong>负责一款S级游戏产品（月活千万级）的数据分析时，我们发现运营团队对所有用户使用统一的触达策略，导致资源浪费——大量推送发给了低价值用户，而真正的高潜用户反而被忽略。</p>
+          <p><strong>T — 目标：</strong>构建一套用户价值分层体系，实现<strong>差异化的精细化运营</strong>，提升整体ROI。</p>
+          <p><strong>A — 行动：</strong></p>
+          <ul>
+            <li>设计了<span class="star-highlight">"P值"分层模型</span>，综合用户的行为深度、付费潜力、社交活跃度等维度，对<span class="star-highlight">2000万+用户</span>进行动态分层</li>
+            <li>搭建了自动化SQL看板（日均处理1000万+条数据），实现日级分层更新</li>
+            <li>基于分层结果设计了差异化运营策略：对不同池子用户配置不同的推送频次、权益内容和召回时机</li>
+            <li>建立了<strong>事前预估 → 事中监控 → 事后归因</strong>的完整评估链路</li>
+          </ul>
+          <p><strong>R — 成果：</strong>该模型被运营团队采纳为日常使用的核心工具；推动了版本转化率提升约5%；决策反馈周期从原来的7天缩短到3天。这套方法论后续被复用到其他3款同类产品中。</p>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <p><strong>🔄 迁移到TT语境的话术：</strong>"这个项目让我深刻理解了一件事——增长不是'对所有用户做更多的事'，而是'对正确的用户做正确的事'。如果把这套思路放到TikTok的增长场景，就是：不同生命阶段的用户（新用户 vs 活跃用户 vs 流失风险用户）需要完全不同的增长策略，而数据分析师的价值就在于用分层模型来指导这种差异化投入。"</p>
+      </div>
+    </section>
+
+    <!-- 3.2 -->
+    <section id="s32">
+      <h3>3.2 案例2：内容消费漏斗 → 转化节点优化的分析框架</h3>
+
+      <div class="star-block">
+        <div class="star-header">
+          <div class="star-letter star-s">S</div>
+          <div class="star-letter star-t">T</div>
+          <div class="star-letter star-a">A</div>
+          <div class="star-letter star-r">R</div>
+        </div>
+        <div class="star-body">
+          <p><strong>S — 背景：</strong>在负责另一款S级产品的内容生态分析时，我们发现内容分发效率存在明显的瓶颈——用户从"看到内容"到"深度消费内容"之间的流失率很高，但具体卡在哪一步不清楚。</p>
+          <p><strong>T — 目标：</strong>构建<strong>"内容消费深度漏斗"</strong>模型，精确定位流失最大的节点，并为每一步提出可验证的优化假设。</p>
+          <p><strong>A — 行动：</strong></p>
+          <ul>
+            <li>定义了5层消费漏斗：<strong>曝光 → 点击 → 浅度消费（&lt;30s）→ 中度消费（30s-3min）→ 深度消费（&gt;3min + 互动）</strong></li>
+            <li>计算每层转化率后发现：<strong>点击→浅度消费</strong>环节流失最严重（流失率约45%）</li>
+            <li>进一步按用户类型细分（新老用户 × 付费状态），发现新用户的点击后流失率高达62%，而老用户只有28%</li>
+            <li>基于此提出了<strong>3个可验证的优化假设</strong>，并设计了对应的AB实验方案（包括指标选择、样本量计算、护栏指标设定）</li>
+            <li>搭建了归因评估体系，追踪每次优化动作对各漏斗环节的影响</li>
+          </ul>
+          <p><strong>R — 成果：</strong>帮助团队明确了优化优先级（优先解决新用户点击后体验问题）；其中一项优化建议（首屏内容个性化排序）被采纳上线后，新用户的内容消费深度提升了约18%。</p>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <p><strong>🔄 迁移到TT语境的话术：</strong>"这个项目的核心方法论——'多层漏斗定位最大流失点 → 分群分析找原因 → 提出假设设计实验'——是完全可以直接迁移到TikTok的增长场景的。比如视频消费漏斗（曝光→播放→完播→互动→关注→再访），每一层的转化率优化都是典型的增长分析课题。"</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 4: 反问清单 ===== -->
+    <h2 class="chapter-title" id="ch4"><span class="ch-num">CH.4</span> 反问问题清单</h2>
+
+    <!-- 4.1 -->
+    <section id="s41">
+      <p>HR说会帮你推荐到更合适的组。这些问题能帮你在聊天的后半段展示你对岗位的认真思考，同时收集信息帮你做后续面试准备。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>问题</th><th>问的目的</th><th>优先级</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>"这个DS团队目前主要支撑的是TikTok的哪个业务模块？是用户增长（获客/激活/留存），还是商业化（广告/电商），还是内容生态？"</td>
+              <td>确认具体业务方向，方便针对性准备后续面试</td>
+              <td><span class="badge badge-red">必须问</span></td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>"团队内部的分工大概是怎样的？DS主要负责实验设计和结果分析，还是也会参与指标体系搭建和看板建设？"</td>
+              <td>理解日常工作内容，判断和你经验的匹配面</td>
+              <td><span class="badge badge-red">必须问</span></td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>"团队目前用什么AB实验平台？是自己搭的还是公司统一的中台？"</td>
+              <td>了解技术基础设施，展示你对工具有概念</td>
+              <td><span class="badge badge-green">推荐问</span></td>
+            </tr>
+            <tr>
+              <td><strong>4</strong></td>
+              <td>"这个岗位最看重候选人的什么能力？是统计分析功底强、业务sense好、还是实验设计经验？"</td>
+              <td>直接获取面试考察重点</td>
+              <td><span class="badge badge-green">推荐问</span></td>
+            </tr>
+            <tr>
+              <td><strong>5</strong></td>
+              <td>"能否分享一下团队最近一个比较成功的增长实验案例？大概是什么方向的问题、用了什么样的分析方法？"</td>
+              <td>了解团队实际工作风格和复杂度</td>
+              <td><span class="badge badge-amber">可选问</span></td>
+            </tr>
+            <tr>
+              <td><strong>6</strong></td>
+              <td>"团队的成长路径大概是什么样的？DS之后可以向哪些方向发展？"</td>
+              <td>展示你有长期规划意识</td>
+              <td><span class="badge badge-amber">可选问</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <p>不要一次全问，选3-4个自然的时机穿插进去。第1、2题必须在这次聊天中得到答案——直接影响后续面试准备方向。问的时候态度是"好奇和学习"，不是"审问"。</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 5: 风险预案 ===== -->
+    <h2 class="chapter-title" id="ch5"><span class="ch-num">CH.5</span> 可能被challenge的点 & 应对预案</h2>
+
+    <!-- 5.1 -->
+    <section id="s51">
+      <h3>5.1 "你没有大厂AB实验平台的实操经验吧？"</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">应对</div>
+        <div class="dialogue-text">
+          "坦率说我没有用过类似字节内部那种成熟AB实验平台的实操经验。但我在工作中做了几件事来补这个gap：<br>
+          第一，我<strong>系统学习了AB实验的完整理论框架</strong>（从实验设计、样本量计算、分流策略到结果分析的统计检验方法），并且结合我们游戏的实际业务场景做过完整的实验方案设计。<br>
+          第二，我在腾讯内部参与过版本迭代的<strong>前后对比分析</strong>（虽然没有正式AB平台，但用的是准实验设计的思路来做归因）。<br>
+          第三，我认为<strong>AB实验的方法论是通用的</strong>——不管用什么平台，核心都是'假设→指标→样本量→分组→分析→决策'这套思维，而这个我已经建立了完整的认知框架。"
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.2 -->
+    <section id="s52">
+      <h3>5.2 "你之前做游戏行业的，跟短视频行业差别很大啊"</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">应对</div>
+        <div class="dialogue-text">
+          "是的，产品形态确实不一样，但我觉得<strong>增长分析的核心方法论是跨行业通用的</strong>：<br><br>
+          <strong>相同的地方：</strong>不管是游戏还是短视频，增长的核心问题都是一样的——怎么让更多人来、来了怎么留住、留住了怎么让他们产生更大价值。AARRR模型、Cohort分析、漏斗优化、LTV/CAC计算，这些方法论在两个行业都是适用的。<br><br>
+          <strong>我能迁移的能力：</strong>我在游戏行业建立的'用户分层→差异化运营'的分析框架、'漏斗定位→假设提出→实验验证'的问题解决思路、以及'数据归因→推动落地'的项目推进能力，这些都是可以直接迁移的。<br><br>
+          <strong>我需要快速学习的：</strong>TikTok特有的增长场景（比如UGC内容生态的增长飞轮、短视频的消费习惯特征、全球市场的本地化增长策略）。这部分我有信心能在入职后快速上手——毕竟我之前在抖音电商实习过，对字节系的生态有一定基础认知。"
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.3 -->
+    <section id="s53">
+      <h3>5.3 "你觉得你自己最大的短板是什么？"</h3>
+      <div class="dialogue-box">
+        <div class="dialogue-label">应对</div>
+        <div class="dialogue-text">
+          "我认为目前最大的短板有两方面：<br><br>
+          <strong>第一，大规模AB实验系统的实操经验。</strong>虽然我掌握了完整的方法论，但没有在成熟的实验平台上跑过真实的实验。这是我需要在入职后快速补上的。<br><br>
+          <strong>第二，短视频/内容推荐领域的业务深耕。</strong>我对增长分析的通用方法论有信心，但对TikTok特有的业务场景（比如推荐算法如何影响用户增长、创作者生态如何驱动内容供给）还需要深入理解。<br><br>
+          不过这两个短板我都已经有了明确的补齐计划：第一块可以通过入职后的实践快速积累；第二块我最近已经开始系统性地研究TikTok的增长策略和竞品分析了。"
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 6: Checklist ===== -->
+    <h2 class="chapter-title" id="ch6"><span class="ch-num">CH.6</span> 沟通前准备</h2>
+
+    <!-- 6.1 -->
+    <section id="s61">
+      <h3>6.1 明天沟通前 Checklist</h3>
+
+      <ul class="checklist">
+        <li>通读一遍本手册，重点 rehearse <strong>2.2（DA→DS转型论证）</strong> 和 <strong>3（两个STAR案例）</strong></li>
+        <li>下载 TikTok App（如果没有），走一遍核心用户旅程，记录3-5个你觉得"可以用AB实验优化"的点</li>
+        <li>准备好纸笔，HR说话时记关键词（尤其是她提到的组名、方向细节、面试官信息）</li>
+        <li>心态调整：这不是面试，是<strong>双向了解</strong>——你也在判断这个组是不是真的适合你的增长方向</li>
+        <li>想好3个必须得到答案的反问（推荐：Section 4 的 #1 #2 #4）</li>
+        <li>提前5分钟进入会议/通话状态，确保网络和环境安静</li>
+      </ul>
+    </section>
+
+    <!-- 6.2 -->
+    <section id="s62">
+      <h3>6.2 沟通流程</h3>
+
+      <div class="flow">
+        <div class="flow-step">自我介绍<br><small>(1min)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">亮明方向<br><small>(增长+AB)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">DA→DS<br><small>论证</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">STAR案例<br><small>(×1~2)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">反问<br><small>(3~4个)</small></div>
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      by chloevchen · 2026-06-09 准备 · 祝沟通顺利 🚀
+    </footer>
+
+  </div><!-- /content-wrap -->
+</div><!-- /main-content -->
+
+<script>
+// Sidebar active link tracking
+const sections = document.querySelectorAll('section[id], h2.chapter-title[id]');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Close sidebar on mobile when clicking a link
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.querySelector('.sidebar').classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>
+<!-- by chloevchen -->

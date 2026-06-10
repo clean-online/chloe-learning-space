@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-04-29</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf9f6;
+    --bg-elevated: #ffffff;
+    --ink: #14161a;
+    --ink-soft: #3a3d44;
+    --ink-muted: #6b7079;
+    --line: #e8e6df;
+    --line-soft: #f0eee7;
+    --accent: #c2410c;
+    --accent-soft: #fef3c7;
+    --accent-deep: #92400e;
+    --green: #166534;
+    --green-soft: #dcfce7;
+    --max-w: 760px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+    word-break: break-all;
+  }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* Top bar */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-elevated);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .topbar-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 8px;
+    transform: translateY(-1px);
+  }
+  .back-link { font-size: 13px; color: var(--ink-muted); }
+  .back-link:hover { color: var(--accent); border-bottom: none; }
+
+  /* Header */
+  .header {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 80px 32px 48px;
+    text-align: left;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 580px;
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+    font-style: italic;
+  }
+  .lede .zh {
+    display: block;
+    margin-top: 6px;
+    color: var(--ink-muted);
+    font-size: 16px;
+  }
+
+  /* Stats strip */
+  .stats {
+    max-width: var(--max-w);
+    margin: 36px auto 0;
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat {
+    flex: 1;
+    padding: 20px 0;
+    text-align: center;
+    border-right: 1px solid var(--line);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* Section heads */
+  .section {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 56px 32px 0;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 36px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-icon { font-size: 22px; }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .section-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Builder card */
+  .builder {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .builder:last-child { border-bottom: none; }
+  .builder-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .builder-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .builder-role {
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--line-soft);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .summary-en {
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .summary-zh {
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.85;
+    padding: 16px 18px;
+    background-color: #fbfaf5;
+    border-left: 3px solid var(--accent-soft);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 14px;
+  }
+  .urls {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    padding: 10px 14px;
+    background: #f5f3ec;
+    border-radius: 6px;
+  }
+  .urls a { display: block; }
+
+  /* Podcast card - elevated */
+  .podcast {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .podcast-source {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .podcast-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .takeaway {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--accent-deep);
+  }
+  .takeaway-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: var(--accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-right: 10px;
+    transform: translateY(-2px);
+  }
+  .podcast-body {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+  }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 28px 0;
+  }
+  .podcast-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.95;
+  }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    max-width: var(--max-w);
+    margin: 80px auto 0;
+    padding: 40px 32px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+  .next-issue {
+    display: inline-block;
+    background: var(--green-soft);
+    color: var(--green);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .signature {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-top: 14px;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 640px) {
+    .header { padding: 56px 24px 36px; }
+    .section { padding: 40px 24px 0; }
+    .header h1 { font-size: 32px; }
+    .stats { padding: 0 24px; }
+    .stat-num { font-size: 22px; }
+    .podcast { padding: 24px; }
+    .podcast-title { font-size: 19px; }
+    .topbar-inner { padding: 12px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand"><span class="brand-mark"></span>Follow Builders, Not Influencers</span>
+    <a class="back-link" href="../../index.html">← 日历</a>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-04-29 · 周三</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">29</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">12 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three notable updates: OpenAI announced an updated partnership with Microsoft — remaining the primary cloud partner while gaining the ability to offer products across all clouds, with continued model supply and revenue share through 2030. Also casually endorsed Codex with the $20 plan as "a really good deal," and posted a simple "we love our users" that predictably went viral.</p>
+    <p class="summary-zh zh">三条值得关注的动态：OpenAI 宣布与微软更新合作——继续作为主要云合作伙伴，同时获得在所有云平台上提供产品的能力，并向微软供应模型、享受分成至 2030 年。顺带提了一句"$20 的 Codex 套餐真的很划算"，简单一句"我们爱我们的用户"也一如既往地爆了。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2048913887614115857">https://x.com/sama/status/2048913887614115857</a>
+      <a href="https://x.com/sama/status/2048910739784826966">https://x.com/sama/status/2048910739784826966</a>
+      <a href="https://x.com/sama/status/2048755148361707946">https://x.com/sama/status/2048755148361707946</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">A series of posts celebrating Codex solving real engineering problems: PR/Issue management, remote test execution, and massive CI infrastructure — finally making meaningful progress after months of wrestling with these pain points. The AI opened a browser, typed into a comment box, and closed an issue autonomously — a concrete demo of code agents crossing from novelty into genuine utility.</p>
+    <p class="summary-zh zh">连发多条庆祝 Codex 搞定了真实工程问题：PR/Issue 管理、远程测试执行、大规模 CI 基础设施——折腾了好几个月终于有了实质进展。AI 自主打开了浏览器、在评论框里打字、然后把 issue 关掉了——代码 Agent 从花哨噱头走向真实效用的一个具体案例。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2049035851493953750">https://x.com/steipete/status/2049035851493953750</a>
+      <a href="https://x.com/steipete/status/2049035044702843053">https://x.com/steipete/status/2049035044702843053</a>
+      <a href="https://x.com/steipete/status/2048957477106938075">https://x.com/steipete/status/2048957477106938075</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Announced GStack Browser integration with Claude Code — you can now type <code>/pair-agent</code> from your Claude Code CLI, get a string to paste into OpenClaw/Hermes, and have your AI control a real Chromium browser remotely, logged into sites and ready to scrape. Also dismissed tech-skeptic narratives as "tired" — argues everything actually changed in 2026, not just the discourse.</p>
+    <p class="summary-zh zh">宣布 GStack Browser 与 Claude Code 集成——现在可以在 Claude Code 里输入 <code>/pair-agent</code>，拿到一串字符粘贴到 OpenClaw/Hermes，然后让 AI 远程控制真实的 Chromium 浏览器、登录网站、随时抓数据。还回怼了"反科技"言论"太老套了"——认为 2026 年一切都真的变了，不只是说说而已。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2049035231903301771">https://x.com/garrytan/status/2049035231903301771</a>
+      <a href="https://x.com/garrytan/status/2049033440935469213">https://x.com/garrytan/status/2049033440935469213</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital VC</span>
+    </div>
+    <p class="summary-en">A sharp observation on the massive gap between Silicon Valley and Global 2000 enterprise adoption: while SV believes AI is self-accelerating and agents run everything, large corporations are still recovering from expensive AI chat experiments two years ago that delivered zero productivity gains. The disconnect between hype and real-world results has never been wider.</p>
+    <p class="summary-zh zh">一个尖锐的观察，揭示了硅谷与全球 2000 强企业 AI 采用之间的巨大鸿沟：硅谷相信 AI 正在自我加速、Agent 接管一切，而大公司们还在舔两年前花大钱上 AI 聊天机器人、却零收益的伤口。炒作与现实之间的鸿沟从未如此之深。</p>
+    <div class="urls">
+      <a href="https://x.com/mattturck/status/2048896617424527499">https://x.com/mattturck/status/2048896617424527499</a>
+      <a href="https://x.com/mattturck/status/2048810951793627281">https://x.com/mattturck/status/2048810951793627281</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">Launched a cohort program: 20 builders, 8 weeks, one goal — first dollar of revenue. Also doubled down on Replit's vertically integrated platform advantage — they're the only platform with proper agent production isolation, a structural benefit that "will continue to compound" as the ecosystem matures.</p>
+    <p class="summary-zh zh">推出 Replit 加速营项目：20 个 Builder、8 周时间、一个目标——挣到第一块钱。同时继续强调 Replit 垂直整合平台的优势——他们是唯一具备 Proper Agent 生产隔离的平台，声称这结构性优势"将继续复合放大"。</p>
+    <div class="urls">
+      <a href="https://x.com/amasad/status/2048912698583453933">https://x.com/amasad/status/2048912698583453933</a>
+      <a href="https://x.com/amasad/status/2048911624061522228">https://x.com/amasad/status/2048911624061522228</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Compiled top 5 takeaways from Tibo Maker, a solo AI founder doing $1M+ monthly: charge money day one; follow the signal when users surprise you (he pivoted from Typeframe to Revid based on unexpected usage patterns); price AI SaaS at $50-100/month; keep monthly churn below 20%; build tool pages to rank on Google. Also pointed out a growing need for APIs and MCP integrations across Substack, video editing tools, banking, government, and healthcare.</p>
+    <p class="summary-zh zh">整理了 solo AI 创始人 Tibo Maker（月收入 100 万美元+）的 5 条核心心得：第一天就收费；用户行为超预期时要跟信号走（他从 Typeframe 转向 Revid 就是因为发现了意外的用法）；AI SaaS 定价 $50-100/月；月度流失率控制在 20% 以下；建工具页面冲 Google 排名。同时指出 Substack、视频编辑工具、银行、政府、医疗等领域对 API 和 MCP 集成的需求正在爆发。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2048771729821229091">https://x.com/petergyang/status/2048771729821229091</a>
+      <a href="https://x.com/petergyang/status/2048918016642154698">https://x.com/petergyang/status/2048918016642154698</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Latent Space</span>
+    </div>
+    <p class="summary-en">An observation on AI workflow design: the most sophisticated AI users she knows are talking to just ONE agent daily, which then orchestrates subagents as needed. The day-to-day interface is a single agent serving as overall coordinator and router — not a zoo of simultaneous AI assistants.</p>
+    <p class="summary-zh zh">一个关于 AI 工作流设计的观察：她认识的最资深 AI 用户，每天只和一个 Agent 对话，这个 Agent 再按需调度子 Agent。日常交互界面是一个总协调/路由 Agent，而不是同时开着满屏的 AI 助手。</p>
+    <div class="urls">
+      <a href="https://x.com/zarazhangrui/status/2049027061768192288">https://x.com/zarazhangrui/status/2049027061768192288</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Co-founded Dawn — a small, off-the-record dinner for ex-founders in SF on May 19th. The insight behind it: there's a community for every stage of starting a company, but nothing for what comes after. Intentionally small and curated to foster genuine peer relationships post-exit.</p>
+    <p class="summary-zh zh">共同创立了 Dawn——5 月 19 日在旧金山为连续创业者举办的小型闭门晚餐。其背后的洞察：创业的每个阶段都有对应的社区，但"创业之后"没有。这是一个有意控制规模、精心筛选的社区，专为退出后建立真正对等关系的连续创业者设计。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2048900068523266544">https://x.com/nikunj/status/2048900068523266544</a>
+      <a href="https://x.com/nikunj/status/2048761583204258298">https://x.com/nikunj/status/2048761583204258298</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Teasing a talk at betaworks tomorrow on a provocative thesis: in a world where code is cheap to produce, software becomes the new media. Also shared his annual reading list — curating what he's read so far this year as a service to the community.</p>
+    <p class="summary-zh zh">预告明天在 betaworks 的演讲，抛出一个挑衅性命题：在代码生产成本趋零的世界里，软件就是新媒体。同时分享了他今年的阅读书单——把自己今年读过的整理出来，作为一种社区服务。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2048818450915586364">https://x.com/danshipper/status/2048818450915586364</a>
+      <a href="https://x.com/danshipper/status/2048748438112645544">https://x.com/danshipper/status/2048748438112645544</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">SouthPk Commons GP / Bevel Co-Founder</span>
+    </div>
+    <p class="summary-en">Announced Bevel 3.0 with a clarifying reframe: the goal was never to be a tracking company — it was always to be intelligent enough to truly help people be healthy. Each release brings them closer to "the most intelligent health and biology companion." Also hosting Google's former ads chief Sridhar Ramaswamy at SouthPk Commons next week.</p>
+    <p class="summary-zh zh">发布 Bevel 3.0，同时澄清了产品定位：目标从来不是做一家追踪数据公司——而是做一款足够智能、真正帮人健康的伴侣。每一版都在接近"最智能的健康与生物伙伴"。另外，下周 SouthPk Commons 会请到前 Google 广告负责人 Sridhar Ramaswamy 来分享。</p>
+    <div class="urls">
+      <a href="https://x.com/adityaag/status/2048868147525222602">https://x.com/adityaag/status/2048868147525222602</a>
+      <a href="https://x.com/adityaag/status/2048838388271178100">https://x.com/adityaag/status/2048838388271178100</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Shared a link (content not visible in the truncated preview) — his signature provocative take on how AI is reshaping enterprise infrastructure and content management.</p>
+    <p class="summary-zh zh">分享了一个链接（预览中被截断），继续他标志性的挑衅风格，探讨 AI 如何重塑企业基础设施和内容管理。</p>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2048950940661932319">https://x.com/levie/status/2048950940661932319</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Announced that Latent Space now has a TikTok account with behind-the-scenes content — expanding their content distribution beyond traditional podcast and blog channels.</p>
+    <p class="summary-zh zh">宣布 Latent Space 开设了 TikTok 账号，发布幕后花絮内容——将内容分发渠道从传统的播客和博客拓展出去。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2048934424344179159">https://x.com/swyx/status/2048934424344179159</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== PODCASTS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <div class="podcast-title">From SEO to Agent-Led Growth: ProFound's James Cadwallader</div>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      AI is creating an entirely new marketing discipline — Agent-Led Growth — where your brand's survival depends on how you show up when AI agents research, compare, and recommend on behalf of users. This is not SEO 2.0; it's a fundamentally different game with new rules, new winners, and new losers.
+    </div>
+
+    <div class="podcast-body">
+      <p>James Cadwallader, co-founder and CEO of ProFound, joins Training Data to discuss what may be the biggest platform shift in marketing history: the move from blue-link search to probabilistic AI responses.</p>
+
+      <p>"The big misconception with using agents to build marketing is that it's just a way to automate the work that we've been doing in the past," Cadwallader explains. "The reality is quite different. You can now, because of agents and because of LLMs, do a type of marketing that just frankly was not possible before."</p>
+
+      <p>ProFound helps companies understand how they show up in AI search — when ChatGPT, Claude, and other AI systems research products and services on behalf of users. With ChatGPT rolling out ads and every marketer scrambling to understand generative engine rankings, this is suddenly relevant to every business.</p>
+
+      <p>The core insight: in the old SEO world, you optimized for human attention. In the new AI agent world, you're optimizing for AI <em>reasoning</em> — what facts does the model cite, what comparisons does it make, what recommendations does it surface? The inputs that determine these outputs are fundamentally different from keywords and backlinks.</p>
+
+      <p>Cadwallader's advice for marketers: stop thinking of this as technical SEO and start thinking of it as <strong>model relations</strong> — building the kind of authoritative, well-structured presence that AI systems trust and cite. It's not about tricking the algorithm; it's about becoming genuinely值得信赖 by it.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>ProFound 联合创始人兼 CEO James Cadwallader 登上 Training Data，探讨营销史上可能是最大的一次平台迁移：从蓝链搜索到概率性 AI 回答。</p>
+
+      <p>"用 AI agent 做营销的最大误解，是以为这只是把我们过去做的事情自动化了，" Cadwallader 解释道。"现实完全不同。因为有了 agent、有了 LLM，你现在可以做一种以前根本不可能的营销。"</p>
+
+      <p>ProFound 帮助企业了解自己在 AI 搜索中的表现——当 ChatGPT、Claude 和其他 AI 系统代表用户研究产品和服务时。随着 ChatGPT 推出广告、每个营销人都在拼命搞懂生成式搜索引擎的排名规则，这件事突然变得与每个企业都相关了。</p>
+
+      <p>核心洞察：在旧的 SEO 世界里，你的优化目标是人类注意力。在新的 AI agent 世界里，你在优化的是 AI 的<strong>推理</strong>——模型会引用哪些事实？做哪些比较？推荐哪些结果？决定这些输出的输入，和关键词、外链完全不是一回事。</p>
+
+      <p>Cadwallader 给营销人的建议：别再把这当成技术性 SEO，开始把它当成<strong>模型关系管理</strong>——建立那种 AI 系统信任并引用你的、权威且结构良好的存在感。不是去骗算法，是让它真正觉得你是值得信赖的。</p>
+    </div>
+
+    <div style="margin-top: 24px; padding: 14px 18px; background: #f5f3ec; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+      <a href="https://www.youtube.com/watch?v=RyTwRCKeDo4">https://www.youtube.com/watch?v=RyTwRCKeDo4</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

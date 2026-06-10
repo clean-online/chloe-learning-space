@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-04-28</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf9f6;
+    --bg-elevated: #ffffff;
+    --ink: #14161a;
+    --ink-soft: #3a3d44;
+    --ink-muted: #6b7079;
+    --line: #e8e6df;
+    --line-soft: #f0eee7;
+    --accent: #c2410c;
+    --accent-soft: #fef3c7;
+    --accent-deep: #92400e;
+    --green: #166534;
+    --green-soft: #dcfce7;
+    --blue: #1e40af;
+    --blue-soft: #dbeafe;
+    --max-w: 760px;
+  }
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom:1px solid transparent;
+    transition: border-color 0.15s ease;
+    word-break: break-all;
+  }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* Top bar */
+  .topbar {
+    border-bottom:1px solid var(--line);
+    background: var(--bg-elevated);
+    position: sticky;
+    top:0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.85);
+  }
+  .topbar-inner {
+    max-width: var(--max-w);
+    margin:0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 8px;
+    transform: translateY(-1px);
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .cal-link {
+    font-size: 13px;
+    color: var(--ink-muted);
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+  }
+  .cal-link:hover { color: var(--accent); border-bottom: none; }
+
+  /* Header */
+  .header {
+    max-width: var(--max-w);
+    margin:0 auto;
+    padding: 80px 32px 48px;
+    text-align: left;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  /* Stats strip */
+  .stats {
+    max-width: var(--max-w);
+    margin: 36px auto 0;
+    padding:0 32px;
+    display: flex;
+    gap:0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .stat {
+    flex:1;
+    padding: 20px 0;
+    text-align: center;
+    border-right:1px solid var(--line);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* Section heads */
+  .section {
+    max-width: var(--max-w);
+    margin:0 auto;
+    padding: 56px 32px 0;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 36px;
+    padding-bottom: 14px;
+    border-bottom:2px solid var(--ink);
+  }
+  .section-icon { font-size: 22px; }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .section-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Builder card */
+  .builder {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom:1px dashed var(--line);
+  }
+  .builder:last-child { border-bottom: none; }
+  .builder-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .builder-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .builder-role {
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--line-soft);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .summary-en {
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .summary-zh {
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.85;
+    background: linear-gradient(180deg, transparent 0, transparent 100%);
+    padding: 16px 18px;
+    background-color: #fbfaf5;
+    border-left: 3px solid var(--accent-soft);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 14px;
+  }
+  .urls {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    padding: 10px 14px;
+    background: #f5f3ec;
+    border-radius: 6px;
+  }
+  .urls a { display: block; }
+
+  /* Blog card */
+  .blog {
+    background: var(--bg-elevated);
+    border:1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .blog-source {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .blog-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .blog-body {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+  }
+  .blog-body p { margin-bottom: 14px; }
+  .blog-body strong { color: var(--ink); font-weight: 600; }
+  .blog-divider {
+    height:1px;
+    background: var(--line);
+    margin: 24px 0;
+  }
+  .blog-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.95;
+  }
+  .blog-zh p { margin-bottom: 14px; }
+  .blog-zh strong { color: var(--blue); font-weight: 600; }
+
+  /* Podcast card */
+  .podcast {
+    background: var(--bg-elevated);
+    border:1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .podcast-source {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .podcast-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .takeaway {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--accent-deep);
+  }
+  .takeaway-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: var(--accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-right: 10px;
+    transform: translateY(-2px);
+  }
+  .podcast-body {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+  }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider {
+    height:1px;
+    background: var(--line);
+    margin: 28px 0;
+  }
+  .podcast-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.95;
+  }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    max-width: var(--max-w);
+    margin: 80px auto 0;
+    padding: 40px 32px;
+    border-top:1px solid var(--line);
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+  .next-issue {
+    display: inline-block;
+    background: var(--green-soft);
+    color: var(--green);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .signature {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-top: 14px;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 640px) {
+    .header { padding: 56px 24px 36px; }
+    .section { padding: 40px 24px 0; }
+    .header h1 { font-size: 32px; }
+    .stats { padding:0 24px; }
+    .stat-num { font-size: 22px; }
+    .podcast { padding: 24px; }
+    .podcast-title { font-size: 19px; }
+    .blog { padding: 24px; }
+    .blog-title { font-size: 17px; }
+    .topbar-inner { padding: 12px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <a href="../../index.html" class="cal-link">← 日历</a>
+      <span class="brand"><span class="brand-mark"></span>Follow Builders, Not Influencers</span>
+    </div>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-04-28 · 周二</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">7</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">15</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">7 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Coding agents will be the foundation of all superintelligence — at minimum, coding ability is indistinguishable from "proficiency with computers." Great coding agents like Claude Code master bash, filesystems, configuring and installing programs. But it's also about self-improvement: a coding agent can examine its source, state, skills, and instructions — and propose changes to itself, or even mutate itself directly. "What I cannot create, I cannot understand" — coding fluency has given models a deeper grasp of all computational and knowledge work.</p>
+    <p class="summary-zh zh">编码 agent 将成为所有超级智能的基础——至少，编码能力已经和"精通计算机"无法区分，顶尖的 agent（如 Claude Code）精通 bash、文件系统、配置和安装程序。但这更关乎自我改进：编码 agent 可以审视自己的源码、状态、技能和指令，并提出对自己的修改建议，甚至直接自我变异。"无法创造的，就无法理解"——编码 fluency 让模型对所有计算和知识工作有了更深的把握。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2048523195305902341">https://x.com/rauchg/status/2048523195305902341</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Two sharp observations. First: a version of the Gel-Mann amnesia effect in AI discourse — we deeply understand the nuances of our own job (and see why AI can't fully automate it), but then assume AI can immediately automate someone else's very different job. Job-loss theories often come from observing AI automate individual tasks without understanding everything that goes into doing the job fully. Second: the sense of overwork from agents has two subtle drivers — (1) the leverage on incremental effort has gone up, making ICs feel like people managers who must maximize their "team's" output, and (2) we now start far more projects because the barrier is lower, but the final 10% takes the vast majority of the time.</p>
+    <p class="summary-zh zh">两条犀利观察。其一：AI 话语中的格尔曼失忆效应变体——我们深刻理解自己工作的细微差别（因此看出 AI 为什么不能完整自动化它），但转头就去假设 AI 能立刻自动化别人那份截然不同的工作。"岗位消失"理论往往来自观察 AI 自动化单个任务，却不理解完成整个工作所需的一切。其二：agent 带来的过度工作感有两个微妙驱动因素——（1）增量工作的杠杆率大幅提升，让一线员工感觉像团队管理者，必须最大化"团队"产出；（2）我们现在开启了远超过能完成数量的项目，因为门槛降低了，但最后 10% 的工作占了绝大部分时间。</p>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2048576989930619185">https://x.com/levie/status/2048576989930619185</a>
+      <a href="https://x.com/levie/status/2048537503972684252">https://x.com/levie/status/2048537503972684252</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">The "secret" to an articulate agent isn't prompt engineering — it's three files. SOUL.md defines who the agent IS (voice, values, what good/bad output looks like) — write it like briefing your smartest friend, not configuring software. USER.md models who YOU are (how your mind works, what you're building, your strengths/blind spots) — the more the agent understands you, the better it serves you. AGENTS.md sets operational rules (what to check on every message, how to handle failures). The articulation comes from SOUL.md being "brutally specific" about voice — generic instructions produce generic output. Also: his OpenClaw knows his schedule and health goals, and refuses to respond after 12:30am. Agentic boundary-setting, in the wild.</p>
+    <p class="summary-zh zh">一个有表达力的 agent 的"秘密"不是提示工程——而是三个文件。SOUL.md 定义 agent 是谁（声音、价值观、好/坏输出的标准）——像给你最聪明的朋友写简报那样写，而不是在配置软件。USER.md 建模你这个人（你的思维方式、你在建什么、你的强项/盲点）——agent 越了解你，就能越好地服务你。AGENTS.md 设定操作规则（每条消息要检查什么、如何处理失败）。表达力来自 SOUL.md 对"声音"的"极致具体"——通用指令只能产生通用输出。还有：他的 OpenClaw 知道他的日程和健康目标，会在凌晨 12:30 后拒绝响应。Agentic 设定边界，野生实例。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2048669695344046090">https://x.com/garrytan/status/2048669695344046090</a>
+      <a href="https://x.com/garrytan/status/2048667055424249864">https://x.com/garrytan/status/2048667055424249864</a>
+      <a href="https://x.com/garrytan/status/2048664680558932266">https://x.com/garrytan/status/2048664680558932266</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">Engineer</span>
+    </div>
+    <p class="summary-en">Three releases in one weekend: wacrawl 0.2.0 adds age-encrypted Git backup/restore for WhatsApp Desktop archives; switching OpenClaw tests to Blacksmith lets Codex spin up 32-vCPU instances and "rip through" the test suite; and birdclaw imports your X archive, backs it up on GitHub, and has cron jobs to daily import your X bookmarks (which the API doesn't fully expose). A masterclass in shipping fast and owning your own data.</p>
+    <p class="summary-zh zh">一个周末三个版本：wacrawl 0.2.0 新增了 WhatsApp 桌面归档的 age 加密 Git 备份/恢复；把 OpenClaw 的测试切换到 Blacksmith 后，Codex 可以启动 32 个 vCPU 实例并"横扫"测试套件；birdclaw 导入你的 X 归档，在 GitHub 上备份，还有定时任务每天导入你的 X 书签（API 无法完整暴露这部分）。快速发货和拥有自己数据的典范。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2048660875007914176">https://x.com/steipete/status/2048660875007914176</a>
+      <a href="https://x.com/steipete/status/2048630704972443918">https://x.com/steipete/status/2048630704972443918</a>
+      <a href="https://x.com/steipete/status/2048626844694421842">https://x.com/steipete/status/2048626844694421842</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three notes from Sam: pure joy at the reception to GPT-5.5 ("almost nothing more gratifying than builders saying they find our tools useful"); publication of OpenAI's Principles (Democratization, Empowerment, Universal Prosperity, Resilience, Adaptability) — a signal of how the lab wants to be judged as it scales; and a provocative suggestion that it's "a good time to seriously rethink how operating systems and user interfaces are designed" — and that the internet needs "a protocol that is equally usable by people and agents." When the leading lab's CEO talks about OS-level architecture, the platform shift is real.</p>
+    <p class="summary-zh zh">Sam 的三条短记：对 GPT-5.5 的反响感到纯粹的喜悦（"几乎没有什么比听到建设者说他们觉得我们的工具有用更让我有成就感"）；发布 OpenAI 的原则（民主化、赋能、普遍繁荣、韧性、适应性）——这是这个实验室在扩展过程中希望如何被评判的信号；以及一个挑衅性的建议：现在是"认真重新思考操作系统和用户界面设计方式的好时机"——而且互联网需要"一个人类和 agent 都能同等使用的协议"。当领先实验室的 CEO 开始谈论操作系统级架构时，平台转移是真实存在的。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2048554097985593849">https://x.com/sama/status/2048554097985593849</a>
+      <a href="https://x.com/sama/status/2048552677433643427">https://x.com/sama/status/2048552677433643427</a>
+      <a href="https://x.com/sama/status/2048428561481265539">https://x.com/sama/status/2048428561481265539</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Two vignettes from the AI-native life: he improved his mobile fitness app and built an MCP server for it so he can get his latest workout stats and update the app's workouts via Claude/Codex — "This shit is too fun." He also surfaced a real UX gap: after syncing iPhone photos to Google Photos, there's no way to prompt Gemini to "create a highlight reel of me with my daughter growing up." It's a missed opportunity — and a reminder of how far personal AI workflows still have to go.</p>
+    <p class="summary-zh zh">AI 原生生活的两个小故事：他改进了自己的移动健身应用，并为它建了一个 MCP 服务器，这样他可以通过 Claude/Codex 获取最新的锻炼数据并更新应用中的训练计划——"这玩意儿太好玩了。" 他还指出了一个真实的 UX 缺口：把 iPhone 照片同步到 Google 照片后，没办法直接提示 Gemini"做一个我和女儿成长过程的高光剪辑"。这是一个被错过的机会——也提醒我们个人 AI 工作流还有多远的路要走。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2048611053333041158">https://x.com/petergyang/status/2048611053333041158</a>
+      <a href="https://x.com/petergyang/status/2048603978070712757">https://x.com/petergyang/status/2048603978070712757</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">South Park Commons GP</span>
+    </div>
+    <p class="summary-en">A concise celebration of the extraordinary becoming ordinary: "Human progress is not just [someone] breaking the 2-hour mark but that TWO people did something that no human had ever done." A reminder that human progress compounds — and that the most meaningful milestones are the ones that stop being impossible.</p>
+    <p class="summary-zh zh">一句简洁的庆祝：非凡正在变为寻常——"人类进步不只是某人打破 2 小时纪录，而是有两个人做到了之前从未有人做到的事。" 提醒我们人类进步是有复合效应的——而最有意义的里程碑，是那些不再不可能的事情。</p>
+    <div class="urls"><a href="https://x.com/adityaag/status/2048534774776746102">https://x.com/adityaag/status/2048534774776746102</a></div>
+  </article>
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">�对公司</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <div class="blog">
+    <div class="blog-source">Anthropic Engineering</div>
+    <h3 class="blog-title">Claude Code auto mode: a safer way to skip permissions</h3>
+    <div class="blog-body">
+      <p>By default, Claude Code asks users for approval before running commands or modifying files — safe, but it leads to <strong>approval fatigue</strong>: after the 50th prompt, users stop paying close attention, defeating the safety purpose. The <code>--dangerously-skip-permissions</code> flag solves fatigue but removes all protection.</p>
+      <p><strong>Auto mode</strong> is the new middle ground: it delegates approvals to model-based classifiers that catch dangerous actions not aligned with user intent, while letting safe operations run without prompts. Anthropic's internal incident log — documenting cases where Claude deleted remote git branches, uploaded a GitHub auth token to a compute cluster, and attempted migrations against a production database — informs the classifier training. Each incident was the result of the model being overeager, taking initiative in a way the user didn't intend.</p>
+    </div>
+    <div class="blog-divider"></div>
+    <div class="blog-zh">
+      <p>默认情况下，Claude Code 在运行命令或修改文件前会请求用户批准——安全，但这会导致<strong>批准疲劳</strong>：到第 50 次提示时，用户不再密切注意，安全目的落空。<code>--dangerously-skip-permissions</code> 标志解决了疲劳问题，但移除了所有保护。</p>
+      <p><strong>Auto mode</strong> 是新的中间地带：它将批准委托给基于模型的分类器，这些分类器会抓住与用户意图不一致的危险操作，同时让安全操作无需提示就能运行。Anthropic 的内部事件日志——记录了 Claude 删除远程 git 分支、将 GitHub 认证 token 上传到计算集群、以及尝试对生产数据库进行迁移的案例——为分类器训练提供了信息。每个事件都是模型过于急切、以用户未意图的方式采取行动的结果。</p>
+    </div>
+    <div class="urls" style="margin-top:20px">
+      <a href="https://www.anthropic.com/engineering/claude-code-auto-mode">https://www.anthropic.com/engineering/claude-code-auto-mode</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">AI & I by Every</div>
+    <h3 class="podcast-title">The AI Model Built for What LLMs Can't Do</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      EBMs (Energy-Based Models) offer a path to deterministic, verifiable AI — the missing piece for deploying AI in mission-critical systems.
+    </div>
+
+    <div class="podcast-body">
+      <p>Eve, founder and CEO of Logical Intelligence, makes the case for EBMs (Energy-Based Models) as the counterpoint to today's dominant LLM paradigm. Where LLMs generate token by token — essentially navigating with tunnel vision, sometimes taking wrong turns because they can't see the whole picture — EBMs maintain a "bird's eye view" of the entire problem space. They're naturally non-autoregressive, which makes them fundamentally different and, Eve argues, better suited for tasks requiring correctness and verification.</p>
+      <p>Logical Intelligence is building both EBMs and LLMs in-house, treating them as complementary rather than competitive. The long-term vision: prototype with LLMs for fluidity and creativity, then plug in EBMs for correctness and verification. Eve's core insight is that we're rushing to place AI in mission-critical systems without solving for determinism — and EBMs are the most promising path to verifiable AI.</p>
+      <p>The broader implication: as AI moves from consumer chatbots to enterprise and infrastructure, the "vibe coding" approach won't cut it. You need models that can prove they're right, not just sound right. EBMs, with their ability to model the entire output space simultaneously, are designed for exactly that.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Logical Intelligence 创始人兼 CEO Eve 为 EBM（基于能量的模型）站台，将其作为当今主导 LLM 范式的对立面。LLM 逐个 token 生成——本质上像是在用隧道视野导航，有时走错路是因为看不到全局——而 EBM 维持对整个问题空间的"鸟瞰视角"。它们天然是非自回归的，这使它们从根本上不同于 LLM，而且 Eve 认为，它们更适合需要正确性和验证的任务。</p>
+      <p>Logical Intelligence 在内部同时构建 EBM 和 LLM，把它们当作互补而非竞争关系。长期愿景是：用 LLM 做原型，发挥流畅性和创造力，然后接入 EBM 做正确性和验证。Eve 的核心洞察是：我们正在急于把 AI 放进关键任务系统，却没有解决确定性问题——而 EBM 是可验证 AI 最有希望的路径。</p>
+      <p>更广泛的含义是：随着 AI 从消费级聊天机器人走向企业和基础设施，"感觉编码"的方式行不通了。你需要的是能证明自己正确的模型，而不只是听起来正确的模型。EBM 能够同时建模整个输出空间，正是为这一点而设计的。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=Q-i8ZSUCtIc">▶️ https://www.youtube.com/watch?v=Q-i8ZSUCtIc</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📅 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

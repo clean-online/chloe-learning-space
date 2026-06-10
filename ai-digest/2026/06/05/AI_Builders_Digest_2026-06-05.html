@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-06-05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .blog { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; }
+  .blog-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 8px; }
+  .blog-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: var(--ink); margin-bottom: 18px; }
+  .footer { max-width: var(--max-w); margin: 64px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .footer-line { margin: 6px 0; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 12px; }
+  @media (max-width: 720px) {
+    .header { padding: 56px 22px 36px; }
+    .section { padding: 44px 22px 0; }
+    .stats { padding: 0 22px; }
+    .header h1 { font-size: 34px; }
+    .section-title { font-size: 19px; }
+    .builder-name { font-size: 15px; }
+    .podcast { padding: 22px; }
+    .podcast-title { font-size: 18px; }
+    .topbar-inner { padding: 12px 22px; }
+    .summary-en { font-size: 15px; }
+    .summary-zh { font-size: 14.5px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand"><span class="brand-mark"></span>Follow Builders, Not Influencers</span>
+    <span>双语 · Bilingual · Daily</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">AI Builders Digest · 2026-06-05</div>
+  <h1>AI 建造者日报</h1>
+  <p class="lede">
+    What 18 AI builders are thinking, building, and saying — in English and Chinese.
+    <span class="zh">18 位 AI 建造者正在思考、建造和发声——中英双语呈现。</span>
+  </p>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">18</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">38</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ==================== PODCAST ==================== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <span class="section-title">Podcast · 播客</span>
+    <span class="section-meta">No Priors</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">No Priors · Satya Nadella</div>
+    <div class="podcast-title">The Rise of the Full-Stack Builder and Hyper-Leveraged Generalist with Microsoft CEO Satya Nadella</div>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Satya Nadella's bet: the future belongs to "full-stack builders" who use AI to 100x their leverage — and Microsoft's real mission is building the agentic system that runs the world's infrastructure, not just selling cloud capacity.
+    </div>
+
+    <div class="podcast-body">
+      <p>Microsoft CEO Satya Nadella sat down with the No Priors hosts and delivered a masterclass in how a trillion-dollar company thinks about AI leverage. The headline insight: Microsoft built more Azure capacity in the last fifteen months than in its first fifteen years — and it's not for show. The real play is agentic systems that autonomously manage infrastructure, not just human-facing cloud tools.</p>
+
+      <p>Nadella framed the "full-stack builder" as the new dominant archetype: someone who can use AI to amplify their output by 100x, not by working harder but by orchestrating agents. He argued the next great institution won't be a traditional university but a new kind of pedagogy built around continuous AI-augmented learning — "the way to get information, the way to educate yourself has changed so much."</p>
+
+      <p>On trust: Nadella acknowledged the tech industry faces a skepticism crisis. His answer is tangible delivery. "The world is going to be very skeptical of tech and tech companies that say, trust us, we've got it, the future is going to be glorious. You kinda have to deliver tangible benefits because it's too important this time around." This is the anti-hype CEO voice — notable from the head of the most AI-invested company on earth.</p>
+
+      <p>Most revealing: Nadella described Microsoft's internal transformation from a company that does Azure networking to one that "builds the agentic system that does Azure networking." That's the pivot. Not cloud as a product, but cloud as an autonomous system that self-manages through AI agents. If he's right, the infrastructure layer of the entire internet is about to be rewritten by agent orchestration.</p>
+
+      <p><strong>Quote worth remembering:</strong> "True ambition is about making the impossible possible. I take great inspiration from the people who were managing the Azure network. We built in the last fifteen months more Azure capacity than we built in the first fifteen years. I mean, it's crazy. Wild."</p>
+    </div>
+
+    <div class="summary-zh" style="margin-top: 20px;">
+      <p>微软 CEO Satya Nadella 在 No Priors 播客中展示了万亿美元公司如何思考 AI 杠杆效应。核心观点：微软在过去 15 个月里建造的 Azure 容量超过了前 15 年的总和——而这不只是为了展示。真正的战略是构建能够自主管理基础设施的智能体系统，而不仅仅是面向人类的云工具。</p>
+
+      <p>Nadella 将"全栈建造者"定义为新的主导原型：利用 AI 将产出放大 100 倍的人——不是通过更努力地工作，而是通过编排智能体。他认为下一所伟大的机构不会是传统大学，而是围绕持续 AI 增强学习构建的新型教育模式——"获取信息的方式、自我教育的方式已经发生了巨大变化"。</p>
+
+      <p>关于信任：Nadella 承认科技行业面临 skepticism 危机。他的答案是切实交付。"世界对科技公司和科技公司会说'相信我们，我们搞定了，未来会很美好'这种说法会越来越怀疑。你们必须交付切实的好处，因为这次太重要了。"这是反炒作的 CEO 声音——来自地球上 AI 投资最多的公司负责人，这一点值得注意。</p>
+
+      <p>最透露内情的部分：Nadella 描述微软从"做 Azure 网络"的公司转变为"构建运行 Azure 网络的智能体系统"的公司。这才是真正的关键转变。不是作为产品的云，而是通过网络智能体自主管理的云系统。如果他是对的，整个互联网的基础设施层即将被智能体编排重新书写。</p>
+
+      <p><strong>值得记住的引用：</strong>"真正的雄心是关于让不可能成为可能。我从管理 Azure 网络的人那里获得了很大启发。我们在过去 15 个月里建造的 Azure 容量比前 15 年还多。我的意思是，这太疯狂了。太疯狂了。"</p>
+    </div>
+
+    <div class="urls" style="margin-top: 20px;">
+      <a href="https://www.youtube.com/@NoPriorsPodcast" target="_blank">https://www.youtube.com/@NoPriorsPodcast</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== X / TWITTER ==================== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">𝕏</span>
+    <span class="section-title">X · Twitter · 推特</span>
+    <span class="section-meta">18 Builders · 38 Tweets</span>
+  </div>
+
+  <!-- Thibault Sottiaux - OpenAI Codex -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thibault Sottiaux</span>
+      <span class="builder-role">OpenAI · Codex Team</span>
+    </div>
+    <div class="summary-en">
+      Thibault signaled a major internal alignment at OpenAI: "Lots of little vectors all pointing in the same direction" — hinting at coordinated model/Codex improvements shipping soon. More notably, he addressed the recent Codex reliability issues head-on: three separate incidents in 24 hours triggered a public apology and a reset of usage limits across all paid plans. The transparency is striking — 8735 likes suggests the community appreciates the directness. The third tweet ("Can't stop watching it") hints at a new Codex feature demo that's clearly internal — the team is excited about what's coming.
+    </div>
+    <div class="summary-zh">
+      Thibault 透露了 OpenAI 内部的重要信号："很多小向量都指向同一个方向"——暗示协调后的模型/Codex 改进即将发布。更值得注意的是，他直接回应了最近的 Codex 可靠性问题：24 小时内三次独立事故引发了公开道歉和所有付费计划的使用限制重置。这种透明度令人惊讶——8735 个赞表明社区欣赏这种直接态度。第三条推文（"停不下来地看它"）暗示了一个新的 Codex 功能演示，显然是内部的——团队对即将推出的功能感到兴奋。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/thsottiaux/status/2062423528927015414" target="_blank">x.com/thsottiaux · Little vectors aligning</a>
+      <a href="https://x.com/thsottiaux/status/2062329981548802523" target="_blank">x.com/thsottiaux · Incidents + usage limit reset</a>
+    </div>
+  </div>
+
+  <!-- Cat Wu - Anthropic -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Cat Wu</span>
+      <span class="builder-role">Anthropic · Data Team</span>
+    </div>
+    <div class="summary-en">
+      Cat shared a significant operational milestone: Anthropic's data team has automated 95% of business analytics queries using Claude. The blog post covers their approach to evals, ablations, and online validation — a rare transparent look at how a top AI lab operationalizes its own tooling. The 280 likes and 14 replies suggest this resonated deeply with the builder community. This is a live demonstration of "eating your own dogfood" at the highest level — and the fact that 95% automation is achievable hints at where the entire analytics industry is headed.
+    </div>
+    <div class="summary-zh">
+      Cat 分享了一个重要的运营里程碑：Anthropic 数据团队使用 Claude 自动化了 95% 的业务分析查询。这篇博客文章涵盖了他们对 evals、消融实验和在线验证的方法——罕见地透明展示了顶级 AI 实验室如何将自己的工具投入使用。280 个赞和 14 条回复表明这在建造者社区引起了深度共鸣。这是最高级别的"吃自己的狗粮"的实时演示——95% 自动化是可以实现的，这一事实暗示了整个分析行业的未来方向。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/_catwu/status/2062408623565984209" target="_blank">x.com/_catwu · 95% analytics automation</a>
+    </div>
+  </div>
+
+  <!-- Thariq - Anthropic -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Anthropic · Claude Code Team</span>
+    </div>
+    <div class="summary-en">
+      Thariq retweeted a short story by Suzanne (a writer on the team) called "Mall of America" — and the 949 likes show how much the community values this blend of literature and AI. His comment reveals something human about the team culture: the prompts feel well-written because there's a novelist on the team. This is a subtle but important signal about how Anthropic differentiates itself culturally — they hire writers, not just engineers, and it shows in the product's voice and prompt sensitivity.
+    </div>
+    <div class="summary-zh">
+      Thariq 转发了 Suzanne（团队中的一位作家）的短篇小说《美国购物中心》——949 个赞表明社区多么重视文学与 AI 的这种融合。他的评论揭示了团队文化的人性化一面：提示词感觉写得很好，因为团队里有一位小说家。这是关于 Anthropic 如何在文化上实现差异化的重要信号——他们雇佣作家，而不仅仅是工程师，这体现在产品的语音和提示词敏感性中。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/trq212/status/2062217018187923783" target="_blank">x.com/trq212 · Suzanne's short story</a>
+    </div>
+  </div>
+
+  <!-- Peter Yang - Product at Roblox -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox Product · 140K+ Newsletter</span>
+    </div>
+    <div class="summary-en">
+      Peter is clearly deep in the Codex workflow — he's asking how to make it the default tab in the ChatGPT app (74 likes, 19 replies — this is a common pain point). His second tweet is a strong endorsement: "Codex is absolutely killing it this afternoon for editing spreadsheets for me" (88 likes). This is notable because spreadsheet editing is a genuinely hard task for code agents — formatting, formulas, and cross-sheet references are easy to break. If Codex is handling this reliably, it's a meaningful capability signal. His third tweet links to a written guide, showing he's actively documenting and teaching this workflow.
+    </div>
+    <div class="summary-zh">
+      Peter 显然深度使用 Codex 工作流——他询问如何让 Codex 成为 ChatGPT 应用的默认标签页（74 个赞，19 条回复——这是一个常见的痛点）。他的第二条推文是强烈的认可："Codex 今天下午在帮我编辑电子表格方面绝对太强了"（88 个赞）。这一点值得注意，因为电子表格编辑对代码智能体来说确实是困难的任务——格式、公式和跨表引用很容易被搞砸。如果 Codex 能可靠地处理这些，这就是一个有意义的能力信号。他的第三条推文链接到一篇书面指南，表明他正在积极记录和教授这个工作流。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2062327484499317124" target="_blank">x.com/petergyang · Codex default tab</a>
+      <a href="https://x.com/petergyang/status/2062283525542531194" target="_blank">x.com/petergyang · Codex spreadsheet editing</a>
+    </div>
+  </div>
+
+  <!-- Josh Woodward - Google Labs -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Josh Woodward</span>
+      <span class="builder-role">VP · Google Labs / Gemini</span>
+    </div>
+    <div class="summary-en">
+      Josh announced Dreambeans — a new Google Labs experimental app that delivers a "daily dose of inspiration" by connecting to your Google apps and surfacing personalized content. The backstory he shared is telling: a small Google Labs team pitched "hope scrolling, not doom scrolling" and got the green light. Now it's rolling out to US-based Google AI Ultra users. 501 likes on the announcement tweet suggests strong organic interest. This is Google's answer to the "doomscroll" problem — using Personal Intelligence to curate rather than manipulate attention. The fact that it comes from Google Labs (not the mainline product team) suggests they're experimenting aggressively with new interaction paradigms.
+    </div>
+    <div class="summary-zh">
+      Josh 发布了 Dreambeans——一款新的 Google Labs 实验性应用，通过连接你的 Google 应用并提供个性化内容来传递"每日灵感"。他分享的背后故事说明问题：一个小型 Google Labs 团队提出了"希望滚动，而不是厄运滚动"的走廊推销，并获得了绿灯。现在它正在向美国地区的 Google AI Ultra 用户推出。公告推文获得 501 个赞，表明有强烈的有机兴趣。这是 Google 对"厄运滚动"问题的回答——使用个人智能来策划而不是操纵注意力。它来自 Google Labs（不是主流产品团队）这一事实表明，他们正在积极尝试新的交互范式。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/joshwoodward/status/2062217728824651848" target="_blank">x.com/joshwoodward · Dreambeans announcement</a>
+      <a href="https://x.com/GoogleLabs/status/2062206479026069544" target="_blank">x.com/GoogleLabs · Dreambeans experiment</a>
+    </div>
+  </div>
+
+  <!-- Google Labs official -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Google Labs</span>
+      <span class="builder-role">Official Account · Google Experiments</span>
+    </div>
+    <div class="summary-en">
+      Google Labs officially announced Dreambeans with a detailed explainer: it uses "Personal Intelligence" to connect to your Google apps, delivering daily curated collections of stories and topics. The phrasing "hope scrolling, not doom scrolling" is a direct design principle — and the fact that they're leading with it suggests Google is aware of the backlash against attention-manipulating feeds. Available to US Google AI Ultra users with a waitlist. 1057 likes — notable traction for a Labs experiment.
+    </div>
+    <div class="summary-zh">
+      Google Labs 正式发布了 Dreambeans 的详细解释：它使用"个人智能"连接你的 Google 应用，每天提供精心策划的故事和主题集合。措辞"希望滚动，而不是厄运滚动"是一个直接的设计原则——他们以此为先导这一事实表明 Google 意识到人们对注意力操纵反馈的反对。面向美国 Google AI Ultra 用户，有候补名单。1057 个赞——对于 Labs 实验来说是一个值得注意的 traction。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/GoogleLabs/status/2062206479026069544" target="_blank">x.com/GoogleLabs · Dreambeans launch</a>
+    </div>
+  </div>
+
+  <!-- Guillermo Rauch - Vercel -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">CEO · Vercel</span>
+    </div>
+    <div class="summary-en">
+      Guillermo is pushing Vercel's AI Gateway hard: Grok Imagine Video is now available through Vercel AI Gateway (97 likes). More interesting is his second tweet about generating frontends on top of business data — "the genie is out of the bottle, never going back to clunky dashboards." He's articulating Vercel's bet: v0 + Next.js delivering 1000x the value when paired with enterprise data. His third tweet ("You know what to do") with 902 likes suggests a community challenge or call-to-action that resonated widely. Vercel is positioning itself as the frontend layer for the AI-augmented enterprise — and Guillermo is using his personal account to build the narrative.
+    </div>
+    <div class="summary-zh">
+      Guillermo 正在大力推广 Vercel 的 AI Gateway：Grok Imagine Video 现已通过 Vercel AI Gateway 可用（97 个赞）。更有趣的是他的第二条推文，关于在业务数据之上生成前端——"精灵已经出瓶了，再也回不到笨重的仪表板了。"他正在阐明 Vercel 的赌注：v0 + Next.js 在与企业数据配对时能提供 1000 倍的价值。他的第三条推文（"你知道该怎么做"，902 个赞）暗示了一个引起广泛共鸣的社区挑战或行动号召。Vercel 正在将自己定位为 AI 增强型企业的前端层——而 Guillermo 正在利用他的个人账号来构建这个叙事。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/rauchg/status/2062332963636060313" target="_blank">x.com/rauchg · Grok Imagine on Vercel AI Gateway</a>
+      <a href="https://x.com/rauchg/status/2062199585322529108" target="_blank">x.com/rauchg · Frontends on business data</a>
+      <a href="https://x.com/rauchg/status/2062179592367227174" target="_blank">x.com/rauchg · You know what to do</a>
+    </div>
+  </div>
+
+  <!-- Amjad Masad - Replit -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">CEO · Replit</span>
+    </div>
+    <div class="summary-en">
+      Amjad continues to document the "ship fast" ethos: "App to App Store in 48 hours" (68 likes) — a direct challenge to the traditional product cycle. His second tweet ("You can run but you can't hide from B2B SaaS") with 384 likes is a bold statement about market inevitability — Replit's agents are coming for enterprise software, and there's no hiding. The third tweet is a classic founder move: "Don't miss it!" — promoting something (likely a launch or feature) with FOMO energy. Amjad is leaning into the "Replit is the Best Way to build for B2B" narrative hard, and the engagement numbers suggest the market is listening.
+    </div>
+    <div class="summary-zh">
+      Amjad 继续记录"快速发布"的 ethos："48 小时从应用到 App Store"（68 个赞）——对传统产品周期的直接挑战。他的第二条推文（"你可以跑，但躲不掉 B2B SaaS"，384 个赞）是关于市场必然性的大胆声明——Replit 的智能体正在进军企业软件，无处可藏。第三条推文是经典的创始人举动："不要错过！"——用 FOMO 能量推广某件事（可能是发布或功能）。Amjad 正在大力倾向"Replit 是 B2B 最佳构建方式"的叙事，参与度数据表明市场正在倾听。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/amasad/status/2062369124609892655" target="_blank">x.com/amasad · 48 hours to App Store</a>
+      <a href="https://x.com/amasad/status/2062228935702921641" target="_blank">x.com/amasad · B2B SaaS is coming</a>
+    </div>
+  </div>
+
+  <!-- Aaron Levie - Box -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">CEO · Box</span>
+    </div>
+    <div class="summary-en">
+      Aaron dropped a bombshell take: the jobs data is showing the opposite of what doomsayers predicted. Engineering — supposedly the most at-risk category — is seeing more projects and more hires because AI amplifies what engineers can do. His exact frame: "You can get by for a while by being non-technical building software, but eventually someone has to understand what got built, maintain it, fix security issues." Apply that logic to every function — sales, marketing, operations — and AI becomes a hiring multiplier, not a replacement. His second tweet is equally sharp: AI token spend per employee dramatically exceeds traditional software spend ($10-50/month vs hundreds/thousands on tokens). This is how he sizes the TAM for intelligence — and it's massive.
+    </div>
+    <div class="summary-zh">
+      Aaron 抛出了一个重磅观点：就业数据展示的情况与末日预言者预测的相反。工程——据称是风险最高的类别——正因为 AI 放大了工程师的能力而看到更多项目和更多招聘。他的确切框架："非技术人员构建软件可以撑一段时间，但最终必须有人理解构建的内容、维护它、修复安全问题。"将这个逻辑应用到每个职能——销售、营销、运营——AI 就成为招聘乘数，而不是替代品。他的第二条推文同样犀利：每位员工在 AI token 上的花费大幅超过了传统软件花费（每月 10-50 美元 vs token 上的数百/数千美元）。这就是他衡量智能 TAM 的方式——而且规模巨大。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2062335852379066698" target="_blank">x.com/levie · AI jobs opposite prediction</a>
+      <a href="https://x.com/levie/status/2062280745889222937" target="_blank">x.com/levie · AI token TAM</a>
+    </div>
+  </div>
+
+  <!-- Ryo Lu - Cursor -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Ryo Lu</span>
+      <span class="builder-role">Design · Cursor</span>
+    </div>
+    <div class="summary-en">
+      Ryo announced Cursor is hiring design engineers — a very specific, high-signal role. The requirements are telling: "taste, systems thinking, and deep care for fast, polished experiences." This is Cursor signaling they're moving beyond "code completion" into carefully crafted user experiences — and they need hybrid designer/engineers to do it. 1012 likes and 87 replies — the community is paying close attention to Cursor's next hires. This also hints at a broader trend: the best AI tools are realizing that "it works" isn't enough — it has to feel good, and that requires design talent that can also ship code.
+    </div>
+    <div class="summary-zh">
+      Ryo 宣布 Cursor 正在招聘设计工程师——一个非常具体、高信号的角色。要求说明问题："品味、系统思维以及对快速、精致体验的深度关注。"这是 Cursor 发出的信号：他们正在从"代码补全"转向精心制作的用户体验——而且他们需要混合型设计师/工程师来实现。1012 个赞和 87 条回复——社区正在密切关注 Cursor 的下一步招聘。这也暗示了一个更广泛的趋势：最好的 AI 工具正在意识到"能用"是不够的——它必须感觉良好，而这需要也能发布代码的设计人才。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/ryolu_/status/2062352329903665471" target="_blank">x.com/ryolu_ · Cursor hiring design engineers</a>
+    </div>
+  </div>
+
+  <!-- Garry Tan - YC -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">President & CEO · Y Combinator</span>
+    </div>
+    <div class="summary-en">
+      Garry took a sharp political turn: defending San Francisco against the "Pelley firing is a free press tragedy" narrative, calling it instead an "autopsy" of CBS's failures. 2354 likes on the "San Francisco is healing" tweet suggests this resonated with the SF tech community's fatigue with mainstream media criticism. His other tweet promotes a Substack piece on the Pelley firing. Garry is clearly leaning into the "SF is back" narrative — and using his platform to push back against national media framing of the city's recovery.
+    </div>
+    <div class="summary-zh">
+      Garry 采取了尖锐的政治转向：为旧金山辩护，反对"Pelley 被解雇是新闻自由悲剧"的叙事，称其为 CBS 失败的"尸检"。关于"旧金山正在愈合"的推文获得 2354 个赞，表明这与旧金山科技社区对主流媒体批评的疲劳产生了共鸣。他的另一条推文推广了一篇关于 Pelley 被解雇的 Substack 文章。Garry 显然倾向于"旧金山回来了"的叙事——并利用他的平台来反击全国媒体对这座城市复苏的框架设定。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2062285811366904091" target="_blank">x.com/garrytan · San Francisco is healing</a>
+      <a href="https://x.com/garrytan/status/2062426378809794805" target="_blank">x.com/garrytan · Pelley firing analysis</a>
+    </div>
+  </div>
+
+  <!-- Zara Zhang -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder · Harvard '17</span>
+    </div>
+    <div class="summary-en">
+      Zara launched the "Beautiful Feishu Whiteboard skill" — allowing agents to create editable SVG graphics in Feishu/Lark docs in 30+ predefined styles. The key innovation: everything is completely editable (can even drag elements around) — solving the "agent generates image and walks away" problem. This is a smart bridge between AI generation and human-in-the-loop refinement. 92 likes suggests strong interest from the China/Asia builder community. Her other tweet ("Try it") is a classic low-friction call-to-action.
+    </div>
+    <div class="summary-zh">
+      Zara 发布了"美丽飞书白板技能"——允许智能体在飞书/Lark 文档中以 30 多种预定义样式创建可编辑的 SVG 图形。关键创新：一切都是完全可编辑的（甚至可以拖动元素）——解决了"智能体生成图像就走开"的问题。这是 AI 生成与人类在环细化之间的智能桥梁。92 个赞表明来自中国/亚洲建造者社区的强烈兴趣。她的另一条推文（"试试看"）是经典的低摩擦行动号召。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/zarazhangrui/status/2062256374730699257" target="_blank">x.com/zarazhangrui · Feishu Whiteboard skill</a>
+    </div>
+  </div>
+
+  <!-- Peter Steinberger - OpenClaw -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">Founder · OpenClaw</span>
+    </div>
+    <div class="summary-en">
+      Peter is on a roll: his MS Build talk "Build the thing that builds the thing" is now online (236 likes). He revealed OpenClaw just crossed a massive milestone: "over 1300 people on the waitlist for today's OpenClaw event" and "more npm downloads this week than ever — combined with Docker, GitHub, company-internal deployments and numerous forks, real number is more in the 10-20 million downloads/week." That's not a hobby project — that's infrastructure-scale adoption. The "build the thing that builds the thing" framing is also a brilliant articulation of the agent orchestration layer — OpenClaw isn't building agents, it's building what builds agents.
+    </div>
+    <div class="summary-zh">
+      Peter 势头正猛：他的 MS Build 演讲"构建构建东西的东西"现已上线（236 个赞）。他透露 OpenClaw 刚刚跨过一个重大里程碑："今天 OpenClaw 活动的候补名单上有超过 1300 人"，以及"本周的 npm 下载量比以往任何时候都多——结合 Docker、GitHub、公司内部部署和众多分支，实际数字更像是每周 1000-2000 万次下载。"这不是爱好项目——这是基础设施规模的采用。"构建构建东西的东西"的框架也是对智能体编排层的精彩阐述——OpenClaw 不是在构建智能体，而是在构建构建智能体的东西。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2062390654022332691" target="_blank">x.com/steipete · MS Build talk</a>
+      <a href="https://x.com/steipete/status/2062276065448669627" target="_blank">x.com/steipete · npm download milestone</a>
+      <a href="https://x.com/steipete/status/2062307384018829768" target="_blank">x.com/steipete · 1300 waitlist</a>
+    </div>
+  </div>
+
+  <!-- Dan Shipper - Every -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">CEO · Every</span>
+    </div>
+    <div class="summary-en">
+      Dan's conversation with Matt Coatney (Figma's Director of Product Management for Developers) is a must-watch: they discussed why the "SaaS-pocalypse" narrative has it backwards — AI makes you more willing to pay for SaaS, not less. The insight: Figma's MCP server allows you to approach design work from two directions (live web → Figma canvas, or Figma design → agent → PR). Dan's also dropping philosophy: "Can you look the machine god in the face and keep your feet on the ground?" — the builder community is processing the existential questions alongside the tactical ones.
+    </div>
+    <div class="summary-zh">
+      Dan 与 Matt Coatney（Figma 开发者产品经理总监）的对话不容错过：他们讨论了为什么"SaaS 末日"叙事是颠倒的——AI 让你更愿意为 SaaS 付费，而不是更少。洞察：Figma 的 MCP 服务器允许你从两个方向处理设计工作（实时网页 → Figma 画布，或 Figma 设计 → 智能体 → PR）。Dan 也在抛出哲学："你能直视机器之神的面孔，同时脚踏实地吗？"——建造者社区正在处理存在问题的同时处理战术问题。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2062202908306030915" target="_blank">x.com/danshipper · Figma SaaS resurgence</a>
+      <a href="https://x.com/danshipper/status/2062144269285023839" target="_blank">x.com/danshipper · Machine god philosophy</a>
+    </div>
+  </div>
+
+  <!-- Swyx -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">DX @ Temporal · AI Engineer World's Fair</span>
+    </div>
+    <div class="summary-en">
+      Swyx is gathering "all the top agent labs" for an event (7 likes, 2 replies) — this is likely related to the AI Engineer World's Fair. His second tweet hints at something big: "you guys know where this is going right" with a screenshot (75 likes, 15 replies) — classic hype-building without spoiling the reveal. Swyx operates as a community convener in the AI engineering space — when he moves, people pay attention. The Hamilton bootleg sitzprobe tweet (1 like) is just a personality tidbit — even builders have hobbies.
+    </div>
+    <div class="summary-zh">
+      Swyx 正在为一个活动"聚集所有顶级智能体实验室"（7 个赞，2 条回复）——这可能与 AI 工程师世界博览会有关。他的第二条推文暗示了大事："你们知道这是往哪里去的对吧"，配了截图（75 个赞，15 条回复）——经典的炒作制造而不剧透。Swyx 在 AI 工程领域充当社区召集人——当他采取行动时，人们会注意。关于 Hamilton 盗录彩排的推文（1 个赞）只是个性花絮——即使是建造者也有爱好。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2062277925127520576" target="_blank">x.com/swyx · Gathering top agent labs</a>
+      <a href="https://x.com/swyx/status/2062371515937800468" target="_blank">x.com/swyx · You know where this is going</a>
+    </div>
+  </div>
+
+  <!-- Nikunj Kothari - FP Ventures -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">Partner · FP Ventures</span>
+    </div>
+    <div class="summary-en">
+      Nikunj is leaning into the "Fitbit Air" hype — tracking professional metrics on his wearable (40 likes, 17 replies). This is a snapshot of where the "quantified self" movement is going in the AI era — it's not just steps and heart rate anymore, it's "am I being professionally effective today?" The fact that he's asking for Google Health API + Apple Health write access suggests the next wave of integrations will be health data → professional performance optimization. Builders are optimizing themselves as seriously as they optimize their code.
+    </div>
+    <div class="summary-zh">
+      Nikunj 正在倾向"Fitbit Air"炒作——在他的可穿戴设备上跟踪专业指标（40 个赞，17 条回复）。这是"量化自我"运动在 AI 时代走向何方的快照——不再只是步数和心率，而是"我今天在专业上有效吗？"他要求 Google Health API + Apple Health 写入权限这一事实表明，下一波集成将是健康数据 → 专业性能优化。建造者优化自己的认真程度与他们优化代码的认真程度一样。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2062198451086221543" target="_blank">x.com/nikunj · Fitbit Air professional tracking</a>
+    </div>
+  </div>
+
+  <!-- Aditya Agarwal - South Park Commons -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">GP · South Park Commons</span>
+    </div>
+    <div class="summary-en">
+      Aditya welcomed Harshit Madan and Rohan Choudhary to the South Park Commons team (20 likes). This is a signal that SPC is actively expanding — and the fact that Aditya announced it personally suggests a hands-on investing style. For context: Aditya was early engineering at Facebook, CTO at Dropbox, and Board at Flipkart — when he hires, it matters.
+    </div>
+    <div class="summary-zh">
+      Aditya 欢迎 Harshit Madan 和 Rohan Choudhary 加入 South Park Commons 团队（20 个赞）。这是一个信号，表明 SPC 正在积极扩张——而 Aditya 亲自宣布这一事实表明了一种亲力亲为的投资风格。背景说明：Aditya 曾是 Facebook 的早期工程师、Dropbox 的 CTO 和 Flipkart 的董事会成员——当他招聘时，这很重要。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/adityaag/status/2062400706448081342" target="_blank">x.com/adityaag · SPC team expansion</a>
+    </div>
+  </div>
+
+  <!-- Claude / Anthropic official -->
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude / Anthropic</span>
+      <span class="builder-role">Official Account</span>
+    </div>
+    <div class="summary-en">
+      The Claude team shared a delightfully weird hardware hack: Ben built a miniature "Clawd" device — when Claude Code needs input, a solenoid inside the aluminum body pushes it upward so it "jumps up and down." He intercepted keyboard signals and rerouted them to an Arduino; a Raspberry Pi Zero acts as the "brains." 95-112 likes across the three tweets suggest the community loves these moments of levity — and it also shows how deeply Claude Code is embedded in some users' physical workflows. When your AI assistant needs a physical presence to get your attention, we've crossed into new territory.
+    </div>
+    <div class="summary-zh">
+      Claude 团队分享了一个令人愉悦的奇怪硬件黑客：Ben 构建了一个微型"Clawd"设备——当 Claude Code 需要输入时，铝制机身内的螺线管会将其向上推，使其"跳上跳下。"他拦截了键盘信号并将其重新路由到 Arduino；Raspberry Pi Zero 充当"大脑。"三条推文获得 95-112 个赞，表明社区喜欢这些轻松的时刻——这也显示了 Claude Code 在某些用户的物理工作流中嵌入得有多深。当你的 AI 助手需要物理存在来获得你的注意时，我们已经跨入了新的领域。
+    </div>
+    <div class="urls">
+      <a href="https://x.com/claudeai/status/2062220051587952973" target="_blank">x.com/claudeai · Clawd device</a>
+      <a href="https://x.com/claudeai/status/2062220049146876347" target="_blank">x.com/claudeai · How Clawd was built</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== BLOGS ==================== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <span class="section-title">Official Blogs · 官方博客</span>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <div class="blog">
+    <div class="blog-source">Anthropic Engineering</div>
+    <div class="blog-title">How we contain Claude across products</div>
+
+    <div class="podcast-body">
+      <p>Anthropic's engineering team published a detailed post on how they safely deploy Claude across products — a critical read for anyone building agent systems. The core tension: twelve months ago, they'd have rejected giving Claude access to take down an internal service. Today, that level of access is routine — because they've built containment systems that work.</p>
+
+      <p>The post reveals a fascinating human-behavior finding: Claude Code's original "ask user for permission at each turn" approach failed because users approved 93% of prompts. The more approvals a user sees, the less attention they pay — a classic fatigue pattern. The solution: Claude Code auto mode, which automates safer approvals and reduces the cognitive load on users.</p>
+
+      <p>Anthropic categorizes risk into two components: likelihood of failure, and blast radius if failure occurs. Their approach: contain the blast radius through environment isolation. Claude Mythos Preview (a model with very high capability) was deemed too risky to ship in April 2026 — but they expect broader release as safeguards mature. This is a refreshingly honest account of the "when do we ship powerful models?" decision framework.</p>
+
+      <p><strong>Why this matters:</strong> Most AI companies talk about safety in abstract terms. Anthropic is showing their actual engineering — including the 93% approval fatigue stat, which should be a wake-up call for anyone building human-in-the-loop approval systems.</p>
+    </div>
+
+    <div class="summary-zh" style="margin-top: 20px;">
+      <p>Anthropic 工程团队发布了一篇关于如何安全地跨产品部署 Claude 的详细文章——对于任何构建智能体系统的人来说都是关键阅读。核心张力：12 个月前，他们会拒绝给予 Claude 关停内部服务的访问权限。今天，这种级别的访问是常规的——因为他们已经构建了有效的 containment 系统。</p>
+
+      <p>文章揭示了一个关于人类行为的迷人发现：Claude Code 最初的"在每一轮询问用户许可"方法失败了，因为用户批准了 93% 的提示。用户看到的批准越多，他们付出的注意力就越少——一个典型的疲劳模式。解决方案：Claude Code 自动模式，它自动化更安全的批准并减少用户的认知负载。</p>
+
+      <p>Anthropic 将风险分为两个组成部分：失败的可能性，以及如果失败发生的爆炸半径。他们的方法：通过环境隔离来遏制爆炸半径。Claude Mythos Preview（一个具有非常高能力的模型）被认为风险太大而无法在 2026 年 4 月发布——但他们预计随着保障措施成熟将更广泛地发布。这是关于"我们什么时候发布强大模型？"决策框架的令人耳目一新的诚实叙述。</p>
+
+      <p><strong>为什么这很重要：</strong>大多数 AI 公司以抽象术语谈论安全。Anthropic 正在展示他们的实际工程——包括 93% 批准疲劳统计数据，这应该是对任何构建人在环批准系统的人的警钟。</p>
+    </div>
+
+    <div class="urls" style="margin-top: 20px;">
+      <a href="https://www.anthropic.com/engineering/how-we-contain-claude" target="_blank">anthropic.com/engineering/how-we-contain-claude</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TAKEAWAY ==================== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">💡</span>
+    <span class="section-title">Today's Takeaway · 今日要点</span>
+  </div>
+
+  <div class="takeaway" style="margin-bottom: 0;">
+    <span class="takeaway-label">Key Signal</span>
+    The "full-stack builder" archetype is going mainstream. Satya Nadella (Microsoft) and Peter Steinberger (OpenClaw) are both describing a world where AI-amplified individuals can do the work of entire teams — and the infrastructure layer (Azure, OpenClaw) is racing to support them. If you're building for these users, the design constraint is: how does your product make one person feel like a team of ten?
+  </div>
+
+  <div class="summary-zh" style="margin-top: 20px;">
+    <span class="takeaway-label" style="margin-right: 6px;">关键信号</span>
+    "全栈建造者"原型正在进入主流。Satya Nadella（微软）和 Peter Steinberger（OpenClaw）都在描述一个 AI 增强的个人能够完成整个团队工作的世界——而基础设施层（Azure、OpenClaw）正在竞相支持他们。如果你正在为这些用户构建产品，设计约束是：你的产品如何让一个人感觉像十个人的团队？
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-line">Follow Builders, Not Influencers</div>
+  <div class="footer-line zh">关注建造者，而非影响者</div>
+  <div class="signature">by chloevchen · 2026-06-05</div>
+</footer>
+
+</body>
+</html>

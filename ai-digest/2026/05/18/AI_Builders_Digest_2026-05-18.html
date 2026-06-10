@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-18 · 周日</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">18</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">9 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">A sprawling philosophical thread attacking Foucault and Derrida as the intellectual root of America's inability to build. Foucault's framework — that every institution claiming knowledge is really exercising power — when applied at civilizational scale, kills the tacit process knowledge that only exists in the hands of people who actually make things. Derrida's deconstruction becomes the OS behind bureaucratic paralysis: 4,000-page environmental impact reports but no concrete poured. The antidote is building: "The physical bridge across a river holds or it doesn't." Also announced GBrain as free, open-source under MIT license — a knowledge system (not RAG) with 8 layers that makes agents "feel clairvoyant about who you are." Installable in one command.</p>
+    <p class="summary-zh zh">一条长篇哲学推文，直指福柯和德里达是美国"丧失建造能力"的思想根源。福柯的框架——任何声称拥有知识的机构实质上都在行使权力——一旦在文明尺度上应用，就会杀死只存在于实干者手中的默会过程知识。德里达的解构主义则成了官僚瘫痪的操作系统：能写出 4000 页环境影响报告，却倒不了混凝土。解药就是建造："桥过河，要么撑住，要么塌，没有第三种可能。"此外还宣布 GBrain 以 MIT 协议免费开源——它是一个知识系统（不是 RAG），8 层架构让 Agent"对你了如指掌"。一行命令即可安装。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2055674791873630650">https://x.com/garrytan/status/2055674791873630650</a>
+      <a href="https://x.com/garrytan/status/2055670797596012657">https://x.com/garrytan/status/2055670797596012657</a>
+      <a href="https://x.com/garrytan/status/2055670533451366479">https://x.com/garrytan/status/2055670533451366479</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">A viral post (3,090 likes) pushing back on Bay Area tech monoculture: "If you're stuck in the Bay Area tech rat race / psychosis, make time to travel to other places. Go to a small town in Europe or visit Asia — you'll see that life can be about much more than whether you're IC7 or IC8 or what company you work for. Don't be the person to put on your tombstone: 'He got divorced and neglected his kids but at least he made D2 at FAANG.'" The thread clearly struck a nerve with tech workers questioning the trade-offs of career maximalism.</p>
+    <p class="summary-zh zh">一条引爆讨论的推文（3,090 赞），直击湾区科技圈的内卷精神状态："如果你被困在湾区的科技老鼠赛跑/精神错乱里，抽时间去其他地方走走。去欧洲小镇，去亚洲看看——你会发现生活远不止 IC7 还是 IC8，远不止你在哪家公司。别让墓志铭写上：'他离了婚，疏于照顾孩子，但至少在 FAANG 当上了 D2。'"这条推文显然击中了科技从业者对职业最大化与生活平衡的集体反思。</p>
+    <div class="urls"><a href="https://x.com/petergyang/status/2055663937061007762">https://x.com/petergyang/status/2055663937061007762</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">Three posts: a relatable "my brain: don't read the Hacker News comments" joke (542 likes — clearly a universal experience), a push to "deslop your Claude Code" and switch to Codex, and BlackBar 0.2.0 shipping for Blacksmith CI — now with 24h vCPU, workflow graphs, opt-in notifications, and a compact status badge. Steinberger continues to be one of the most prolific builders shipping real tools.</p>
+    <p class="summary-zh zh">三条动态：一条引发共鸣的"大脑：别看 HN 评论区"段子（542 赞——显然是所有人的共同体验），一条呼吁"去 slob 你的 Claude Code"、切换到 Codex，以及 BlackBar 0.2.0 发布——Blacksmith CI 的新版本支持 24 小时 vCPU、工作流图、可选通知和紧凑状态徽章。Steinberger 依然是最多产的工具 Builder 之一。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2055775661755715974">https://x.com/steipete/status/2055775661755715974</a>
+      <a href="https://x.com/steipete/status/2055747016727167035">https://x.com/steipete/status/2055747016727167035</a>
+      <a href="https://x.com/steipete/status/2055685581758206139">https://x.com/steipete/status/2055685581758206139</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Advice for young people considering venture capital: don't, unless you're absolutely obsessed with the craft of investing. You can't truly understand "excellence" from the cap table and board seats — you need to be embedded working for founders who are truly excellent. Kothari credits his understanding of product excellence to Deep Nishar and Eric Wu, design excellence to Kurt Varner and Micah Sivitz, and operational excellence to Keith Rabois and Daniel Ubata. The one exception: if investing is your one true passion and you literally cannot fathom doing anything else. Otherwise, work at a great company and start as an angel — "It's such a fun way to learn and be part of founders' journey."</p>
+    <p class="summary-zh zh">给想进 VC 的年轻人的建议：别去，除非你对投资这件事痴迷到无法自拔。你无法仅凭 Cap Table 和董事会席位真正理解什么叫"卓越"——你需要亲自嵌入在真正卓越的创始人身边工作。Kothari 把自己对产品卓越的理解归功于 Deep Nishar 和 Eric Wu，对设计卓越归功于 Kurt Varner 和 Micah Sivitz，对运营卓越归功于 Keith Rabois 和 Daniel Ubata。唯一的例外：如果投资就是你唯一的热爱，你完全无法想象自己干别的。否则，先去一家好公司，然后从天使投资做起——"这是学习、参与创始人旅程的有趣方式。"</p>
+    <div class="urls"><a href="https://x.com/nikunj/status/2055648134819450907">https://x.com/nikunj/status/2055648134819450907</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host / AI Engineer</span>
+    </div>
+    <p class="summary-en">AI Engineer Summit is coming to India — the tweet garnered 78 likes with significant reply activity (21 replies), signaling strong demand for the event in the Indian developer ecosystem. Also commented that someone's social media team is "better than mine" after seeing a first-pull YouTube strategy.</p>
+    <p class="summary-zh zh">AI Engineer Summit 即将登陆印度——这条推文获得了 78 赞和 21 条回复，显示印度开发者生态对此活动的强烈需求。另外还吐槽某人的社交媒体团队"比我的强"，看到对方在 YouTube 上的首发策略。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2055889947136237595">https://x.com/swyx/status/2055889947136237595</a>
+      <a href="https://x.com/swyx/status/2055612276208709731">https://x.com/swyx/status/2055612276208709731</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Madhu Guru</span>
+      <span class="builder-role">Google Gemini PM</span>
+    </div>
+    <p class="summary-en">A reflection on wealth and happiness that resonated (166 likes): "Whether something is enough is up to you. Whether you're happy is independent of your bank account. You can want to be wealthy and still be content now. You don't need to chase it from a place of lack and desperation. Silicon Valley treats ambition and happiness as mutually exclusive — that's the trap. You can be both."</p>
+    <p class="summary-zh zh">一段关于财富与幸福的反思（166 赞）："够不够，由你决定。开不开心，和银行卡余额无关。你可以既渴望富有，又对当下知足。不需要从匮乏和焦虑出发去追逐。硅谷把雄心和快乐当成互斥的——这才是陷阱。你可以两者兼得。"</p>
+    <div class="urls"><a href="https://x.com/realmadhuguru/status/2055708451670798839">https://x.com/realmadhuguru/status/2055708451670798839</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Two posts: a sharp analogy pushing back on "AI weakens your abilities" fears — "If you use a bicycle it weakens your walking abilities, too!" — and declaring he's "Successfully Codex-pilling the world one text at a time." Shipper is clearly all-in on Codex as the next major coding paradigm shift.</p>
+    <p class="summary-zh zh">两条动态：一个犀利的类比回击"AI 会削弱你的能力"的恐惧——"如果你用自行车，那走路能力也会变弱！"——以及宣告自己正在"一条条短信地成功给全世界安利 Codex"。Shipper 显然已经全力押注 Codex 作为下一个编程范式转变。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2055727669900141017">https://x.com/danshipper/status/2055727669900141017</a>
+      <a href="https://x.com/danshipper/status/2055715359244566552">https://x.com/danshipper/status/2055715359244566552</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Harvard '17</span>
+    </div>
+    <p class="summary-en">A perfectly captured description of AI builder psychology: "AI psychosis: cycling between two mental states every single day — after using coding agents: holy shit I'm omnipotent. I can build anything. I've never felt this powerful in my life. After scrolling Twitter: holy shit I'm completely behind. Everyone's ahead. The wave is moving and I'm going to get left." (136 likes — the entire AI Twitter felt this.)</p>
+    <p class="summary-zh zh">精准概括了 AI Builder 的精神状态："AI 精神错乱：每天在两种心态之间循环——用完编程 Agent 之后：卧槽我无所不能，我什么都能造，人生从未如此强大。刷完 Twitter 之后：卧槽我彻底落后了，所有人都跑在前面，浪潮在走我要被抛下了。"（136 赞——整个 AI Twitter 都感同身受。）</p>
+    <div class="urls"><a href="https://x.com/zarazhangrui/status/2055728641913536762">https://x.com/zarazhangrui/status/2055728641913536762</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code @ Anthropic</span>
+    </div>
+    <p class="summary-en">A concise declaration with 64 likes: "HTML continues to be undefeated." Coming from someone building at Anthropic, it's a reminder that the web's foundational technology still powers the most accessible and durable interfaces — even in the age of AI agents.</p>
+    <p class="summary-zh zh">一条简洁有力的宣言（64 赞）："HTML 继续无敌。"来自在 Anthropic 做 Claude Code 的人，这是一个提醒：即便在 AI Agent 时代，Web 的基础技术仍然支撑着最易访问、最持久的界面。</p>
+    <div class="urls"><a href="https://x.com/trq212/status/2055903660476129723">https://x.com/trq212/status/2055903660476129723</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">No Priors</div>
+    <h3 class="podcast-title">Pax Silica: Inside the Trump Administration's Tech Strategy with US Under Secretary of State for Economic Affairs Jacob Helberg</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Pax Silica is the US government's attempt to build an AI supply chain NATO — a 14-nation economic security coalition that bets on private-sector dynamism over government-operated infrastructure, with the Philippines as the first forward-deployed industrial base. The bet: commercially viable platforms that outlive any single administration.
+    </div>
+
+    <div class="podcast-body">
+      <p>Jacob Helberg, now confirmed as Under Secretary of State for Economic Affairs, outlines Pax Silica — an economic security coalition of 14 countries designed to secure the AI supply chain for the US and its allies. The philosophical foundation is distinctly American: <strong>"We're not gonna do government-operated supply chains — that's not how we shine as a country. Our superpower is really our private sector."</strong> The Steve Jobs quote "American products enchant and delight users around the world by the billions" serves as the guiding principle.</p>
+
+      <p>The first major "product rollout" is a <strong>forward-deployed industrial base with the Philippines</strong> — America's oldest ally in Asia. The idea: instead of reshoring everything, create distributed manufacturing nodes in allied nations that are commercially viable and can survive changes in political administration. This is infrastructure designed to outlast any single president.</p>
+
+      <p>On the chip export control front, Helberg argues the current framework is evolving. The key insight: <strong>controlling advanced AI compute is not about restricting trade — it's about shaping the ecosystem so that the most capable infrastructure stays within a trusted circle</strong>. The Pax Silica countries get preferential access; those outside face increasingly tight constraints.</p>
+
+      <p>Counterintuitive note: Helberg explicitly rejects the "industrial policy" label. He frames Pax Silica as the opposite — government enabling private companies to compete, not picking winners. The test: "Can this platform ultimately live outside the government as a private service?" If yes, it's aligned with the model. If it requires permanent government subsidy, it's not.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>已获确认的美国经济事务副国务卿 Jacob Helberg 详细阐述了 Pax Silica——一个由 14 国组成的经济安全联盟，旨在为美国及其盟友保障 AI 供应链。哲学基石是鲜明的美国路线：<strong>"我们不会搞政府运营的供应链——那不是我们国家的强项。我们真正的超能力是私营部门。"</strong>乔布斯那句"美国产品让全球数十亿人为之着迷"被奉为指南。</p>
+
+      <p>第一个重大"产品发布"是<strong>与菲律宾建立的前沿部署工业基地</strong>——菲律宾是美国在亚洲最古老的盟友。核心思路：不是把所有制造都搬回美国，而是在盟国创建分布式的制造节点，这些节点在商业上可行，能跨越政府更迭存活下来。这是为超越任何单个总统任期而设计的基础设施。</p>
+
+      <p>在芯片出口管制方面，Helberg 认为当前框架正在演进。关键洞察：<strong>管控先进 AI 算力不是限制贸易——而是塑造生态，让最强大的基础设施留在可信的圈层内</strong>。Pax Silica 成员国获得优先准入；圈外国家面临越来越严的约束。</p>
+
+      <p>反直觉之处：Helberg 明确拒绝"产业政策"的标签。他把 Pax Silica 定位为反面——政府赋能私营企业竞争，而非挑选赢家。检验标准："这个平台最终能否脱离政府作为私营服务存在？"如果可以，就符合模型；如果需要永久政府补贴，就不符合。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=xjlYpGaxIPA">▶️ https://www.youtube.com/watch?v=xjlYpGaxIPA</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

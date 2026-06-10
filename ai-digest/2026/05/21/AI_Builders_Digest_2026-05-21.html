@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-21</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-21 · 周四</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">17</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">40</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">17 Builders</span>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Andrej Karpathy</span>
+      <span class="builder-role">AI Researcher · Ex-OpenAI/Tesla</span>
+    </div>
+    <div class="summary-en">Karpathy announced he has joined Anthropic, saying the next few years at the frontier of LLMs will be "especially formative." He remains passionate about education and plans to resume that work in time. The announcement received 131K+ likes, making it one of the most-engaged AI tweets in recent memory.</div>
+    <div class="summary-zh zh">Karpathy 宣布加入 Anthropic，称 LLM 前沿接下来几年将"尤其具有塑造力"。他对教育的热情不变，计划后续恢复相关工作。该推文获得超过 13.1 万点赞，成为近期互动量最高的 AI 相关推文之一。</div>
+    <div class="urls">
+      <a href="https://x.com/karpathy/status/2056753169888334312">x.com/karpathy/status/2056753169888334312</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">CEO · OpenAI</span>
+    </div>
+    <div class="summary-en">Altman unveiled "tokenmaxxing": OpenAI will invest $2M in tokens into every YC startup, and is offering discounted tokens for 1-3 year capacity commitments. He noted the world will be capacity-constrained as models improve, and these commits help OpenAI plan while giving customers price certainty.</div>
+    <div class="summary-zh zh">Altman 推出"tokenmaxxing"计划：OpenAI 将为当前 YC 批次每家初创公司投入 200 万美元的 token 额度，同时推出 1-3 年容量承诺的折扣 token。他表示随着模型进步世界将面临算力瓶颈，这些承诺帮助 OpenAI 规划产能，同时给客户价格确定性。</div>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2056933166875857290">x.com/sama/status/2056933166875857290</a>
+      <a href="https://x.com/sama/status/2056827105401614656">x.com/sama/status/2056827105401614656</a>
+      <a href="https://x.com/sama/status/2056834734915977382">x.com/sama/status/2056834734915977382</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">CEO · Box</span>
+    </div>
+    <div class="summary-en">Levie reported that token costs have become the dominant topic among Fortune 500 CIOs; no one feels they have the right solution yet, with strategies ranging from workload-tiered model access to spend caps by team. Separately, he shared Box's evaluation of Gemini 3.5 Flash, which showed a 12pp jump on complex document tasks, with gains up to +22pp in healthcare and +20pp in life sciences.</div>
+    <div class="summary-zh zh">Levie 报告称 token 成本已成为财富 500 强 CIO 们最热议的话题；没有人觉得自己找到了正确方案，策略从按工作负载分配模型到按团队设支出上限不等。另外，他分享了 Box 对 Gemini 3.5 Flash 的评估结果，复杂文档任务提升 12 个百分点，医疗健康提升 +22pp，生命科学提升 +20pp。</div>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2056965292753146019">x.com/levie/status/2056965292753146019</a>
+      <a href="https://x.com/levie/status/2056804573449474527">x.com/levie/status/2056804573449474527</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Josh Woodward</span>
+      <span class="builder-role">VP · Google Labs / Gemini</span>
+    </div>
+    <div class="summary-en">Woodward introduced Gemini Spark, a 24/7 personal AI agent designed to proactively manage tasks and navigate your digital life under your direction. It launches to trusted testers this week and as a Beta for US Google AI Ultra subscribers next week.</div>
+    <div class="summary-zh zh">Woodward 发布 Gemini Spark，一个 24/7 全天候个人 AI agent，旨在按用户指令主动管理任务、导航数字生活。本周开放给受信测试者，下周向美国 Google AI Ultra 订阅者推出 Beta。</div>
+    <div class="urls">
+      <a href="https://x.com/joshwoodward/status/2056873495116845485">x.com/joshwoodward/status/2056873495116845485</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">CEO · Vercel</span>
+    </div>
+    <div class="summary-en">Rauch announced a new CDN pricing model that "smooths over" traffic spikes and viral events for predictability without degraded PoPs or priority bandwidth tiers. He also highlighted Claude Managed Agents + Vercel Sandbox integration, and showcased rerun.io (Svelte/Three.js/Vercel stack) for 3D visualization.</div>
+    <div class="summary-zh zh">Rauch 宣布新 CDN 定价模型，"平滑"流量高峰和病毒式事件，提供可预测性而无需降级 PoP 或带宽优先级分层。他还推广了 Claude Managed Agents + Vercel Sandbox 集成，并展示了 rerun.io（Svelte/Three.js/Vercel 技术栈）的 3D 可视化能力。</div>
+    <div class="urls">
+      <a href="https://x.com/rauchg/status/2056802789477740713">x.com/rauchg/status/2056802789477740713</a>
+      <a href="https://x.com/rauchg/status/2056735989830471977">x.com/rauchg/status/2056735989830471977</a>
+      <a href="https://x.com/rauchg/status/2056734559048536070">x.com/rauchg/status/2056734559048536070</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">President & CEO · Y Combinator</span>
+    </div>
+    <div class="summary-en">Tan reflected on his podcast appearance with Rick Rubin, noted that WinFS (his old Microsoft project) can finally happen with LLMs and it's called GBrain, and confirmed the "tokenmaxxing" trend that OpenAI is pushing with YC startups.</div>
+    <div class="summary-zh zh">Tan 回顾了与 Rick Rubin 录制播客的经历，指出他当年在微软做的 WinFS 项目终于可以通过 LLM 实现，即 GBrain；并确认了 OpenAI 正在向 YC 初创公司推动的"tokenmaxxing"趋势。</div>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2056976600294650266">x.com/garrytan/status/2056976600294650266</a>
+      <a href="https://x.com/garrytan/status/2056967665001082919">x.com/garrytan/status/2056967665001082919</a>
+      <a href="https://x.com/garrytan/status/2056931642967798226">x.com/garrytan/status/2056931642967798226</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Product · Roblox · Creator</span>
+    </div>
+    <div class="summary-en">Yang reflected on the tension between being a "builder" vs. an "influencer" after Google I/O, sharing his commitment to keeping the builder muscle from atrophying. He quoted advice on 90-day roadmaps over annual plans and asked followers what to ask the Head of Gemini app in a live interview.</div>
+    <div class="summary-zh zh">Yang 在 Google I/O 后反思了"builder"与"influencer"之间的张力，承诺不让 builder 肌肉萎缩。他引用了关于 90 天路线图优于年度规划的建议，并向粉丝征集对 Gemini app 负责人访谈的提问。</div>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2056953057066598805">x.com/petergyang/status/2056953057066598805</a>
+      <a href="https://x.com/petergyang/status/2056927645657641378">x.com/petergyang/status/2056927645657641378</a>
+      <a href="https://x.com/petergyang/status/2056910185650856446">x.com/petergyang/status/2056910185650856446</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">AI Engineer · Latent Space Pod</span>
+    </div>
+    <div class="summary-en">Swyx shared a 4-part AI SDLC framework: (1) set up ~50 tests with instructions to add more, (2) plan refactoring for maintainability and AI-editability, (3) execute with "do not stop until all work is done" discipline, and (4) periodically spot-check deployed functionality. He also noted Contextual getting "windsurfed" and flagged RSI concerns.</div>
+    <div class="summary-zh zh">Swyx 分享了 AI SDLC 四步框架：（1）建立约 50 个测试并持续扩展，（2）规划重构以提升可维护性和 AI 可编辑性，（3）以"不停手直到完成"的纪律执行，（4）周期性抽查已部署功能。他还注意到 Contextual 被"windsurfed"收购，并提醒关注 RSI（重复性劳损）问题。</div>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2056877529991205072">x.com/swyx/status/2056877529991205072</a>
+      <a href="https://x.com/swyx/status/2056999228405346812">x.com/swyx/status/2056999228405346812</a>
+      <a href="https://x.com/swyx/status/2056790544731484358">x.com/swyx/status/2056790544731484358</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">Partner · FPV Ventures</span>
+    </div>
+    <div class="summary-en">Kothari argued that even in the AI-pilled Bay Area crowd, very few have priced in the progression from assistant to coworker to autonomous workers. He sees evidence in labs collecting long-horizon RL data, harnesses enabling longer tasks, and models getting better at recursive self-correction. He calls this the "diffusion era" where AI just needs to be diffused into everything, taking 10-20 years.</div>
+    <div class="summary-zh zh">Kothari 认为即使在 AI 圈核心的湾区，也很少有人真正"定价"了从助手到同事再到自主工人这一演进。他看到了证据：实验室收集长时域 RL 数据、框架支持越来越长的任务、模型在递归自我纠错上持续进步。他称这是"扩散时代"，AI 需要扩散到一切领域，还需 10-20 年。</div>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2056865808832397344">x.com/nikunj/status/2056865808832397344</a>
+      <a href="https://x.com/nikunj/status/2056755713830171023">x.com/nikunj/status/2056755713830171023</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">CEO · Every</span>
+    </div>
+    <div class="summary-en">Shipper's simple "what did karpathy see" tweet garnered 1,518 likes, capturing the collective curiosity around Karpathy's Anthropic move. He also expressed excitement about an upcoming speaking engagement.</div>
+    <div class="summary-zh zh">Shipper 的一条简短推文"what did karpathy see"获得 1,518 点赞，捕捉到了围绕 Karpathy 加入 Anthropic 的集体好奇。他还表达了即将参加演讲活动的期待。</div>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2056762096352649421">x.com/danshipper/status/2056762096352649421</a>
+      <a href="https://x.com/danshipper/status/2056777922757730555">x.com/danshipper/status/2056777922757730555</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code · Anthropic</span>
+    </div>
+    <div class="summary-en">Thariq welcomed Karpathy to Anthropic with "the future is bright, let's get to work" (1,763 likes), and directed followers to the Claude Blog for Managed Agents updates.</div>
+    <div class="summary-zh zh">Thariq 以"the future is bright, let's get to work"欢迎 Karpathy 加入 Anthropic（1,763 点赞），并引导关注者到 Claude Blog 查看 Managed Agents 更新。</div>
+    <div class="urls">
+      <a href="https://x.com/trq212/status/2056777186062032964">x.com/trq212/status/2056777186062032964</a>
+      <a href="https://x.com/trq212/status/2056843158965858380">x.com/trq212/status/2056843158965858380</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Ryo Lu</span>
+      <span class="builder-role">Design · Cursor</span>
+    </div>
+    <div class="summary-en">Lu shared that he now uses Composer 2.5 for everything: planning, building, iterations, and debugging. He praised it as a great all-rounder especially for UI work with Design Mode. He also demonstrated Cursor integrating with Jira to "turn the backlog into reality."</div>
+    <div class="summary-zh zh">Lu 分享他现在一切工作都用 Composer 2.5：规划、构建、迭代和调试。他特别推荐其 Design Mode 的 UI 工作流。他还展示了 Cursor 与 Jira 的集成，"把 backlog 变成现实"。</div>
+    <div class="urls">
+      <a href="https://x.com/ryolu_/status/2056892527626817935">x.com/ryolu_/status/2056892527626817935</a>
+      <a href="https://x.com/ryolu_/status/2056878599333102053">x.com/ryolu_/status/2056878599333102053</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">VC · FirstMark Capital</span>
+    </div>
+    <div class="summary-en">Turck called the Gemini 3.5 Flash release "genuinely impressive," noting big jumps on agentic coding (76.2% Terminal-Bench), finance agent tasks (57.9%), and leading scores on SWE-Bench/OSWorld. He also quipped "Anthropic attains sainthood" on the Karpathy news.</div>
+    <div class="summary-zh zh">Turck 称 Gemini 3.5 Flash 的发布"确实令人印象深刻"，指出在 agent 编码（76.2% Terminal-Bench）、金融 agent 任务（57.9%）以及 SWE-Bench/OSWorld 上的领先分数。他还打趣道"Anthropic 获封圣徒"回应 Karpathy 的消息。</div>
+    <div class="urls">
+      <a href="https://x.com/mattturck/status/2056834038946775343">x.com/mattturck/status/2056834038946775343</a>
+      <a href="https://x.com/mattturck/status/2056759042333147467">x.com/mattturck/status/2056759042333147467</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">GP · South Park Commons · Ex-Facebook/Dropbox</span>
+    </div>
+    <div class="summary-en">Agarwal expressed optimism about the intersection of AI and atoms, saying "the future is bright" for combining digital intelligence with physical-world applications.</div>
+    <div class="summary-zh zh">Agarwal 对 AI 与原子世界（物理世界）的交汇表示乐观，认为将数字智能与物理应用结合"未来可期"。</div>
+    <div class="urls">
+      <a href="https://x.com/adityaag/status/2056747510736249162">x.com/adityaag/status/2056747510736249162</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nan Yu</span>
+      <span class="builder-role">Head of Product · Linear</span>
+    </div>
+    <div class="summary-en">Yu offered an "alternate take" via quote tweet, likely providing a contrarian perspective on a trending AI discussion.</div>
+    <div class="summary-zh zh">Yu 通过引用推文提供了"另一种观点"，可能对某个热门 AI 讨论提出了不同视角。</div>
+    <div class="urls">
+      <a href="https://x.com/thenanyu/status/2056790880120713432">x.com/thenanyu/status/2056790880120713432</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Google Labs</span>
+      <span class="builder-role">Official · Google</span>
+    </div>
+    <div class="summary-en">Google Labs announced major Project Genie updates: Street View grounding for real-world world generation, a new Library for organizing creations, and external sharing. They also celebrated Flow's one-year anniversary and introduced Computational Discovery powered by AlphaEvolve and ERA (Empirical Research Agent) for agentic research.</div>
+    <div class="summary-zh zh">Google Labs 宣布 Project Genie 重大更新：Street View 地理锚定生成世界、新 Library 管理创作、外部分享功能。他们还庆祝了 Flow 一周年，并推出基于 AlphaEvolve 和 ERA（实证研究 Agent）的计算发现平台，用于 agent 式研究。</div>
+    <div class="urls">
+      <a href="https://x.com/GoogleLabs/status/2056872996988756228">x.com/GoogleLabs/status/2056872996988756228</a>
+      <a href="https://x.com/GoogleLabs/status/2056813720257663354">x.com/GoogleLabs/status/2056813720257663354</a>
+      <a href="https://x.com/GoogleLabs/status/2056812957775142985">x.com/GoogleLabs/status/2056812957775142985</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude</span>
+      <span class="builder-role">Official · Anthropic</span>
+    </div>
+    <div class="summary-en">Claude's official account launched "The Problem Solvers" series featuring founders tackling hard problems with Claude, spotlighting Scott Wu of Cognition/Devin. They also announced self-hosted sandboxes and MCP tunnels for Managed Agents.</div>
+    <div class="summary-zh zh">Claude 官方账号推出"The Problem Solvers"系列，展示用 Claude 解决难题的创始人，重点介绍了 Cognition/Devin 的 Scott Wu。他们还宣布了 Managed Agents 的自托管沙箱和 MCP 隧道功能。</div>
+    <div class="urls">
+      <a href="https://x.com/claudeai/status/2056805730359931007">x.com/claudeai/status/2056805730359931007</a>
+      <a href="https://x.com/claudeai/status/2056805728774402428">x.com/claudeai/status/2056805728774402428</a>
+      <a href="https://x.com/claudeai/status/2056645493493575681">x.com/claudeai/status/2056645493493575681</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============== BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">2 Posts</span>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Anthropic Engineering</span>
+      <span class="builder-role">Scaling Managed Agents</span>
+    </div>
+    <div class="summary-en">Anthropic Engineering published "Scaling Managed Agents: Decoupling the brain from the hands," drawing an analogy to operating systems: just as OS abstractions (process, file) outlasted specific hardware, Managed Agents virtualize agent components into session (append-only log), harness (the loop calling Claude), and sandbox (execution environment). This decoupling allows each component to be swapped independently as models improve. They found that context resets added for Claude Sonnet 4.5's "context anxiety" became dead weight on Claude Opus 4.5, illustrating how harness assumptions go stale.</div>
+    <div class="summary-zh zh">Anthropic Engineering 发布了"Scaling Managed Agents: Decoupling the brain from the hands"，类比操作系统：正如 OS 抽象（进程、文件）比特定硬件更持久，Managed Agents 将 agent 组件虚拟化为 session（追加日志）、harness（调用 Claude 的循环）和 sandbox（执行环境）。这种解耦允许随着模型改进独立替换各组件。他们发现为 Claude Sonnet 4.5 的"上下文焦虑"添加的上下文重置在 Claude Opus 4.5 上变成了死代码，说明框架假设会过时。</div>
+    <div class="urls">
+      <a href="https://www.anthropic.com/engineering/managed-agents">anthropic.com/engineering/managed-agents</a>
+    </div>
+  </div>
+
+  <div class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude Blog</span>
+      <span class="builder-role">Managed Agents Updates</span>
+    </div>
+    <div class="summary-en">The Claude Blog announced self-hosted sandboxes (public beta) and MCP tunnels (research preview) for Managed Agents. Self-hosted sandboxes keep sensitive files and execution within your perimeter while the orchestration loop stays on Anthropic's infrastructure. Supported providers include Cloudflare (microVMs, zero-trust secrets), Daytona (full composable computers), Modal, and Vercel. MCP tunnels let agents connect to private MCP servers inside your network.</div>
+    <div class="summary-zh zh">Claude Blog 宣布了 Managed Agents 的自托管沙箱（公测）和 MCP 隧道（研究预览）。自托管沙箱将敏感文件和执行保留在你的边界内，编排循环留在 Anthropic 基础设施上。支持的供应商包括 Cloudflare（微虚拟机、零信任密钥）、Daytona（完整可组合计算机）、Modal 和 Vercel。MCP 隧道让 agent 可以连接你网络内的私有 MCP 服务器。</div>
+    <div class="urls">
+      <a href="https://claude.com/blog/claude-managed-agents-updates">claude.com/blog/claude-managed-agents-updates</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcast</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <div class="podcast-title">Rebuilding IT From the Ground Up for the AI Age: Serval's Jake Stauch</div>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Enterprise service management (the "getting help at work" problem) is ripe for an AI-native rebuild. Serval's approach: automate all employee support requests with AI agents that resolve issues instantly instead of routing tickets through human chains.
+    </div>
+
+    <div class="podcast-body">
+      <p><strong>Jake Stauch, founder and CEO of Serval</strong>, is building an AI-native ServiceNow replacement. The core insight: employees need help at work, and the ideal experience is asking for something and getting it instantly, automatically, rather than waiting for tickets to be tracked and assigned.</p>
+      <p>Serval automates IT support by understanding employee requests in natural language, then executing the resolution. Stauch argues that traditional service management platforms built around human ticket routing are fundamentally limited; AI makes it possible to close the gap between what people think their job should be and what it actually is, by eliminating the bureaucratic overhead.</p>
+      <p>The conversation explores how enterprise IT has accumulated decades of process debt, and why starting from scratch with AI as the default interaction model, rather than bolting AI onto legacy workflows, produces fundamentally better outcomes. Stauch draws parallels to how consumer apps eliminated the need to "submit a ticket" for everyday tasks.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh zh">
+      <p><strong>Serval 创始人兼 CEO Jake Stauch</strong>正在构建 AI 原生的 ServiceNow 替代品。核心洞察：员工在工作中需要帮助，理想体验是提出请求后立即自动获得解决，而非等待工单流转和人工分配。</p>
+      <p>Serval 通过理解员工的自然语言请求来自动化 IT 支持，然后执行解决方案。Stauch 认为围绕人工工单路由构建的传统服务管理平台存在根本局限；AI 让人们能够弥合"理想工作"与"实际工作"之间的差距，消除官僚流程开销。</p>
+      <p>对话探讨了企业 IT 如何积累了数十年的流程债务，以及为什么以 AI 为默认交互模式从头开始构建，而非在传统工作流上"贴 AI 补丁"，能产生根本性更好的结果。Stauch 类比了消费应用如何消除了日常任务的"提交工单"需求。</p>
+    </div>
+
+    <div class="urls" style="margin-top: 20px;">
+      <a href="https://www.youtube.com/watch?v=j7ypvRUFY7M">youtube.com/watch?v=j7ypvRUFY7M</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="footer">
+  <div class="next-issue">明日见 · See you tomorrow</div>
+  <div>Follow Builders, Not Influencers</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+<!-- by chloevchen -->
+</body>
+</html>

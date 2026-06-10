@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-19</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-19 · 周一</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">21</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">12 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">ChatGPT Images 2.0 launched in India, and it's already generated more than 1 billion images there. The scale of adoption in India continues to be one of OpenAI's most impressive growth stories — and image generation is clearly hitting a cultural nerve.</p>
+    <p class="summary-zh zh">ChatGPT Images 2.0 在印度上线，当地已生成超过 10 亿张图片。印度市场的采用规模持续成为 OpenAI 最亮眼的增长故事之一——图片生成显然击中了某种文化需求。</p>
+    <div class="urls"><a href="https://x.com/sama/status/2056165722804654196">https://x.com/sama/status/2056165722804654196</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Two major threads. First: there's a temporary mismatch between the jobs CS graduates used to chase (building consumer-facing software at tech companies) and the new reality — AI makes coding abundant, which means every industry now needs technical talent to implement agentic systems. A Fortune 500 pharma CEO told him they need far more technical people. The demand for skills is still there; the job descriptions are just different. Second: don't bail on learning fundamentals. The expert with AI always outruns the novice with AI. The experienced developer using agents outpaces someone just vibe coding. The designer who uses AI builds better products. Despite valley rhetoric that deep expertise is obsolete, the opposite is true.</p>
+    <p class="summary-zh zh">两条重磅推文。第一条：CS 毕业生曾经趋之若鹜的岗位（在科技公司做面向消费者的软件）和新的现实之间存在暂时错位——AI 让编程变得充裕，意味着每个行业都需要技术人才来部署 Agent 系统。一位财富 500 强药企 CEO 告诉他，他们需要更多技术人才。技能的需求还在，只是岗位描述变了。第二条：别放弃学基本功。专家+AI 永远胜过新手+AI。有经验的开发者用 Agent 比纯 vibe coding 的人效率高得多，会用 AI 的设计师做出的产品更好。硅谷有人说深度专业已过时，但恰恰相反。</p>
+    <div class="urls">
+      <a href="https://x.com/levie/status/2056219645796090197">https://x.com/levie/status/2056219645796090197</a>
+      <a href="https://x.com/levie/status/2056051851439857933">https://x.com/levie/status/2056051851439857933</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">A characteristically bold shot at Ken Griffin: "He doesn't understand the ceiling just got raised. Some 20-something reading this will build the cracked AI-human-computer-symbiosis team that will supersede his whole operation because he is too distracted about lowering cost." The message: boil the ocean, don't cut costs. Also endorsed ZeroEntropy as the top tool for personal AI scenarios against his 120k markdown brain — a notable signal from someone running one of the most connected AI ecosystems.</p>
+    <p class="summary-zh zh">对 Ken Griffin 的经典式猛攻："他不懂天花板已经被抬高了。某个正在看这条推文的二十多岁的人，会组建出超强的 AI-人-计算机共生团队，取代他的整个运营，因为他太执着于降成本了。"核心信息：煮海，别砍成本。另外，他推荐 ZeroEntropy 作为他 12 万个 Markdown 个人知识库场景下的首选工具——来自运营着最紧密 AI 生态圈之一的人，这是值得关注的信号。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2056123737544757733">https://x.com/garrytan/status/2056123737544757733</a>
+      <a href="https://x.com/garrytan/status/2056122508550738223">https://x.com/garrytan/status/2056122508550738223</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code @Anthropic</span>
+    </div>
+    <p class="summary-en">A viral meme that captured the Claude Code power-user moment: "tired: I brought my work laptop and my personal laptop / wired: I am dual wielding." Two Claude Code sessions running simultaneously — this is the new dual-monitor setup for the AI-native developer.</p>
+    <p class="summary-zh zh">一条精准捕捉 Claude Code 重度用户心态的病毒式 meme："tired：我带了我的工作笔记本和个人笔记本 / wired：我双持了。"同时跑两个 Claude Code session——这就是 AI 原生开发者新的双屏配置。</p>
+    <div class="urls"><a href="https://x.com/trq212/status/2056145415867937182">https://x.com/trq212/status/2056145415867937182</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">"The ideal [developer tool] doesn't exist" — another Guillermo meme-format post, this time sparking conversation about what the perfect AI-powered development workflow looks like. The implied subtext: whatever it is, Vercel is building toward it.</p>
+    <p class="summary-zh zh">"理想的 [开发者工具] 并不存在"——Guillermo 的又一个 meme 格式帖子，这次引发了关于完美 AI 驱动开发工作流应该长什么样的讨论。潜台词：不管它是什么，Vercel 正在往那个方向建。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2056201218540904667">https://x.com/rauchg/status/2056201218540904667</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">"Big week for all my Google friends, I can assure you all they've been cooking" — hype-building for Google I/O with insider conviction. Also shared practical advice: build evals based on real traces and feedback, not "eval theater" on generic academic benchmarks. Use Claude to synthesize customer feedback into themes. As models get smarter, evals need to get harder to keep producing signal.</p>
+    <p class="summary-zh zh">"对所有的谷歌朋友来说这是重大一周，我保证他们一直在憋大招"——用内部人的信心为 Google I/O 造势。还分享了实用建议：基于真实对话记录和反馈来建 eval，不要在通用学术基准上搞"eval theater"。用 Claude 把客户反馈综合成主题。模型越聪明，eval 需要越难才能持续产生信号。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2056210471917912140">https://x.com/petergyang/status/2056210471917912140</a>
+      <a href="https://x.com/petergyang/status/2056178053848703019">https://x.com/petergyang/status/2056178053848703019</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">A detailed warning for employees joining recently minted unicorns: triple whammy of tranched valuations inflating entry strike prices, high 409a valuations making early exercise expensive, and stock packages that look great "on paper" but are massively inflated. His advice: go with wide eyes and use Claude or ChatGPT to do exit math on your equity. Also shared his Claude Code /goal mode workflow: running <code>--dangerously-skip-permissions</code> with <code>/goal improve the codebase for performance and add a bit of aura</code>.</p>
+    <p class="summary-zh zh">对加入新晋独角兽的员工发出详细警告：分层估值导致入场行权价虚高、409a 估值让提前行权成本高昂、股权包"纸面"上很好看但实际被严重注水——三重打击。建议：睁大眼睛，用 Claude 或 ChatGPT 算一算你的股权退出数学。还分享了他的 Claude Code /goal 工作流：跑 <code>--dangerously-skip-permissions</code> 配合 <code>/goal improve the codebase for performance and add a bit of aura</code>。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2056125669466333672">https://x.com/nikunj/status/2056125669466333672</a>
+      <a href="https://x.com/nikunj/status/2056014576215601431">https://x.com/nikunj/status/2056014576215601431</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">"What SMBs are building" — showcasing the breadth of what small and medium businesses create on Replit. The signal: AI-powered development tools are not just for startups and enterprises; the long tail of SMB builders is a massive, underreported market.</p>
+    <p class="summary-zh zh">"SMB 在建什么"——展示了中小企业在 Replit 上创建的项目的广度。信号：AI 驱动的开发工具不只是给创业公司和大企业的；SMB 长尾建设者是一个庞大但鲜被报道的市场。</p>
+    <div class="urls"><a href="https://x.com/amasad/status/2056083305468944820">https://x.com/amasad/status/2056083305468944820</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder</span>
+    </div>
+    <p class="summary-en">A crisp observation that resonated widely: "People consistently overestimate how hard it is to build something and underestimate how hard it is to win people's attention once you've built it." A reminder that distribution, not construction, is the real bottleneck for most products.</p>
+    <p class="summary-zh zh">一条广泛引发共鸣的精辟观察："人们总是高估做出来有多难，而低估做出来之后获得注意有多难。"提醒我们：对大多数产品来说，真正的瓶颈是分发，不是构建。</p>
+    <div class="urls"><a href="https://x.com/zarazhangrui/status/2056132881630826952">https://x.com/zarazhangrui/status/2056132881630826952</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital</span>
+    </div>
+    <p class="summary-en">A dry observation on venture returns: "When a multi-billion dollar venture fund has a $1B exit in its portfolio." The subtext — even a billion-dollar exit can be underwhelming when you're a massive fund; return multiples matter more than absolute numbers.</p>
+    <p class="summary-zh zh">对风投回报的冷幽默观察："当一个数十亿美元的基金，其投资组合里出现了 10 亿美元的退出。"潜台词——对于巨型基金来说，即使 10 亿美元的退出也可能不够看；回报倍数比绝对数字更重要。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2056129724565373406">https://x.com/mattturck/status/2056129724565373406</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">South Park Commons GP</span>
+    </div>
+    <p class="summary-en">A quietly powerful reframe: "On Friday I used AI to write a lot of code. And then on Saturday I watched humans play sports and dance. I am not worried that we won't have meaning and purpose." The point isn't that AI is trivial — it's that human meaning doesn't come from labor scarcity.</p>
+    <p class="summary-zh zh">一个安静却有力的重构："周五我用 AI 写了很多代码。然后周六我看了人类打球和跳舞。我不担心我们会失去意义和目的。"重点不是说 AI 微不足道——而是人类的意义并不来自劳动的稀缺性。</p>
+    <div class="urls"><a href="https://x.com/adityaag/status/2056015684145127612">https://x.com/adityaag/status/2056015684145127612</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Posting from Singapore during ICML week: kaya toast breakfast meetup for those still around. Also noted that "the agentic excel thing is basically what you get when you expand the side panel to be the main thing" — a sharp observation about how AI-native interfaces often start as sidebars before taking over the entire workflow.</p>
+    <p class="summary-zh zh">在 ICML 周期间从新加坡发帖：还在的话来吃 kaya toast 早餐。还指出"agentic Excel 本质上就是把侧边栏展开成主面板"——一个敏锐的观察，AI 原生界面往往先以侧边栏形式出现，然后逐步接管整个工作流。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2056190797096403162">https://x.com/swyx/status/2056190797096403162</a>
+      <a href="https://x.com/swyx/status/2056201387172843800">https://x.com/swyx/status/2056201387172843800</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">AI & I by Every</div>
+    <h3 class="podcast-title">Claude Code Can Be Your Second Brain</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      The real breakthrough in AI-assisted thinking isn't about writing — it's about <em>thinking mode</em>. By running Claude Code against your entire Obsidian vault on a home server accessible from your phone, you can research, reason, and ship from anywhere. The key discipline: explicitly tell the AI you're in thinking mode, not writing mode — and build daily progress reports into your workflow.
+    </div>
+
+    <div class="podcast-body">
+      <p>Noah Breyer has what might be the most advanced personal Claude Code setup in the world. He runs it on his Obsidian vault — 120k+ markdown files synced via Git — hosted on a mini PC in his basement, accessible from his phone through Tailscale VPN and the Termius terminal app. The result: deep research, writing, and even shipping code from a device that was never designed for deep work.</p>
+
+      <p>The core insight: <strong>separate thinking mode from writing mode</strong>. Breyer explicitly tells Claude Code "don't help me write anything right now, I just want you to help me think and ask me questions." Most people let AI jump straight to producing artifacts, but the highest-leverage use is as a thinking partner — one that can search your entire knowledge base, pull relevant research, and challenge your assumptions.</p>
+
+      <p>His workflow for a new project: create a folder, tell Claude about past work and big themes, have it search the entire Obsidian vault for relevant material, then switch to a "thinking partner" sub-agent that asks probing questions rather than generating output. At the end of each day, he has the AI write a progress report — what was learned, what ideas emerged, what to explore next.</p>
+
+      <p>The broader philosophy: building <strong>Fingerspitzengefühl</strong> — "fingertip feeling" — is what matters most with AI. You can't reason about these tools without experiencing them. The intuition gap is the real divide, not the knowledge gap. And for code sharing between projects, Breyer and his team use AI to translate approaches across repos instead of building abstracted modular libraries — a pattern he calls "tacit code sharing."</p>
+
+      <p>On AI and kids: rather than banning AI, teach children the meta-skill of <strong>detecting when the AI is wrong</strong>. Hallucination detection is just a form of the critical thinking needed for all media consumption. The "brain guard" rule: if information makes you feel good because you agree with it, be <em>even more</em> skeptical.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Noah Breyer 可能拥有世界上最先进的个人 Claude Code 设置。他在 Obsidian 知识库上运行它——超过 12 万个 Markdown 文件通过 Git 同步——托管在地下室的 mini PC 上，通过 Tailscale VPN 和 Termius 终端 app 从手机访问。结果：在一个从不为深度工作设计的设备上，做研究、写作，甚至推送代码。</p>
+
+      <p>核心洞察：<strong>把"思考模式"和"写作模式"分开</strong>。Breyer 明确告诉 Claude Code"现在不要帮我写任何东西，我只要你帮我思考、问我问题"。大多数人让 AI 直接产出成果，但最高杠杆的用法是作为思考伙伴——一个能搜索你的整个知识库、拉取相关研究、挑战你假设的伙伴。</p>
+
+      <p>他的新项目工作流：创建文件夹，告诉 Claude 过去的工作和大主题，让它搜索整个 Obsidian 找相关材料，然后切换到"思考伙伴"子 Agent 来提深入问题而不是生成输出。每天结束时，让 AI 写一份进度报告——学到了什么、冒出了什么想法、接下来探索什么。</p>
+
+      <p>更广的哲学：建立 <strong>Fingerspitzengefühl</strong>——"指尖感觉"——才是 AI 时代最重要的。你不能在没有体验这些工具的情况下推理它们。直觉差距才是真正的鸿沟，不是知识差距。在项目间共享代码方面，Breyer 和团队用 AI 在不同 repo 之间翻译方法，而不是构建抽象的模块化库——他称之为"隐性代码共享"。</p>
+
+      <p>关于 AI 和孩子：与其禁止 AI，不如教孩子<strong>检测 AI 何时出错</strong>这个元技能。幻觉检测只是所有媒体消费都需要的那种批判性思维的一个形式。"大脑卫士"规则：如果某条信息让你因为赞同而感觉良好，那你就应该<em>更加</em>怀疑它。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=in7i-EVDDlk">▶️ https://www.youtube.com/watch?v=in7i-EVDDlk</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

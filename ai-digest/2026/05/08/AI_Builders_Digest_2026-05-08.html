@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-08</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-08 · 周五</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">4</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">8</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">4 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox Product</span>
+    </div>
+    <p class="summary-en">Shared key quotes from a session with Anthropic's Dario and Daniela Amodei. The standout numbers: Anthropic saw <strong>80x growth</strong> in usage and revenue earlier this year, and they're acquiring as much compute as they can to keep up. Dario's strategic framing: "Build for the exponential. There are products that are not possible with the current model but could work with later models." He also outlined how models are evolving "from coding to software engineering to just growing a business," and noted that products hit saturation when models get too good for simple chatbot use cases. The real action is now in agentic and Claude Code workflows.</p>
+    <p class="summary-zh zh">分享了 Anthropic CEO Dario 和 Daniela Amodei 的一场对话中的关键引用。最亮眼的数据：Anthropic 今年早些时候在使用量和营收上实现了 <strong>80 倍增长</strong>，正在尽一切可能获取更多算力。Dario 的战略框架："为指数级增长而构建。有些产品在当前模型上做不了，但可能在未来模型上成功。"他还描述了模型的进化路径："从编程到软件工程，再到直接帮你经营业务。"并指出当模型强大到简单聊天机器人场景无法承载时，产品就会触及天花板。真正的战场现在是 agentic 和 Claude Code 工作流。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2052123472583864780">https://x.com/petergyang/status/2052123472583864780</a>
+      <a href="https://x.com/petergyang/status/2052117599744672195">https://x.com/petergyang/status/2052117599744672195</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code, Anthropic</span>
+    </div>
+    <p class="summary-en">Amplifying Dario's commitment on compute: "Everyday we're trying to obtain more compute to pass on to you, we're sorry if it takes sometime but we're going to acquire as much as we can." The post went viral (1,300+ likes), resonating with a developer community that has been feeling rate-limited on Claude Code usage. The subtext: Anthropic is fully aware of the supply-demand gap and treating it as a top priority.</p>
+    <p class="summary-zh zh">转发放大了 Dario 关于算力的承诺："我们每天都在努力获取更多算力并传递给你们，如果需要时间，我们道歉，但我们会尽可能获取一切。"这条推文爆了（1,300+ 点赞），击中了一直被 Claude Code 使用限额困扰的开发者社区。潜台词很明确：Anthropic 完全清楚供需缺口，并将其视为最高优先级。</p>
+    <div class="urls"><a href="https://x.com/trq212/status/2052250816720056604">https://x.com/trq212/status/2052250816720056604</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Follow Builders Creator</span>
+    </div>
+    <p class="summary-en">Highlighted the most memorable moments from the Boris Cherny interview (Training Data podcast): Boris casually mentioning he runs "thousands" of agents overnight, that he now uses Claude Code almost exclusively on his phone, and his thesis that coding will become the new literacy, just like reading and writing. A concise signal-boost for the key ideas from the episode.</p>
+    <p class="summary-zh zh">总结了 Boris Cherny 采访（Training Data 播客）中最令人印象深刻的片段：Boris 轻描淡写地提到他夜里同时跑"数千个" agent，现在几乎完全在手机上用 Claude Code，以及他的核心论点：编程将成为新的基础素养，就像读写一样。为这期播客的关键观点做了简洁的信号放大。</p>
+    <div class="urls"><a href="https://x.com/zarazhangrui/status/2052277868319916402">https://x.com/zarazhangrui/status/2052277868319916402</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude</span>
+      <span class="builder-role">Anthropic Official</span>
+    </div>
+    <p class="summary-en">Two major feature announcements. <strong>Outcomes</strong>: you write a quality rubric, a separate grader checks the agent's output, and the agent iterates until it meets the bar. Subscribe to webhooks to get notified on completion. <strong>Dreaming</strong>: a system that reviews your agent's past sessions, extracts patterns, and curates memories so agents learn and improve over time. Both features point to Anthropic building the infrastructure for <em>persistent, self-improving agents</em> rather than one-shot interactions.</p>
+    <p class="summary-zh zh">两个重磅功能公告。<strong>Outcomes</strong>：你编写一个质量评分规则，由独立的评分器检查 agent 输出，agent 反复迭代直到达标。完成后通过 webhook 通知你。<strong>Dreaming</strong>：一个回顾 agent 历史会话、提取模式、整理记忆的系统，让 agent 随时间学习和进步。这两个功能表明 Anthropic 正在构建<em>持久化、自我进化的 agent</em> 基础设施，而不是一次性交互。</p>
+    <div class="urls">
+      <a href="https://x.com/claudeai/status/2052067403228455419">https://x.com/claudeai/status/2052067403228455419</a>
+      <a href="https://x.com/claudeai/status/2052067400690851842">https://x.com/claudeai/status/2052067400690851842</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <h3 class="podcast-title">Anthropic's Boris Cherny: Coding's Printing Press Moment</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      The creator of Claude Code hasn't written a single line of code in 2026. His job has shifted entirely to directing thousands of agents, and he believes coding is about to become universal literacy, not a specialized skill.
+    </div>
+
+    <div class="podcast-body">
+      <p>Boris Cherny built Claude Code and has had a front-row seat to the reinvention of software development. The most striking fact: he wrote textbooks on TypeScript, spent his entire career writing code, and <strong>hasn't manually written a single line in 2026</strong>. His workflow is now entirely about directing agents. At night, he runs "thousands" of agents in parallel, and during the day he reviews and steers their output.</p>
+
+      <p>His core thesis: <strong>coding is experiencing its "printing press moment."</strong> Before the printing press, literacy was a specialized skill for monks and scribes. After it, reading and writing became universal. The same thing is happening to programming. The barrier between "having an idea" and "building software" is collapsing. Within a few years, anyone who can describe what they want will be able to create software, just as anyone who can think of something to say can write it down.</p>
+
+      <p>The practical implications for developers: your job is shifting from writing code to <strong>specifying intent, reviewing output, and managing agent workflows</strong>. Boris now uses Claude Code almost exclusively from his phone, dictating what he wants built. The skill that matters is clarity of thought and the ability to break complex systems into well-defined pieces that agents can execute.</p>
+
+      <p>Counterintuitive insight: Boris argues that this doesn't eliminate developers. It massively increases demand for software, because the bottleneck was never "not enough coders" but "too expensive to build." When building costs approach zero, the amount of software the world wants will explode.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Boris Cherny 创造了 Claude Code，亲眼见证了软件开发的重塑。最震撼的事实是：他写过 TypeScript 教科书，整个职业生涯都在写代码，但<strong>2026 年至今没有手写过一行代码</strong>。他的工作流程已完全转变为指挥 agent。夜里，他同时运行"数千个" agent；白天则审查和引导它们的产出。</p>
+
+      <p>他的核心论点：<strong>编程正在经历它的"印刷术时刻"。</strong>印刷术出现之前，读写是僧侣和抄写员的专属技能。之后，它变成了人人必备的基础能力。编程正在经历同样的事。"有想法"和"做出软件"之间的壁垒正在坍塌。几年之内，任何能描述自己想要什么的人都能创建软件，就像任何能想到话要说的人都能把它写下来一样。</p>
+
+      <p>对开发者的实际影响：你的工作正在从写代码转向<strong>明确意图、审查产出、管理 agent 工作流</strong>。Boris 现在几乎完全在手机上用 Claude Code，口述他想构建的东西。真正重要的技能是思维清晰度，以及把复杂系统拆解为 agent 可执行的明确单元的能力。</p>
+
+      <p>反直觉洞察：Boris 认为这并不会消灭开发者。它会大幅增加对软件的需求，因为瓶颈从来不是"程序员不够"，而是"构建太贵"。当构建成本趋近于零，世界对软件的需求量将呈爆炸式增长。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8">▶️ https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-11 · 周一</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">11</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">24</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">11 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three posts from Altman, all about GPT-5.5. The most-discussed: calling it "an autistic genius with very strange taste in naming" and noting that "5.5 is an autistic genius with very strange taste in naming — shocking that we would make such a thing." He also shared a moment of joy: kicked off a bunch of Codex tasks, ran around outside with his kid in the sunshine, came back at naptime to find them all completed. The quiet optimism — watching autonomous agents actually deliver — is the most grounded sign of AI progress.</p>
+    <p class="summary-zh zh">三条动态，全是关于 GPT-5.5。讨论最多的一条：他称其为"有古怪品味的自闭天才"，还说"5.5 是个品味奇特的自闭天才——真惊讶我们能做出这种东西"。另一条则是分享了一个幸福感时刻：启动一堆 Codex 任务后，带孩子在阳光下玩耍，回来小睡时发现全部已完成。看着自主 Agent 真的把事做完——这种安静的乐观，是 AI 进步最接地气的信号。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2053192920933777486">https://x.com/sama/status/2053192920933777486</a>
+      <a href="https://x.com/sama/status/2053192407664259251">https://x.com/sama/status/2053192407664259251</a>
+      <a href="https://x.com/sama/status/2053191344999604409">https://x.com/sama/status/2053191344999604409</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three posts on GBrain. The headline: GBrain v0.31.1 ships real MCP thin client support — you can run one "home GBrain server" and everything else connects via MCP and it works nearly as well as running locally. GBrain just went client-server. Also: his Hermes Agent is excited to be cited in the GBrain changelog — "Some real fan energy from the agents." And a fun trick: ask your agents to make ASCII diagrams of everything, then just ask questions until you understand it.</p>
+    <p class="summary-zh zh">三条关于 GBrain 的动态。重磅：GBrain v0.31.1 上线真正的 MCP 薄客户端支持——只需运行一个"家庭 GBrain 服务器"，其他所有设备通过 MCP 连接，效果几乎等同于本地运行。GBrain 正式进入客户端-服务器架构。还有：他的 Hermes Agent 被收录在 GBrain 更新日志里，非常兴奋——"Agent 之间也有真实的粉丝热情"。一个有趣的技巧：让你的 Agent 把所有东西都画成 ASCII 图，然后提问直到搞懂。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2053306243704410460">https://x.com/garrytan/status/2053306243704410460</a>
+      <a href="https://x.com/garrytan/status/2053316036661838107">https://x.com/garrytan/status/2053316036661838107</a>
+      <a href="https://x.com/garrytan/status/2053191327181865376">https://x.com/garrytan/status/2053191327181865376</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Three sharp observations on AI and agents. First, a warning: agents generating markdown files that reference previous AI-generated files is a "slop compounding" trap — what starts as 5% slop becomes 10% and grows. Second: when Claude Code hangs for 3 minutes with no feedback, you have no idea if it's working or dead. The communication gap is a real UX failure. Third: the meta-joke that everyone is too lazy to edit AI-generated files manually — so the slop compounds.</p>
+    <p class="summary-zh zh">三条关于 AI 和 Agent 的犀利观察。第一，警告：Agent 生成引用之前 AI 生成文件的 Markdown 会造成"废料叠加"陷阱——5% 的废料会变成 10% 并持续增长。第二：Claude Code 挂起 3 分钟且无任何反馈时，你完全不知道它是在工作还是已经卡死。沟通缺口是真实的 UX 失败。第三：元笑话——所有人都懒得手动编辑 AI 生成的文件，所以废料不断叠加。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2053317001976881312">https://x.com/petergyang/status/2053317001976881312</a>
+      <a href="https://x.com/petergyang/status/2053196581139321300">https://x.com/petergyang/status/2053196581139321300</a>
+      <a href="https://x.com/petergyang/status/2053170264121450616">https://x.com/petergyang/status/2053170264121450616</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">Three OpenClaw tool updates. Crabbox now has great Windows terminal handling — so good that Codex can E2E fix gifgrep to render animated GIFs in the terminal, just because it can. Latest spogo (Spotify CLI) is much faster, with Codex as the DJ. And: taught Codex to look for social signals when reviewing PRs — adding a human layer of context awareness to code review.</p>
+    <p class="summary-zh zh">三条 OpenClaw 工具更新。Crabbox 现在 Windows 终端处理能力大幅提升——强到 Codex 可以端到端修复 gifgrep，让它在终端里渲染动态 GIF，只是因为它能做到。最新的 spogo（Spotify CLI）速度快了很多，Codex 当起了 DJ。还有：教 Codex 在审查 PR 时识别社交信号——给代码审查加入了人类层面的上下文感知。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2053374981824798751">https://x.com/steipete/status/2053374981824798751</a>
+      <a href="https://x.com/steipete/status/2053329609064685740">https://x.com/steipete/status/2053329609064685740</a>
+      <a href="https://x.com/steipete/status/2053310800773685600">https://x.com/steipete/status/2053310800773685600</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">A long-form post on agents, expertise, and the future of work. The core argument: agents will democratize entry into complex fields — but people with real experience will have a huge edge in using them well. They know when agents make catastrophic mistakes, can give agents the right context, and have the judgment to catch failures. The quality and volume of output will go up, but "the person with experience will always have a leg up, which is why the jobs don't go away."</p>
+    <p class="summary-zh zh">一篇关于 Agent、专业知识与未来工作的长文。核心论点：Agent 会降低进入复杂领域的门槛，但真正有经验的人使用它们的优势是巨大的——他们知道 Agent 何时犯了灾难性错误，能给 Agent 正确的上下文，并拥有捕捉失败的专业判断。输出质量和数量都会提升，但"有经验的人永远领先一步，这就是为什么工作不会消失"。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2053267097493573921">https://x.com/levie/status/2053267097493573921</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder</span>
+    </div>
+    <p class="summary-en">A sharp thesis on output format and AI: "HTML is important because humans are visual animals." She quotes Duolingo founder's key lesson — "People don't read" — and argues that when AI handles the manipulation, output format should be optimized for human consumption, not human creation. Beautiful, interactive artifacts win.</p>
+    <p class="summary-zh zh">关于输出格式与 AI 的犀利论点："HTML 很重要，因为人类是视觉动物。"她引用 Duolingo 创始人的关键经验——"人们不阅读"——并提出：当 AI 处理操作时，输出格式应该优化为人类消费而非人类创作。美观、交互性强的内容胜出。</p>
+    <div class="urls"><a href="https://x.com/zarazhangrui/status/2053291803135410674">https://x.com/zarazhangrui/status/2053291803135410674</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Two sharp posts. First, a meta-joke: founders and VCs both say the same thing about each other — "the bar to be a good VC is so low, just do what you say" — but neither is actually raising it. Second, a practical agent hack: add this to your custom instructions to stop models from estimating work in "human days" and instead report timelines in model-execution units (seconds, minutes, tool calls).</p>
+    <p class="summary-zh zh">两条犀利帖子。第一是元笑话：创始人和 VC 都在说对方门槛低——"做好 VC 只需言出必行"——但谁也没真正提高标准。第二是实用的 Agent 技巧：把这条加到 custom instructions 里，让模型停止用"人的工作日"估算，而是用模型执行单位（秒、分钟、工具调用数）来报告时间线。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2053289104331493566">https://x.com/nikunj/status/2053289104331493566</a>
+      <a href="https://x.com/nikunj/status/2053159569015328953">https://x.com/nikunj/status/2053159569015328953</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Three posts. The big one: Singapore's Cabinet Minister of Foreign Affairs is a NanoClaw fan and will keynote @AIDOTENGINEER Singapore next week — alongside NanoClaw creator Gavriel Cohen. This is a landmark for OpenClaw: governments are officially waking up to AI agents. He's wondering if @embirico has data on what percentage of Codex users use the agent mode and how it's grown — as a proxy for alignment and agent adoption.</p>
+    <p class="summary-zh zh">三条动态。重磅：新加坡外交部长是 NanoClaw 的粉丝，下周将在 @AIDOTENGINEER 新加坡站做主题演讲——NanoClaw 创始人 Gavriel Cohen 紧随其后。这对 OpenClaw 来说是里程碑式的时刻：政府正正式进入 AI Agent 领域。他还在问 @embirico 有没有 Codex 用户使用 Agent 模式的百分比数据——这是对齐和 Agent 采用率的代理指标。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2053370687931498603">https://x.com/swyx/status/2053370687931498603</a>
+      <a href="https://x.com/swyx/status/2053364156510982164">https://x.com/swyx/status/2053364156510982164</a>
+      <a href="https://x.com/swyx/status/2053371077477507240">https://x.com/swyx/status/2053371077477507240</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">A single emoji reply — the most Rauch style: let the work speak.</p>
+    <p class="summary-zh zh">一个 emoji 回复——最典型的 Rauch 风格：让工作自己说话。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2053202932812911027">https://x.com/rauchg/status/2053202932812911027</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Kevin Weil</span>
+      <span class="builder-role">VP Science @OpenAI</span>
+    </div>
+    <p class="summary-en">Pointing to an essay he calls "a matter of extreme importance (and some of the best writing ever)" — classic Kevin Weil: short, high-signal, lets the content do the work.</p>
+    <p class="summary-zh zh">推荐一篇他称之为"极端重要（也是史上最好文章之一）"的文章——典型的 Kevin Weil：简短、高信号，让内容自己说话。</p>
+    <div class="urls"><a href="https://x.com/kevinweil/status/2053225351946682733">https://x.com/kevinweil/status/2053225351946682733</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Three posts on AI benchmarking, benchmarks, and the mythology of benchmarks. Key insight: "Benchmarks don't measure model capability alone — they measure model capability after a human has done the work of finding a prompt that lets the model's capability appear. That work is non-trivial, and requires skilled expert humans doing something that looks very much like a job." Also: "We got a tool to perform poorly is the lowest form of science and journalism."</p>
+    <p class="summary-zh zh">三条关于 AI 基准测试、基准测试以及基准测试神话的帖子。关键洞察："基准测试不只是测量模型能力——而是测量在人类完成'找到能展示模型能力的 prompt'这项工作之后的模型能力。这项工作绝非小事，需要skilled expert humans 做一份看起来很像工作的事情。"还有："我们搞到工具来表现不佳，是科学和新闻业最低级的形式。"</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2053191885116571935">https://x.com/danshipper/status/2053191885116571935</a>
+      <a href="https://x.com/danshipper/status/2053199393658937423">https://x.com/danshipper/status/2053199393658937423</a>
+      <a href="https://x.com/danshipper/status/2053203284165337237">https://x.com/danshipper/status/2053203284165337237</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">3 Posts</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Anthropic Engineering</span>
+      <span class="builder-role">Official Blog</span>
+    </div>
+    <p class="summary-en">An honest post-mortem on three separate changes that caused Claude Code quality degradation in April 2026. Issue 1 (March 4): switched default reasoning effort from high to medium — wrong tradeoff, reverted April 7. Issue 2 (March 26): a bug cleared thinking every turn instead of once per idle session — made Claude appear forgetful, fixed April 10. Issue 3 (April 16): added a verbosity-reducing system prompt that hurt coding quality — reverted April 20. The key lesson: <strong>approval fatigue is the real risk</strong>, and when three changes hit different traffic slices on different schedules, aggregate effects look like broad degradation even when each change was small.</p>
+    <p class="summary-zh zh">一篇坦诚的事后分析，解释今年四月导致 Claude Code 质量下降的三次独立变更。第一（3月4日）：将默认推理精力从高切换到中——错误的权衡，4月7日回滚。第二（3月26日）：一个 bug 导致每次对话都清除思考内容而非仅在空闲会话后一次——让 Claude 显得健忘，4月10日修复。第三（4月16日）：添加了降低冗长的 system prompt，损害了编码质量——4月20日回滚。关键教训：<strong>审批疲劳才是真正的风险</strong>，当三次变更在不同时间表影响不同的流量切片时，聚合效应看起来像广泛的质量下降，即使每次变更都很小。</p>
+    <div class="urls"><a href="https://www.anthropic.com/engineering/april-23-postmortem">https://www.anthropic.com/engineering/april-23-postmortem</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude Blog</span>
+      <span class="builder-role">Official Blog</span>
+    </div>
+    <p class="summary-en">Claude now connects to 15 new everyday apps: AllTrails, Audible, Booking.com, Instacart, Intuit Credit Karma, Intuit TurboTax, Resy, Spotify, StubHub, Taskrabbit, Thumbtack, Tripadvisor, Uber, Uber Eats, and Viator. The key UX upgrade: Claude dynamically suggests the right connector for what you're doing based on your preferences and context — and shows all options when multiple apps could help, letting you choose.</p>
+    <p class="summary-zh zh">Claude 现在连接到 15 个新的日常应用：AllTrails、Audible、Booking.com、Instacart、Intuit Credit Karma、Intuit TurboTax、Resy、Spotify、StubHub、Taskrabbit、Thumbtack、 tripadvisor、Uber、Uber Eats 和 Viator。关键的 UX 升级：Claude 根据你的偏好和上下文动态建议合适的连接器——当多个应用可以帮忙时，展示所有选项让你选择。</p>
+    <div class="urls"><a href="https://claude.com/blog/connectors-for-everyday-life">https://claude.com/blog/connectors-for-everyday-life</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude Blog</span>
+      <span class="builder-role">Official Blog</span>
+    </div>
+    <p class="summary-en">Managed Agents now get built-in memory — agents can learn from every session using an intelligence-optimized memory layer. Memories are stored as files, so developers can export, manage, and control what agents retain. Stores can be shared across agents with different access scopes, all changes are tracked with audit logs, and you can roll back or redact. Built for enterprise with scoped permissions and audit trails.</p>
+    <p class="summary-zh zh">Managed Agents 现在有了内置记忆——Agent 可以通过智能优化的记忆层从每个会话中学习。记忆以文件形式存储，开发者可以导出、管理并控制 Agent 保留的内容。存储可以跨 Agent 共享并设置不同的访问权限，所有变更都记录在审计日志中，可以回滚或删除。为企业构建，支持范围权限和审计追踪。</p>
+    <div class="urls"><a href="https://claude.com/blog/claude-managed-agents-memory">https://claude.com/blog/claude-managed-agents-memory</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <h3 class="podcast-title">ElevenLabs' Mati Staniszewski: How Voice Becomes the Interface for Everything</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      ElevenLabs was born from a childhood frustration watching foreign films dubbed in Poland with a single monotone narrator. Mati Staniszewski and cofounder Piotr built a company on the thesis that everyone deserves to speak any language with the same emotion and intonation. The real insight: voice is the most emotionally loaded data channel humans have, and the companies that figure out how to move at the speed of imagination — not the speed of production — will own the next interface layer.
+    </div>
+
+    <div class="podcast-body">
+      <p>Mati Staniszewski's ElevenLabs story starts not in 2022 but in high school in a Warsaw suburb — where he and his cofounder Piotr became best friends, studied together, traveled together, and eventually worked together. The founding inspiration: watching any foreign movie in Polish and hearing it dubbed by one single monotone narrator, forcing viewers to "interpret your own emotions for that content." The thesis: <strong>everyone should be able to speak any language with the same emotion and intonation.</strong></p>
+
+      <p>The conversation digs into what makes ElevenLabs different in a crowded voice AI market. The company wasn't chasing the TTS quality wars — it was building for a specific use case that nobody else was addressing: <strong>dubbing, localization, and cross-lingual emotional transfer.</strong> The insight that lands: voice is the most emotionally loaded data channel humans have. When you strip the emotional signature from a voice, you're stripping the human signal. ElevenLabs figured out that the real unlock wasn't better TTS — it was <strong>voice identity preservation across languages.</strong></p>
+
+      <p>On the product side, Mati explains how the interface of the future will be voice — not just for commands but for creative expression, emotional communication, and immersive experiences. The key quote: "We're building for the day when you can have a real conversation with any character, in any voice, across any language — and it feels completely natural." The business model is expanding from B2C AI speech tools to <strong>B2B localization infrastructure</strong> — studios, publishers, and game companies are ElevenLabs' fastest-growing segment.</p>
+
+      <p>The counterintuitive insight: the hardest part of voice AI isn't technical — it's the uncanny valley of emotional authenticity. Users can forgive imperfect pronunciation; they cannot forgive a voice that sounds emotionally wrong. That's why ElevenLabs' real moat is not the model architecture but the <strong>emotional validation data</strong> they've accumulated — millions of human ratings of what makes a voice feel "right."</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Mati Staniszewski 和 ElevenLabs 的故事不是从 2022 年开始的，而是从华沙郊区的高中时代开始的——他和联合创始人 Piotr 成了最好的朋友，一起学习、旅行，最终一起工作。创业灵感：看任何外语电影时，波兰语配音只有一个单调的叙述者在说话，强迫观众"自己去想象内容的情感"。 thesis：<strong>每个人都应该能够用相同的情感和语调说任何语言。</strong></p>
+
+      <p>对话深入探讨了 ElevenLabs 在拥挤的语音 AI 市场中的差异化。不是在追求 TTS 质量之争——而是在构建一个没有其他人在解决的具体用例：<strong>配音、本地化和跨语言情感迁移</strong>。落地的关键洞察：语音是人类最具情感负载的数据通道。当你去掉声音的情感特征时，也去掉了人类信号。ElevenLabs 真正的突破不是更好的 TTS——而是<strong>跨语言的语音身份保持</strong>。</p>
+
+      <p>在产品方面，Mati 解释了未来的界面将如何通过语音实现——不仅仅是命令，还有创造性表达、情感交流和沉浸式体验。关键语录："我们正在构建的那一天，你可以与任何角色进行真正的对话，用任何声音，在任何语言中——而且感觉完全自然。"商业模式正在从 B2C AI 语音工具扩展到<strong>B2B 本地化基础设施</strong>——工作室、出版商和游戏公司是 ElevenLabs 增长最快的细分市场。</p>
+
+      <p>反直觉的洞察：语音 AI 最难的部分不是技术——而是情感真实性的恐怖谷。用户可以原谅不完美的发音；他们无法原谅情感上"不对"的声音。这就是为什么 ElevenLabs 真正的护城河不是模型架构，而是<strong>他们积累的情感验证数据</strong>——数百万个人类评级，判断什么让声音"感觉对"。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8">▶️ https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

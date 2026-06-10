@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-06-06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .blog-post { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .blog-post:last-child { border-bottom: none; }
+  .blog-title { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 12px; }
+  .blog-source { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; display: inline-block; margin-bottom: 12px; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-06-06 · 周五</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">17</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">31</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">4</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">17 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host / DX Tips HQ</span>
+    </div>
+    <p class="summary-en">Swyx highlights two major evaluation milestones: first, METR evals capped at ~16 hours while Cog (Cognition's Devin) runs private enterprise evals up to 100 hours with financial guarantees. The key insight: Cog's dataset uses real-life Java/TypeScript/Python feature dev, bugfixes, and migrations from 258 actual user sessions, achieving rlog 0.74 on held-out sets. This is pioneering real-world eval work that goes far beyond toy benchmarks. Also celebrating the first eval ship from Cog — a signal that the eval infrastructure for AI coding agents is finally maturing.</p>
+    <p class="summary-zh zh">Swyx 重点介绍了两个重要的评估里程碑：METR evals 上限约 16 小时，而 Cog（Cognition 的 Devin）运行私企 eval 可达 100 小时，并提供财务保证。核心洞察：Cog 的数据集来自 258 个真实用户会话中的 Java/TypeScript/Python 功能开发、bug 修复和迁移，在留出集上达到 rlog 0.74。这是开创性的现实世界 eval 工作，远超玩具基准。也庆祝 Cog 的第一个 eval 发布——标志着 AI 编程 Agent 的评估基础设施终于成熟。</p>
+    <div class="urls"><a href="https://x.com/swyx/status/2062611218196771017">https://x.com/swyx/status/2062611218196771017</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Josh Woodward</span>
+      <span class="builder-role">VP Google Labs / Gemini</span>
+    </div>
+    <p class="summary-en">Josh shares excitement about a new Gemini feature on macOS app — signaling that Gemini is pushing deeper OS integration, following the trend of AI assistants becoming system-level utilities rather than just web apps.</p>
+    <p class="summary-zh zh">Josh 分享了 Gemini macOS 应用新功能的兴奋——标志着 Gemini 正在深化 OS 集成，跟随 AI 助手从Web应用向系统级工具演进的趋势。</p>
+    <div class="urls"><a href="https://x.com/joshwoodward/status/2062667951485108354">https://x.com/joshwoodward/status/2062667951485108354</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thibault Sottiaux</span>
+      <span class="builder-role">OpenAI Codex Team</span>
+    </div>
+    <p class="summary-en">Two important Codex updates: (1) Codex is now available as a Python SDK — `pip install openai-codex` — letting developers embed Codex directly into their own programs. (2) A bug fix: Codex was undercounting tokens for some Pro/Plus accounts by a small amount (<15% of accounts). Transparency matters: Thibault chose not to fix this silently, explicitly notifying users. The first post alone has 1164 likes — strong signal that programmatic access to Codex is highly anticipated.</p>
+    <p class="summary-zh zh">两个重要的 Codex 更新：（1）Codex 现在可作为 Python SDK 使用——`pip install openai-codex`——让开发者直接将 Codex 嵌入自己的程序。（2）Bug 修复：Codex 对某些 Pro/Plus 账户少计了少量 token（影响 <15% 账户）。透明度很重要：Thibault 选择不默默修复，而是明确通知用户。仅第一条推文就有 1164 个赞——强烈信号表明 Codex 的程序化访问备受期待。</p>
+    <div class="urls">
+      <a href="https://x.com/thsottiaux/status/2062734215494664697">https://x.com/thsottiaux/status/2062734215494664697</a>
+      <a href="https://x.com/thsottiaux/status/2062648326332539015">https://x.com/thsottiaux/status/2062648326332539015</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM / Creator Educator</span>
+    </div>
+    <p class="summary-en">Peter shares a powerful workflow for saving 50%+ time on any knowledge work using Codex: (1) Reflect on your past week's most repetitive work; (2) List every single step in detail; (3) Paste into Codex/Claude Code and ask "What integrations and skills can I build?" The key: set up human checkpoints along the way to apply your "taste." He also notes Codex's frontend design still lags behind Claude — a bold product feedback that Codex team should take seriously. His /slides skill demo makes the gap visually obvious.</p>
+    <p class="summary-zh zh">Peter 分享了一个强力工作流，用 Codex 节省 50%+ 的知识工作时间：（1）回顾上周最重复的工作；（2）详细列出每一步；（3）粘贴到 Codex/Claude Code 并问"我可以构建什么集成和技能？"关键：沿途设置人工检查点以运用你的"品味"。他还指出 Codex 的前端设计仍落后于 Claude——大胆的产品反馈，Codex 团队应认真对待。他的 /slides 技能演示让差距一目了然。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2062740262338929110">https://x.com/petergyang/status/2062740262338929110</a>
+      <a href="https://x.com/petergyang/status/2062743491365544361">https://x.com/petergyang/status/2062743491365544361</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Cat Wu</span>
+      <span class="builder-role">Claude Code / Anthropic</span>
+    </div>
+    <p class="summary-en">Cat is hiring a PM for Claude Code focused on model performance — a specialized role signaling that Claude Code is iterating rapidly on the model side, not just the product side. The fact that they need a dedicated PM for "model performance" suggests Claude Code's capabilities are now gated by model-level improvements, not just UX or feature work.</p>
+    <p class="summary-zh zh">Cat 正在为 Claude Code 招聘一名专注于模型性能的 PM——这是一个专业角色，标志着 Claude Code 在模型层面快速迭代，而不仅仅是产品层面。他们需要专门的"模型性能"PM，这一事实表明 Claude Code 的能力现在受限于模型级改进，而不仅仅是 UX 或功能工作。</p>
+    <div class="urls"><a href="https://x.com/_catwu/status/2062659533047259212">https://x.com/_catwu/status/2062659533047259212</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thariq</span>
+      <span class="builder-role">Claude Code / Anthropic</span>
+    </div>
+    <p class="summary-en">Thariq draws a beautiful analogy: "An app can be a home-cooked meal (2020)" — in 2026, personal software can truly be as personal as a home-cooked meal or a handwritten letter. Also sharing how dynamic workflows let Claude Code handle whole new types of tasks — a technical deep dive into Claude Code's evolving capabilities that goes beyond static prompt templates.</p>
+    <p class="summary-zh zh">Thariq 用了一个美妙的比喻："一个应用可以是一顿家常菜（2020）"——在 2026 年，个人软件可以真正像家常菜或手写信一样个性化。还分享了动态工作流如何让 Claude Code 处理全新类型的任务——深入探索 Claude Code 不断演进的能力，超越静态提示模板。</p>
+    <div class="urls">
+      <a href="https://x.com/trq212/status/2062605395101884916">https://x.com/trq212/status/2062605395101884916</a>
+      <a href="https://x.com/trq212/status/2062556889171517499">https://x.com/trq212/status/2062556889171517499</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">Amjad shares a "prompt to shop" workflow — Replit is pushing deeper into the full-stack creation space, where natural language directly produces deployable web applications with e-commerce capabilities. The implication: the barrier between "I have an idea" and "I have a working online store" is disappearing fast.</p>
+    <p class="summary-zh zh">Amjad 分享了一个"prompt to shop"工作流——Replit 正在深入全栈创建领域，自然语言直接生成可部署的带电商能力的 Web 应用。含义："我有一个想法"和"我有一个运行的在线商店"之间的障碍正在快速消失。</p>
+    <div class="urls"><a href="https://x.com/amasad/status/2062646796804145517">https://x.com/amasad/status/2062646796804145517</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Vercel reaffirms collaboration with the Void team and Nitro.js, investing in an open platform for the web with native support for Vite-based frameworks like Nuxt, Svelte, and TanStack Start. The strategic bet: owning the deployment layer for all modern JS frameworks, not just Next.js. This is how Vercel widens its moat beyond the React ecosystem.</p>
+    <p class="summary-zh zh">Vercel 重申与 Void 团队和 Nitro.js 的合作，投资于开放 Web 平台，原生支持 Nuxt、Svelte 和 TanStack Start 等基于 Vite 的框架。战略押注：拥有所有现代 JS 框架的部署层，而不仅仅是 Next.js。这是 Vercel 将护城河扩展到 React 生态系统之外的方式。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2062535454130676193">https://x.com/rauchg/status/2062535454130676193</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Alex Albert</span>
+      <span class="builder-role">Anthropic Research</span>
+    </div>
+    <p class="summary-en">Anthropic published internal data on Claude's development: over 80% of all code merged is now written by Claude; typical engineers ship 8x as much code as in 2024; on open-ended tasks, Claude's success rate jumped from ~26% to 76% in 6 months. The most striking insight: "We're not at recursive self-improvement yet, but it could come sooner than most expect." This is one of the most transparent looks into how a top AI lab operationalizes its own tooling — a must-read for anyone building AI-augmented engineering teams.</p>
+    <p class="summary-zh zh">Anthropic 发布了 Claude 开发的内部数据：现在超过 80% 的合并代码由 Claude 编写；典型工程师交付的代码量是 2024 年的 8 倍；在开放式任务上，Claude 的成功率从 6 个月前的 ~26% 跃升至 76%。最引人注目的洞察："我们还没有达到递归自我改进，但它可能比大多数人预期的来得更快。"这是深入了解顶级 AI 实验室如何将其工具使用操作化的最透明的一瞥——对于任何构建 AI 增强工程团队的人来说都是必读。</p>
+    <div class="urls"><a href="https://x.com/alexalbert__/status/2062580571214389510">https://x.com/alexalbert__/status/2062580571214389510</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Aaron highlights a key paragraph from Anthropic's recent post: the explosion of new ideas, initiatives, tools, and simulations from Anthropic employees working with highly capable models — far more than the organization has capacity to pursue. The bottleneck is now identifying and executing on the best ideas, not generating them. AI lowers the barrier dramatically, but ultimately still requires people to manage the surrounding work. This is the optimistic scenario for AI: augmentation, not replacement.</p>
+    <p class="summary-zh zh">Aaron 重点介绍了 Anthropic 最近文章中关键的一段：Anthropic 员工使用高性能模型产生的想法、项目、工具和模拟的爆炸式增长——远远超过组织有能力追求的数量。瓶颈现在变成了识别和执行业最好的想法，而不是产生它们。AI 大幅降低了障碍，但最终仍然需要人来管理工作。这是 AI 的乐观情景：增强，而非替代。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2062728257359790292">https://x.com/levie/status/2062728257359790292</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Garry celebrates two YC decacorns in one day — one of them is Polaris, which hit 150 million degrees C, the first privately funded machine to do so. This is the abundance future, built by people who actually ship. Also sharing wisdom: "So close to product market fit is still not product market fit" — a classic YC lesson that many founders still learn the hard way.</p>
+    <p class="summary-zh zh">Garry 庆祝两家 YC decacorn 同一天诞生——其中一家是 Polaris，达到了 1.5 亿摄氏度，是第一家做到这一点的私营资助机器。这就是丰裕未来，由真正交付的人构建。还分享了智慧："接近产品市场契合仍然不是产品市场契合"——经典的 YC 教训，许多创始人仍然在艰难地学习。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2062763109849411834">https://x.com/garrytan/status/2062763109849411834</a>
+      <a href="https://x.com/garrytan/status/2062760454649487491">https://x.com/garrytan/status/2062760454649487491</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital / MAD Podcast</span>
+    </div>
+    <p class="summary-en">Matt shares the full chapter list of his conversation with Dan Roberts (OpenAI) on why AI can now make discoveries — a comprehensive deep dive from the foundations of RL to the future of AI in science. Key topics: why the OpenAI math result was an act of exploration, how RL gives models the ability to think, the difference between informal reasoning (OpenAI) and formal proof (DeepMind), and the provocative question: "Is there a thermodynamics of AI?" A must-listen for anyone tracking the frontier of AI reasoning.</p>
+    <p class="summary-zh zh">Matt 分享了与 Dan Roberts（OpenAI）关于"为什么 AI 现在能做发现"对话的完整章节列表——从 RL 基础到 AI 在科学中的未来的全面深入探讨。关键主题：为什么 OpenAI 的数学结果是一种探索行为，RL 如何赋予模型思考能力，非正式推理（OpenAI）和形式化证明（DeepMind）之间的区别，以及挑衅性的问题："AI 有热力学吗？"对于任何关注 AI 推理前沿的人来说都是必听。</p>
+    <div class="urls">
+      <a href="https://x.com/mattturck/status/2062587004261748887">https://x.com/mattturck/status/2062587004261748887</a>
+      <a href="https://x.com/mattturck/status/2062587000201580808">https://x.com/mattturck/status/2062587000201580808</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FP Ventures Partner</span>
+    </div>
+    <p class="summary-en">Nikunj introduces "Nock" — an AI representation of himself built with Claude Code, trained on >200 1:1 founder pitch meeting notes captured by Granola, plus his essays on the kind of founders he loves to back. The result: founders can run their deck through Nock to see what Nikunj would think. This is a glimpse into the future of VC: personalized AI agents that encode an investor's thesis, taste, and questioning style — scalable, consistent, and available 24/7.</p>
+    <p class="summary-zh zh">Nikunj 介绍了"Nock"——用 Claude Code 构建的自己的 AI 代表，基于 Granola 捕获的超过 200 份 1:1 创始人路演会议笔记，加上他关于喜欢支持哪类创始人的文章训练而成。结果：创始人可以通过 Nock 运行他们的 Deck，看看 Nikunj 会怎么想。这是 VC 未来的一瞥：编码了投资者理念、品味和提问风格的个性化 AI Agent——可扩展、一致、24/7 可用。</p>
+    <div class="urls"><a href="https://x.com/nikunj/status/2062659649732825549">https://x.com/nikunj/status/2062659649732825549</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Dan launches Spiral 4.0 — a writing partner for you and your agent. Two breakthrough features: (1) Stylometry-based Style Engine that extracts your/your brand's voice from examples of past work; (2) MCP + CLI support so Spiral can be used by your agent (Codex, Claude Code, OpenClaw) for automated high-quality writing. Every uses it internally for landing pages, tweets, podcasts, marketing emails — all on-brand across a 30-person team. This is the future of brand-consistent AI writing.</p>
+    <p class="summary-zh zh">Dan 发布 Spiral 4.0——为你和你的 Agent 准备的一个写作伙伴。两个突破性功能：（1）基于文体学的风格引擎，从过去的工作示例中提炼出你/你品牌的语声；（2）MCP + CLI 支持，所以 Spiral 可以被你的 Agent（Codex、Claude Code、OpenClaw）使用，实现自动化高质量写作。Every 内部使用它来写落地页、推文、播客、营销邮件——在 30 人团队中全部保持品牌一致。这是品牌一致的 AI 写作的未来。</p>
+    <div class="urls"><a href="https://x.com/danshipper/status/2062628079869005876">https://x.com/danshipper/status/2062628079869005876</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">South Park Commons GP / ex-Facebook CTO</span>
+    </div>
+    <p class="summary-en">A pithy observation: "A lot of roles will now have engineering infused into them." Marketing Engineer is a great example of this trend — the blender of skills that the AI era demands. This is not just about new job titles; it's about the fundamental reconfiguration of what "doing the work" looks like.</p>
+    <p class="summary-zh zh">一个精辟的观察："很多角色现在都将融入工程。"营销工程师是这个趋势的一个很好的例子——AI 时代要求的技能融合。这不仅仅是关于新职位名称；这是关于"做工作"的样子从根本上重新配置。</p>
+    <div class="urls"><a href="https://x.com/adityaag/status/2062655784127971565">https://x.com/adityaag/status/2062655784127971565</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three posts in rapid succession: (1) "Build and publish web apps with ChatGPT!" — a major new feature turning ChatGPT into a full-stack app creator, not just a chatbot. Sam nostalgically mentions HyperCard — the classic Apple tool for creating interactive content. (2) Big upgrade to ChatGPT memory rolling out. (3) "Man the early days of the internet were so special" — a reflective moment on how the current AI moment compares to the early internet. The memory upgrade is particularly significant: persistent, cross-conversation memory was one of the top-requested features, and this ship puts ChatGPT much closer to truly personalized AI.</p>
+    <p class="summary-zh zh">连续发三条：（1）"用 ChatGPT 构建和发布 Web 应用！"——一个重要的新功能，将 ChatGPT 变成全栈应用创建者，而不仅仅是聊天机器人。Sam 怀旧地提到了 HyperCard——苹果创建交互内容的经典工具。（2）ChatGPT 记忆的重大升级正在推出。（3）"天啊，互联网早期太特别了"——关于当前 AI 时刻与早期互联网相比的反思时刻。记忆升级尤其重要：持久的、跨对话的记忆是头号请求功能之一，这次发布让 ChatGPT 更接近真正的个性化 AI。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2062661071761211561">https://x.com/sama/status/2062661071761211561</a>
+      <a href="https://x.com/sama/status/2062660086787613116">https://x.com/sama/status/2062660086787613116</a>
+      <a href="https://x.com/sama/status/2062661191969972645">https://x.com/sama/status/2062661191969972645</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude (Anthropic)</span>
+      <span class="builder-role">Official Account</span>
+    </div>
+    <p class="summary-en">Claude highlights Anton Osika (Lovable CEO) in their "Problem Solvers" series: his thesis is that the most underrated moat in AI is trust, and earning it takes craft, care, and obsession. Also featuring "The Problem Solvers" series showcasing founders taking on hard problems with Claude — a smart content strategy that puts founder stories front and center rather than just listing features.</p>
+    <p class="summary-zh zh">Claude 在他们的"问题解决者"系列中重点介绍了 Anton Osika（Lovable CEO）：他的论点是 AI 中最被低估的护城河是信任，赢得信任需要技艺、关怀和执着。还推出了"问题解决者"系列，展示使用 Claude 解决难题的创始人——一个聪明的内容策略，将创始人的故事放在前沿和中心，而不仅仅是列出功能。</p>
+    <div class="urls">
+      <a href="https://x.com/claudeai/status/2062558335358927317">https://x.com/claudeai/status/2062558335358927317</a>
+      <a href="https://x.com/claudeai/status/2062558332695556378">https://x.com/claudeai/status/2062558332695556378</a>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">4 Posts</span>
+  </div>
+
+  <article class="blog-post">
+    <div class="blog-source">Anthropic Engineering</div>
+    <h3 class="blog-title">An update on recent Claude Code quality reports</h3>
+    <p class="summary-en">Anthropic investigated reports of Claude's responses worsening for some users. Three separate changes were identified and all fixed as of April 20 (v2.1.116): (1) Default reasoning effort changed from high to medium (reverted April 7); (2) A bug caused session context clearing to happen every turn instead of just once after 1 hour idle (fixed April 10); (3) A system prompt instruction to reduce verbosity hurt coding quality (reverted April 20). The aggregate effect looked like broad degradation, but each change affected a different slice of traffic. Key lesson: as models improve, harness assumptions go stale — what was necessary guardrails for Sonnet 4.5 may be dead weight for Opus 4.5.</p>
+    <p class="summary-zh zh">Anthropic 调查了关于 Claude 对某些用户的响应变差的报告。发现了三个独立的变化，截至 4 月 20 日（v2.1.116）全部修复：（1）默认推理努力从高改为中（4 月 7 日恢复）；（2）一个 bug 导致会话上下文清理在每个回合都发生，而不是在空闲 1 小时后只发生一次（4 月 10 日修复）；（3）系统提示指令减少冗长损害了编码质量（4 月 20 日恢复）。总体效果看起来像广泛降级，但每个变化影响了不同的流量片。关键教训：随着模型改进，harness 假设会变陈旧——对 Sonnet 4.5 必要的护栏对 Opus 4.5 可能是死重。</p>
+    <div class="urls"><a href="https://www.anthropic.com/engineering/april-23-postmortem">https://www.anthropic.com/engineering/april-23-postmortem</a></div>
+  </article>
+
+  <article class="blog-post">
+    <div class="blog-source">Anthropic Engineering</div>
+    <h3 class="blog-title">Scaling Managed Agents: Decoupling the brain from the hands</h3>
+    <p class="summary-en">Anthropic introduces Claude Managed Agents architecture: decoupling the agent "brain" (session log, orchestration, context management, error recovery) from the "hands" (sandbox execution environment). The insight: this is the same pattern as operating systems virtualizing hardware — process, file, read() are agnostic to whether they access a 1970s disk pack or a modern SSD. Similarly, Managed Agents virtualize agent components (session, harness, sandbox) into stable abstractions that outlast any particular implementation. The post explicitly calls out that "context anxiety" (Claude wrapping up tasks prematurely fearing context limits) is gone in Opus 4.5 — the old harness became dead weight. This is a masterclass in building future-proof AI infrastructure.</p>
+    <p class="summary-zh zh">Anthropic 介绍 Claude Managed Agents 架构：将 Agent"大脑"（会话日志、编排、上下文管理、错误恢复）与"手"（沙盒执行环境）解耦。洞察：这与操作系统虚拟化硬件的模式相同——process、file、read() 对它们访问的是 1970 年代的磁盘包还是现代 SSD 是不可知的。类似地，Managed Agents 将 Agent 组件（会话、harness、沙盒）虚拟化为稳定的抽象，比任何特定实现都更持久。文章明确指出"上下文焦虑"（Claude 担心上下文限制而过早结束任务）在 Opus 4.5 中消失了——旧的 harness 变成了死重。这是构建面向未来的 AI 基础设施的大师课。</p>
+    <div class="urls"><a href="https://www.anthropic.com/engineering/managed-agents">https://www.anthropic.com/engineering/managed-agents</a></div>
+  </article>
+
+  <article class="blog-post">
+    <div class="blog-source">Claude Blog</div>
+    <h3 class="blog-title">New in Claude Managed Agents: self-hosted sandboxes and MCP tunnels</h3>
+    <p class="summary-en">Starting today, Claude Managed Agents can operate in a sandbox you control and connect to your private MCP servers. The sandbox runs on your own infrastructure or with managed providers (Cloudflare, Daytona, Modal, Vercel). The agent loop (orchestration, context, error recovery) stays on Anthropic's infrastructure, while tool execution moves to your environment. This means: sensitive files, packages, and services stay within your perimeter; you control compute (resource sizing, runtime image); network policies, audit logging, and security tooling are already in place. Amplitude is already building "Design Agent" on this architecture for on-brand production UI and marketing design. This is the enterprise-grade Agent deployment story that large companies have been waiting for.</p>
+    <p class="summary-zh zh">从今天开始，Claude Managed Agents 可以在你控制的沙盒中运行，并连接到你的私有 MCP 服务器。沙盒在你自己的基础设施上运行，或使用托管提供商（Cloudflare、Daytona、Modal、Vercel）。Agent 循环（编排、上下文、错误恢复）保留在 Anthropic 的基础设施上，而工具执行移动到你的环境。这意味着：敏感文件、包和服务保留在你的边界内；你控制计算（资源大小、运行时镜像）；网络策略、审计日志和安全工具已经就绪。Amplitude 已经在这个架构上构建"设计 Agent"，用于品牌一致的生产 UI 和营销设计。这是大型企业一直在等待的企业级 Agent 部署方案。</p>
+    <div class="urls"><a href="https://claude.com/blog/claude-managed-agents-updates">https://claude.com/blog/claude-managed-agents-updates</a></div>
+  </article>
+
+  <article class="blog-post">
+    <div class="blog-source">Claude Blog</div>
+    <h3 class="blog-title">New connectors in Claude for everyday life</h3>
+    <p class="summary-en">Claude now connects to everyday apps: AllTrails, Instacart, Audible, Tripadvisor, Intuit TurboTax, and more. The UX improvement: Claude now dynamically suggests the right app for what you're doing — no need to manually invoke connectors. Since launching in July 2025, the Claude connector directory has grown to over 200 connectors spanning design, finance, productivity, and health. The vision: Claude becomes the universal interface to your digital life — not just a chatbot, but an orchestrator that knows which tool to call for each intent. Also notable: Claude is ad-free and will stay that way, with no paid placements or sponsored answers.</p>
+    <p class="summary-zh zh">Claude 现在连接到日常应用：AllTrails、Instacart、Audible、Tripadvisor、Intuit TurboTax 等。UX 改进：Claude 现在动态地建议你正在做的事情的合适应用——不需要手动调用连接器。自 2025 年 7 月推出以来，Claude 连接器目录已增长到超过 200 个连接器，跨越设计、金融、生产力和健康。愿景：Claude 成为你数字生活的通用界面——不仅仅是一个聊天机器人，而是一个知道为每个意图调用什么工具的编排器。还值得注意的是：Claude 无广告，并将保持这种方式，没有付费放置或赞助答案。</p>
+    <div class="urls"><a href="https://claude.com/blog/connectors-for-everyday-life">https://claude.com/blog/connectors-for-everyday-life</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">The MAD Podcast with Matt Turck</div>
+    <h3 class="podcast-title">OpenAI's Dan Roberts: Why AI Can Now Make Discoveries</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      AI is moving from doing the work we ask of it to autonomously making deep scientific discoveries — and reinforcement learning is the "cake," not the cherry on top, that makes this possible.
+    </div>
+
+    <div class="podcast-body">
+      <p>Dan Roberts leads the Foundations of Reinforcement Learning team at OpenAI — a team that thinks about the deepest theoretical underpinnings of how AI systems learn from experience. His background is in theoretical physics, which gives him a distinctive intuition for how intelligence emerges from simple rules iterated at scale.</p>
+
+      <p>The conversation centers on a remarkable recent milestone: OpenAI, DeepMind, and Anthropic all cracked some of the most famous long-unsolved problems in mathematics known as the Erdős problems — a moment many view as a stunning breakthrough. But Dan is careful to frame this not as "AI solved math" but as AI performing an <strong>act of exploration</strong>: the model navigated a vast search space of possible approaches, found a promising direction, and then verified its result. This is fundamentally different from brute-force search or even traditional theorem proving.</p>
+
+      <p>The deeper insight: <strong>reinforcement learning is now "the cake," not the cherry on top</strong>. Early LLMs relied overwhelmingly on supervised learning (predicting the next token). RLHF (Reinforcement Learning from Human Feedback) was added almost as an afterthought to align outputs with human preferences. But the frontier has shifted: test-time compute, verifiable rewards, and RL-based reasoning are now the primary drivers of capability jumps. The Erdős result is a proof point of this shift.</p>
+
+      <p>Dan draws a fascinating parallel to physics: just as thermodynamics provides coarse-grained laws that emerge from statistical mechanics, we may be approaching a "thermodynamics of AI" — principled, predictable relationships between compute, data, model architecture, and reasoning capability. It's a tantalizing prospect: moving from empirical art to scientific engineering.</p>
+
+      <p>On the timeline question: Dan believes AI automating AI research is not a distant sci-fi scenario but possibly <strong>just a few years away</strong>. The combination of better reasoning (via RL), better verification (via formal methods and test-time compute), and better problem formulation (via LLMs understanding scientific intent) creates a plausible path to recursive self-improvement — though we're not there yet.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh zh">
+      <p>Dan Roberts 领导 OpenAI 的基础强化学习团队——这个团队思考 AI 系统如何从经验中学习的最深层理论基础的。他的背景是理论物理，这让他对智能如何从大规模迭代的简单规则中出现有独特的直觉。</p>
+
+      <p>对话围绕一个非凡的最近里程碑：OpenAI、DeepMind 和 Anthropic 都破解了一些最著名的长期未解决的数学问题，称为 Erdős 问题——许多人认为这是惊人的突破。但 Dan 小心地构建这个问题，不是"AI 解决了数学"，而是 AI 执行了一个<strong>探索行为</strong>：模型在可能方法的巨大搜索空间中导航，找到了一个有希望的方向，然后验证了它的结果。这与暴力搜索甚至传统定理证明有根本不同。</p>
+
+      <p>更深的洞察：<strong>强化学习现在是"蛋糕"，而不是上面的樱桃</strong>。早期的 LLM 压倒性地依赖监督学习（预测下一个 token）。RLHF（基于人类反馈的强化学习）几乎是事后添加的，以使输出与人类偏好对齐。但前沿已经转移：测试时计算、可验证奖励和基于 RL 的推理现在是可操作性跳跃的主要驱动因素。Erdős 结果是这种转变的一个证明点。</p>
+
+      <p>Dan 画了一个迷人的物理学类比：正如热力学提供了从统计力学中出现的粗粒度定律，我们可能正在接近"AI 的热力学"——计算、数据、模型架构和推理能力之间有原则的、可预测的关系。这是一个诱人的前景：从经验艺术转向科学工程。</p>
+
+      <p>在时间表问题上：Dan 认为 AI 自动化 AI 研究不是一个遥远的科幻场景，而可能<strong>只需要几年</strong>。更好的推理（通过 RL）、更好的验证（通过形式化方法和测试时计算）和更好的问题表述（通过 LLM 理解科学意图）的结合，创造了一条通往递归自我改进的合理路径——虽然我们还没有到达那里。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=oWOz2htozfI">▶️ https://www.youtube.com/watch?v=oWOz2htozfI</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

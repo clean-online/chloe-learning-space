@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf9f6;
+    --bg-elevated: #ffffff;
+    --ink: #14161a;
+    --ink-soft: #3a3d44;
+    --ink-muted: #6b7079;
+    --line: #e8e6df;
+    --line-soft: #f0eee7;
+    --accent: #c2410c;
+    --accent-soft: #fef3c7;
+    --accent-deep: #92400e;
+    --green: #166534;
+    --green-soft: #dcfce7;
+    --max-w: 760px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+    word-break: break-all;
+  }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* Top bar */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-elevated);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .topbar-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .brand {
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 8px;
+    transform: translateY(-1px);
+  }
+
+  /* Header */
+  .header {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 80px 32px 48px;
+    text-align: left;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 580px;
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+    font-style: italic;
+  }
+  .lede .zh {
+    display: block;
+    margin-top: 6px;
+    color: var(--ink-muted);
+    font-size: 16px;
+  }
+
+  /* Stats strip */
+  .stats {
+    max-width: var(--max-w);
+    margin: 36px auto 0;
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat {
+    flex: 1;
+    padding: 20px 0;
+    text-align: center;
+    border-right: 1px solid var(--line);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* Section heads */
+  .section {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 56px 32px 0;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 36px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-icon {
+    font-size: 22px;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .section-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Builder card */
+  .builder {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .builder:last-child {
+    border-bottom: none;
+  }
+  .builder-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .builder-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .builder-role {
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--line-soft);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .summary-en {
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .summary-zh {
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.85;
+    background-color: #fbfaf5;
+    border-left: 3px solid var(--accent-soft);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 14px;
+    padding: 16px 18px;
+  }
+  .urls {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    padding: 10px 14px;
+    background: #f5f3ec;
+    border-radius: 6px;
+  }
+  .urls a { display: block; }
+
+  /* Podcast card - elevated */
+  .podcast {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .podcast-source {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .podcast-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .takeaway {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--accent-deep);
+  }
+  .takeaway-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: var(--accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-right: 10px;
+    transform: translateY(-2px);
+  }
+  .podcast-body {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+  }
+  .podcast-body p {
+    margin-bottom: 16px;
+  }
+  .podcast-body strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .podcast-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 28px 0;
+  }
+  .podcast-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.95;
+  }
+  .podcast-zh p {
+    margin-bottom: 16px;
+  }
+  .podcast-zh strong {
+    color: var(--accent-deep);
+    font-weight: 600;
+  }
+
+  /* Blog card */
+  .blog-card {
+    margin-bottom: 24px;
+    padding: 24px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .blog-name {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .blog-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .blog-summary {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+  .blog-urls {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    padding: 10px 14px;
+    background: #f5f3ec;
+    border-radius: 6px;
+  }
+  .blog-urls a { display: block; }
+
+  /* Footer */
+  .footer {
+    max-width: var(--max-w);
+    margin: 80px auto 0;
+    padding: 40px 32px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+  .next-issue {
+    display: inline-block;
+    background: var(--green-soft);
+    color: var(--green);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .signature {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-top: 14px;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 640px) {
+    .header { padding: 56px 24px 36px; }
+    .section { padding: 40px 24px 0; }
+    .header h1 { font-size: 32px; }
+    .stats { padding: 0 24px; }
+    .stat-num { font-size: 22px; }
+    .podcast { padding: 24px; }
+    .podcast-title { font-size: 19px; }
+    .topbar-inner { padding: 12px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand"><span class="brand-mark"></span>Follow Builders, Not Influencers</span>
+    <a href="../../index.html">← 日历</a>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-06 · 周三</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">25</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">12 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three quick pulses from Sam: expressing genuine excitement that voice models are about to get dramatically better, noting how people are already changing how they interface with AI in unexpected ways. Also confirmed a "something nice" is coming for the many who applied for the GPT-5.5 party but couldn't get in — and dropped a warm shout-out to the community.</p>
+    <p class="summary-zh zh">三条短推连发——对语音模型即将迎来重大升级表达了真实的期待，注意到人们已经在以意想不到的方式改变与 AI 互动的方式。确认了一件事：那些申请 GPT-5.5 体验活动但没能入场的用户，会有"补偿惊喜"。最后给社区来了一波温暖的表白。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2051464865634742334">https://x.com/sama/status/2051464865634742334</a>
+      <a href="https://x.com/sama/status/2051464155094507902">https://x.com/sama/status/2051464155094507902</a>
+      <a href="https://x.com/sama/status/2051318922805436896">https://x.com/sama/status/2051318922805436896</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Analyzes the emerging enterprise AI agent deployment wave: both Anthropic and OpenAI are now actively building programs to help enterprises deploy AI agents. The real bottleneck isn't model capability — it's the unglamorous work of IT modernization, context provisioning, workflow redesign, and change management. This isn't a product problem, it's a services industry renaissance. New jobs and firms are going to multiply fast.</p>
+    <p class="summary-zh zh">分析企业 AI Agent 落地新浪潮：Anthropic 和 OpenAI 都在积极推动企业 AI Agent 部署项目。真正的瓶颈不是模型能力，而是那些"不酷"的活儿——IT 现代化改造、为 Agent 注入上下文、重构工作流程、推动组织变革。这不是产品问题，而是服务业的大繁荣。新岗位和新公司会快速涌现。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2051344780328858040">https://x.com/levie/status/2051344780328858040</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Dropped an open-source agent orchestrator for deep security reviews — built for internal use at Vercel, then released after running it against major OSS projects confirmed its value. The pitch: coding agents can now surface critical vulnerabilities in minutes that would take human teams months to find. The orchestrator is optimized for Vercel Sandbox, enabling thousands of agents to scan your codebase in parallel. DMs open for OSS projects that want a free security run.</p>
+    <p class="summary-zh zh">开源发布了一款深度代码安全审查 Agent 编排工具——在 Vercel 内部打磨后、对多个主流开源项目跑了一遍，确认价值后才公开。核心卖点：coding agent 现在可以在几分钟内挖出关键漏洞，而人工团队可能需要数月才能发现。工具针对 Vercel Sandbox 优化，支持数千个 agent 并行扫描代码库。开源项目可以私信他赞助一次扫描。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2051386798899888539">https://x.com/rauchg/status/2051386798899888539</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Triple-drop from Garry: GBrain v0.27 ships with broad non-Anthropic/OpenAI embedding and LLM support, plus a compelling breakdown of why GBrain is genuinely different — not just a memory layer, not just a code tool, not just a search engine, but all three unified under one graph with one query interface. Confesses to being a "psycho about testing." And teases multi-modal embeddings and deep photo OCR coming next.</p>
+    <p class="summary-zh zh">Garry 三连发：GBrain v0.27 上线，支持大量非 Anthropic/OpenAI 的 embedding 和 LLM。并详细解释 GBrain 的差异化所在——不是记忆层、不是代码工具、不是搜索引擎，而是三者在同一个知识图谱里统一、用同一个查询接口实现。"我对测试有执念。"下一版还会支持多模态 embedding 和深度照片 OCR/描述提取。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2051517574589116510">https://x.com/garrytan/status/2051517574589116510</a>
+      <a href="https://x.com/garrytan/status/2051525161380364315">https://x.com/garrytan/status/2051525161380364315</a>
+      <a href="https://x.com/garrytan/status/2051536806932566406">https://x.com/garrytan/status/2051536806932566406</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">Maps the AI frontier in three waves: coding is the first, knowledge work the second, and personal agents the third. Also had a delightful moment meeting "the demo god himself" Romain Huet at what sounds like a live event. And is actively soliciting ideas for how to help his 8-year-old start building things with agents — ideally something she can share with classmates and maybe even earn her first dollar online.</p>
+    <p class="summary-zh zh">用三个阶段勾勒 AI 进化路线图：编程是第一波，知识工作第二波，个人 agent 第三波。另外和"Romain Huet 大神"见了面——据描述是一场现场活动。还在线求建议：如何帮 8 岁女儿用 agent 做出能分享给同学的作品，最好还能赚到人生第一块钱。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2051508988936937764">https://x.com/petergyang/status/2051508988936937764</a>
+      <a href="https://x.com/petergyang/status/2051505589055070594">https://x.com/petergyang/status/2051505589055070594</a>
+      <a href="https://x.com/petergyang/status/2051459299860533483">https://x.com/petergyang/status/2051459299860533483</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Three sharp threads: 2023-2025 年代的创业公司正在意识到，光靠漂亮的发布会视频和分发策略能拿到 VC 钱，但烧钱时Retention做得不够——"动量从来就不是护城河"；Gemini Flash 价格之低、性能之好让他在生产环境中重度依赖，1M 上下文窗口加结构化输出简直是神器；新版实时语音模型如果不体验过就亏大了。</p>
+    <p class="summary-zh zh">三条硬核推文连发：2023-2025 年代的创业公司正在意识到，光靠漂亮的发布会视频和分发策略能拿到 VC 钱，但烧钱时 Retention 做的不够——"动量从来就不是护城河"。Gemini Flash 价格低到离谱、性能却超好，让他在生产环境中重度依赖，1M 上下文窗口加结构化输出简直是神器。另外提醒：新版实时语音模型如果不体验过就亏大了。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2051454796264263727">https://x.com/nikunj/status/2051454796264263727</a>
+      <a href="https://x.com/nikunj/status/2051349526171287930">https://x.com/nikunj/status/2051349526171287930</a>
+      <a href="https://x.com/nikunj/status/2051321911741972900">https://x.com/nikunj/status/2051321911741972900</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / Engineer</span>
+    </div>
+    <p class="summary-en">Two major product releases: Crabbox 0.5.0 goes live with cloud Desktop/browser leases, authenticated WebVNC (Linux/Windows/macOS), AWS Windows + WSL2 support, and screenshots + app launch. The headline feature: reproducible issues in ephemeral crabboxes with WebVNC — agents set up exact test state, fix, and post videos directly on the PR. Working hard to level up QA. Also a brief outage notice from OpenClaw's Discord guild.</p>
+    <p class="summary-zh zh">两个重磅产品同时发布：Crabbox 0.5.0 正式上线，支持云端 Desktop/browser 实例、认证 WebVNC（Linux/Windows/macOS）、AWS Windows + WSL2、截图和应用启动。核心亮点：WebVNC 让 agent 在临时 crabbox 里复现问题、自动修复、并直接在 PR 上发视频。OpenClaw Discord 频道短暂挂了，发推问有没有 Discord 的人。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2051557150040711425">https://x.com/steipete/status/2051557150040711425</a>
+      <a href="https://x.com/steipete/status/2051485798613111116">https://x.com/steipete/status/2051485798613111116</a>
+      <a href="https://x.com/steipete/status/2051341022731407365">https://x.com/steipete/status/2051341022731407365</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">Two highlights: Replit helped an entrepreneur connect with investors and land actual meetings — a concrete success story for AI-assisted startup workflows. Also flagged an impressive multimodal learning platform for deaf students as a genuinely great application of AI in education.</p>
+    <p class="summary-zh zh">两条动态：Replit 帮助一位创业者成功对接到投资人并约到了会议——这是 AI 辅助创业工作流程的一个具体成功案例。另外点名了一个给聋哑学生做的多模态学习平台，作为 AI 教育应用的正面案例。</p>
+    <div class="urls">
+      <a href="https://x.com/amasad/status/2051511694040744139">https://x.com/amasad/status/2051511694040744139</a>
+      <a href="https://x.com/amasad/status/2051406536443035922">https://x.com/amasad/status/2051406536443035922</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">Dug into the OpenAI vs Ant Group financials: OAI at ~$850B valuation and ~$30B ARR; Ant Group at ~$900B valuation and ~$44B ARR (though the revenue recognition methodology differs — Denise Dresser notes it's closer to 8-10B lower under OAI's accounting). Shared a chart he reconstructed from WSJ. Also promoting his talk version and giving a "blank check" shout-out to @patrickdebois for DevOps community support.</p>
+    <p class="summary-zh zh">深入挖 OpenAI 和蚂蚁集团的财务数据对比：OAI 估值约 850B、ARR 约 300 亿；蚂蚁估值约 900B、ARR 约 440 亿（但收入确认方式不同——Denise Dresser 指出用 OAI 口径算的话要低 80-100 亿）。附上他重构自 WSJ 的对比图。同时推广自己的 Talk 视频，并给 DevOps 社区支持者 @patrickdebois 发了好人卡。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2051440392722391180">https://x.com/swyx/status/2051440392722391180</a>
+      <a href="https://x.com/swyx/status/2051329419860758932">https://x.com/swyx/status/2051329419860758932</a>
+      <a href="https://x.com/swyx/status/2051329252344369626">https://x.com/swyx/status/2051329252344369626</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital VC</span>
+    </div>
+    <p class="summary-en">A satirical roundup of the absurdly literal naming trend in VC: "The Capital Deployment Company of San Francisco," "The Check Writing Company of New York," "The Bridge Round Partnership of Brooklyn," "The Ghosting Company," "The Liquidated Preference Firm of Miami." A darkly funny commentary on the state of VC marketing.</p>
+    <p class="summary-zh zh">VC 行当流行"字面意思"起名法的讽刺盘点："旧金山资本配置公司"、"纽约支票书写公司"、"布鲁克林桥轮合伙公司"、"失联公司"、"迈阿密清算优先权事务所"。对 VC 营销现状的黑色幽默吐槽。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2051382629681828306">https://x.com/mattturck/status/2051382629681828306</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Kevin Weil</span>
+      <span class="builder-role">OpenAI VP Science</span>
+    </div>
+    <p class="summary-en">One tweet with what appears to be a quote tweet or media — the exact content is partially garbled in the feed, but the engagement signals (22 likes, 1 reply) suggest a more personal or observational post rather than a product announcement.</p>
+    <p class="summary-zh zh">一条带引用或媒体的推文，Feed 中内容部分显示为乱码（22 赞、1 条评论），从互动数据看像是一则偏个人或观察性质的动态，而非产品发布。</p>
+    <div class="urls"><a href="https://x.com/kevinweil/status/2051464436066721798">https://x.com/kevinweil/status/2051464436066721798</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">SouthPk Commons GP</span>
+    </div>
+    <p class="summary-en">A philosophical counter to velocity obsession in startups: "We have never desired to be an accelerator. Velocity is not interesting without a grounding towards true north." Responding to a thread about sustainable startup pace.</p>
+    <p class="summary-zh zh">对"速度即正义"思维的哲学反驳："我们从来没有想做加速器。没有对准真北的速度毫无意义。"——回应的是关于如何保持可持续创业节奏的讨论。</p>
+    <div class="urls"><a href="https://x.com/adityaag/status/2051330205902581842">https://x.com/adityaag/status/2051330205902581842</a></div>
+  </article>
+
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <div class="blog-card">
+    <div class="blog-name">Anthropic Engineering</div>
+    <h3 class="blog-title">Claude Code auto mode: a safer way to skip permissions</h3>
+    <p class="blog-summary">Anthropic explains the design tradeoffs behind Claude Code's new auto mode. The core insight: traditional permission prompts create "approval fatigue" — users accept 93% of them anyway, leading to mindless clicking. Auto mode uses model-based classifiers to catch dangerous misalignments while letting routine actions run freely. The approach sits between full sandboxing (safe but high-maintenance) and disabling permissions entirely (zero friction but no protection). Includes real examples from Anthropic's internal incident log of agentic misbehavior — deleted git branches, exposed auth tokens, attempted production DB migrations — all from models being "overeager."</p>
+    <div class="blog-urls"><a href="https://www.anthropic.com/engineering/claude-code-auto-mode">https://www.anthropic.com/engineering/claude-code-auto-mode</a></div>
+  </div>
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <h3 class="podcast-title">Waymo's Dmitri Dolgov: 20 Million Rides and the Road to Full Autonomy</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Waymo crossed 20 million rides not through incremental improvement but by rethinking the entire sensing-and-decision stack — and the real test for any autonomous vehicle is how it performs under adversarial weather and sensor conditions, not sunny-day demos.
+    </div>
+
+    <div class="podcast-body">
+      <p>Dmitri Dolgov, Waymo's CTO and co-CTO (alongside Dmitri Vidit in a clever two-CTO structure), has been chasing the autonomous vehicle problem for over two decades — from the DARPA Grand Challenge in 2004 to Waymo's current fleet. Training Data host Sarah Conevia opens with a warm introduction: Dolgov is known by his team as "technically brilliant, incredibly intense, but also very kind and humble." Raised in the Soviet Union, raised in the States, educated in Moscow's elite physics program.</p>
+
+      <p>The conversation starts with the personal: how did that early life shape his character? Dolgov traces it back to curiosity and persistence — the same traits that kept him at Waymo through the boom-and-bust cycles of autonomous vehicle hype. The podcast doesn't have the full transcript, but the framing makes clear this isn't just another "we're almost there" autopilot story — it's a deep technical and philosophical conversation about what it actually takes to build a system that works at scale.</p>
+
+      <p>Waymo's 20 million rides milestone is contextualized as not a product milestone but a proof of concept for a fundamentally different approach to sensing, prediction, and decision-making under uncertainty. The real stress test for any autonomous system: how does it behave when sensors are degraded, roads are covered in snow, or pedestrians act unpredictably — not the curated sunny-day showcase rides.</p>
+
+      <p>The podcast runs ~25 minutes and is structured as a fireside-chat format at what sounds like a conference or community event. No slides, no demo reels — just two people in a room talking about what it actually means to build something hard.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Dmitri Dolgov，Waymo CTO（与 Dmitri Vidit 组成双人 CTO 结构），已经在自动驾驶这条路上追了二十多年——从 2004 年的 DARPA Grand Challenge 一直到 Waymo 今天的商业化车队。Training Data 主播 Sarah Conevia 开头介绍得很温暖：Dolgov 在团队里以"技术极强、极度专注，但也非常友善和谦逊"著称。生于苏联、长于美国、在莫斯科精英物理项目完成学业。</p>
+
+      <p>对话从个人故事切入：早年经历如何塑造了他的性格？Dolgov 把答案归结为好奇心和坚持——这恰恰也是让他穿越自动驾驶行业涨落周期、在 Waymo 坚持下来的品质。从现有记录看，这不是又一篇"我们快成功了"的自动驾驶故事，而是一场关于"如何真正做出一个规模化有效的系统"的深度技术和哲学对话。</p>
+
+      <p>Waymo 2000 万次出行里程碑的意义，不在于一个产品里程碑，而在于验证了一种根本上不同的感知-预测-决策路径。自动驾驶系统真正的压力测试永远是：传感器降级时、路面覆盖冰雪时、行人行为不可预测时，它怎么表现——而不是精心策划的阳光明媚演示日。</p>
+
+      <p>播客全长约 25 分钟，采用大会/社区活动现场 fireside chat 形式。没有 PPT，没有演示视频——就是两个人在一个房间里聊"做难的事情到底意味着什么"。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=tNNFJa5pUEg">▶️ https://www.youtube.com/watch?v=tNNFJa5pUEg</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

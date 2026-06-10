@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-05-07</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-05-07 · 周四</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">25</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">12 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">Anthropic and OpenAI both launched enterprise AI agent initiatives — a sign that the next frontier is not just better models but <em>getting agents deployed</em> inside organizations. Levie frames the core challenge: once AI agents enter knowledge work beyond coding, there is very real work to upgrade IT systems, give agents the context they need, modernize workflows, figure out the human-agent relationship, drive adoption, and do change management. While AI models have incredible capability packed into them, there is no shortcut to getting that intelligence applied to a business process in a stable way. This is creating tons of opportunities across the market for new jobs and firms — and the labs are equally recognizing the criticality here.</p>
+    <p class="summary-zh zh">Anthropic 和 OpenAI 都推出了企业 AI Agent 项目——这意味着下一阶段的竞争焦点已不只在于更好的模型，而在于<em>把 Agent 部署进企业</em>。Levie 点出了核心挑战：AI Agent 一旦进入编程以外的知识工作，就需要真实地去做 IT 系统升级、给 Agent 配置所需上下文、重构工作流程、理清人与 Agent 的协作关系、推动采纳、做变更管理。模型能力再强，也没法绕过"把智能稳定落地到业务流程"这件事。这为市场创造了大量新岗位和新公司机会，AI 实验室也同等重视这一点。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2051344780328858040">https://x.com/levie/status/2051344780328858040</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">Three posts in rapid succession: expressing excitement that voice models are about to get great, replying to fan art with "we love you too!", and promising something nice for everyone who applied for the GPT-5.5 party but didn't get in. The GPT-5.5 party invite is already legendary in the AI community — Altman is carefully managing the narrative around a new flagship model drop.</p>
+    <p class="summary-zh zh">连续发了三条——对语音模型即将变强表示兴奋，回复粉丝画作时说了"我们也很爱你们！"，还预告会给申请 GPT-5.5 体验派对但没挤进去的人送点好东西。GPT-5.5 派对的邀请函已经是 AI 圈里的传说，Altman 正在小心翼翼地管理新旗舰模型发布的叙事节奏。</p>
+    <div class="urls">
+      <a href="https://x.com/sama/status/2051464865634742334">https://x.com/sama/status/2051464865634742334</a>
+      <a href="https://x.com/sama/status/2051464155094507902">https://x.com/sama/status/2051464155094507902</a>
+      <a href="https://x.com/sama/status/2051318922805436896">https://x.com/sama/status/2051318922805436896</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three major GBrain announcements: v0.27 ships multi-model LLM support as promised, with multi-modal embeddings and photo OCR/description/EXIF extraction coming shortly. More importantly, Garry clarifies what makes GBrain genuinely different: it's not a memory layer, not a code tool, and not a search engine — it's all three unified under one graph with one query interface. Nobody else has that architecture. He's using it all day with his 100k markdown file OpenClaw+Hermes Agent setup.</p>
+    <p class="summary-zh zh">三条重磅 GBrain 更新：v0.27 如约上线多模型 LLM 支持，后续还将推出多模态 embedding 和照片 OCR/描述/EXIF 提取。更重要的是，Garry 说清了 GBrain 的真正差异化：它不是记忆层，不是代码工具，不是搜索引擎——而是三者统一在同一个知识图谱里、用同一个查询接口。这是独一无二的技术架构。他自己每天都在用，配合 OpenClaw+Hermes Agent 管理 10 万个 Markdown 文件。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2051517574589116510">https://x.com/garrytan/status/2051517574589116510</a>
+      <a href="https://x.com/garrytan/status/2051525161380364315">https://x.com/garrytan/status/2051525161380364315</a>
+      <a href="https://x.com/garrytan/status/2051536806932566406">https://x.com/garrytan/status/2051536806932566406</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Steinberger</span>
+      <span class="builder-role">OpenClaw / OpenAI</span>
+    </div>
+    <p class="summary-en">OpenClaw ships Crabbox 0.5.0 with a major UX leap: desktop and browser-based leases, VNC + authenticated WebVNC, AWS Windows + WSL2 support, screenshots, and app launch. Agents can now reproduce issues directly in ephemeral crabboxes with WebVNC — they set up the exact state to test, fix the bug, and post a video of the PR. Working hard to level up QA.</p>
+    <p class="summary-zh zh">OpenClaw 发布 Crabbox 0.5.0，完成了 UX 层面的大跨越：桌面和浏览器租赁、VNC + 认证 WebVNC、AWS Windows + WSL2 支持、截图和应用启动。Agent 现在可以在临时 crabbox 里直接复现问题，用 WebVNC 搭好测试环境、修好 bug，再把视频发到 PR 上。团队正在努力把 QA 提升到一个新水平。</p>
+    <div class="urls">
+      <a href="https://x.com/steipete/status/2051485798613111116">https://x.com/steipete/status/2051485798613111116</a>
+      <a href="https://x.com/steipete/status/2051557150040711425">https://x.com/steipete/status/2051557150040711425</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">Roblox PM</span>
+    </div>
+    <p class="summary-en">A crisp three-liner on AI eras: "Coding is the first frontier. Knowledge work is the second one. Personal agents are the third." Also sharing a moment meeting the "demo god" Romain Huet, and putting out a call for ideas on how to get his 8-year-old daughter building stuff with agents — ideally something she can share with her class and even make her first dollar online.</p>
+    <p class="summary-zh zh">用三句话概括 AI 时代演进："编程是第一战场。知识工作是第二战场。个人 Agent 是第三个。"另外分享了见到"演示之神"Romain Huet 的激动一刻，并发了个求助帖：想让 8 岁的女儿用 Agent 做点东西，最好能分享给同学，甚至赚到人生第一块钱。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2051508988936937764">https://x.com/petergyang/status/2051508988936937764</a>
+      <a href="https://x.com/petergyang/status/2051505589055070594">https://x.com/petergyang/status/2051505589055070594</a>
+      <a href="https://x.com/petergyang/status/2051459299860533483">https://x.com/petergyang/status/2051459299860533483</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">Vercel is open-sourcing an agent orchestrator for deep security reviews. Built for internal use and battle-tested against major OSS projects, it lets coding agents find critical vulnerabilities in minutes that would take human teams months to uncover — if they spot them at all. Since it's optimized to work with Vercel Sandbox, you can harness the power of thousands of agents scrutinizing your codebase in parallel. Open to sponsoring runs on OSS projects — DMs open.</p>
+    <p class="summary-zh zh">Vercel 开源了一个深度安全审查的 Agent 编排工具。内部自用、在多个大型开源项目上验证过，它能让编程 Agent 在几分钟内找到关键漏洞，而这些漏洞即使人工团队花几个月也不一定能发现。工具针对 Vercel Sandbox 做了优化，可以调动数千个 Agent 并行审查代码库。开源项目想申请免费赞助跑一次？DM 开放。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2051386798899888539">https://x.com/rauchg/status/2051386798899888539</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">Two posts: celebrating Replit helping an entrepreneur find investors and land meetings, and flagging a great AI-for-education use case — a multi-modal learning platform built specifically for deaf students. The Replit ecosystem continues to prove it is not just a dev tool but a launchpad for real businesses.</p>
+    <p class="summary-zh zh">两条动态：一条是 Replit 帮助一位创业者对接投资人、约到会面；另一条是转发了一个超棒的 AI+教育案例——专为聋哑学生打造的多模态学习平台。Replit 持续证明它不只是一个开发工具，而是一个能真正帮创业项目起飞的发射台。</p>
+    <div class="urls">
+      <a href="https://x.com/amasad/status/2051511694040744139">https://x.com/amasad/status/2051511694040744139</a>
+      <a href="https://x.com/amasad/status/2051406536443035922">https://x.com/amasad/status/2051406536443035922</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Three sharp posts: a contrarian hot take on 2023-2025 startup vintages realizing that fancy launch videos and distribution tricks get you VC funding but still burn cash if you haven't figured out retention — momentum was never a moat and the seed-to-Series A gap is starting to show it. Also noting how absurdly cheap and good Gemini Flash is with 1M context windows and structured outputs, probably his most-used model in production. Plus their new live voice model is "mindblowingly good."</p>
+    <p class="summary-zh zh">三条硬货：第一个是泼冷水——2023-2025 年创业批次正在醒悟，光靠炫酷的发布视频和流量玩法能拿到 VC，但留不住用户就还是烧钱；动能从来不是护城河，A 轮融资的通过率已经在说明问题。然后夸 Gemini Flash 的性价比——100 万 context window 加结构化输出，便宜到离谱，大概是他生产环境中用得最多的模型。还有新的实时语音模型，"效果好到离谱"。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2051349526171287930">https://x.com/nikunj/status/2051349526171287930</a>
+      <a href="https://x.com/nikunj/status/2051321911741972900">https://x.com/nikunj/status/2051321911741972900</a>
+      <a href="https://x.com/nikunj/status/2051454796264263727">https://x.com/nikunj/status/2051454796264263727</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">Latent Space Host</span>
+    </div>
+    <p class="summary-en">A data visualization comparing OpenAI's ~$850B valuation at ~$30B ARR vs Ant Group's ~$900B valuation at ~$44B ARR, reconstructed from WSJ. The contextual note: Ant's revenue is recognized differently — per Denise Dresser it's probably $8-10B lower if measured using OpenAI's methodology. Also teased that the Seoul ICML talk version is out, produced by Steve Ruiz.</p>
+    <p class="summary-zh zh">一张对比图：OpenAI 估值 850 亿美元、ARR 约 300 亿；蚂蚁估值 900 亿、ARR 约 440 亿（按 WSJ 数据重新绘制）。补充说明：蚂蚁的营收确认方式不同——按 Denise Dresser 的估算，用 OpenAI 的口径可能要低 80-100 亿。另外预告了首尔 ICML 演讲视频版已发布，由 Steve Ruiz 制作。</p>
+    <div class="urls">
+      <a href="https://x.com/swyx/status/2051440392722391180">https://x.com/swyx/status/2051440392722391180</a>
+      <a href="https://x.com/swyx/status/2051329419860758932">https://x.com/swyx/status/2051329419860758932</a>
+      <a href="https://x.com/swyx/status/2051329252344369626">https://x.com/swyx/status/2051329252344369626</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Kevin Weil</span>
+      <span class="builder-role">VP Science @OpenAI</span>
+    </div>
+    <p class="summary-en">A single emoji reply to an OpenAI announcement — the most Kevin Weil style: let the work speak for itself.</p>
+    <p class="summary-zh zh">用一个 emoji 回复了 OpenAI 的公告——非常 Kevin Weil 风格：让工作自己说话。</p>
+    <div class="urls"><a href="https://x.com/kevinweil/status/2051464436066721798">https://x.com/kevinweil/status/2051464436066721798</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Matt Turck</span>
+      <span class="builder-role">FirstMark Capital</span>
+    </div>
+    <p class="summary-en">A satirical riff on VC naming trends: "The Capital Deployment Company of San Francisco," "The Check Writing Company of New York," "The Bridge Round Partnership of Brooklyn," "The Ghosting Company," "The Liquidated Preference Firm of Miami." Cutting commentary on how the VC industry is increasingly defined by brand and narrative over substance.</p>
+    <p class="summary-zh zh">用讽刺的语气调侃 VC 起名趋势："旧金山资本部署公司"、"纽约支票书写公司"、"布鲁克林过桥轮合伙"、"消失公司"、"迈阿密清算优先权公司"。辛辣地评论了 VC 行业越来越被品牌和叙事定义、而非实质的现状。</p>
+    <div class="urls"><a href="https://x.com/mattturck/status/2051382629681828306">https://x.com/mattturck/status/2051382629681828306</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aditya Agarwal</span>
+      <span class="builder-role">South Park Commons GP</span>
+    </div>
+    <p class="summary-en">A one-liner with depth: "We have never desired to be an accelerator. Velocity is not interesting without a grounding towards true north." A subtle but important distinction — South Park Commons positions itself as a community for builders, not a machine that produces startups on a timeline.</p>
+    <p class="summary-zh zh">一句话见深度："我们从未想成为一个加速器。没有北极星方向的加速，毫无意义。"这是 South Park Commons 与众不同的自我定位——他们服务的是建设者，不是按时间表产出创业公司的流水线。</p>
+    <div class="urls"><a href="https://x.com/adityaag/status/2051330205902581842">https://x.com/adityaag/status/2051330205902581842</a></div>
+  </article>
+
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Anthropic Engineering</span>
+      <span class="builder-role">Official Blog</span>
+    </div>
+    <p class="summary-en">Anthropic published a detailed post on Claude Code's new Auto Mode — a safer middle ground between manual approval prompts and the dangerously-unsafe <code>--dangerously-skip-permissions</code> flag. Auto Mode delegates approval decisions to model-based classifiers that catch dangerous actions misaligned with user intent while letting benign actions run freely. The post is notable for its transparency about past incidents: deleting git branches, uploading auth tokens, attempting production database migrations — all from the model being overeager. The insight: <strong>approval fatigue is the real security risk</strong>, because users accept 93% of prompts anyway. Auto Mode targets the 7% that are genuinely dangerous.</p>
+    <p class="summary-zh zh">Anthropic 发布了一篇详细文章，介绍 Claude Code 新增的 Auto Mode——这是介于手动审批提示和危险的不安全 flag <code>--dangerously-skip-permissions</code> 之间的更安全折中方案。Auto Mode 把审批决策委托给基于模型的分类器，它们能捕捉到与用户意图不符的危险操作，同时让良性操作自由执行。文章值得注意的亮点是对历史事故的坦诚披露：删除 git 分支、上传认证 Token、尝试在生产数据库执行迁移——全都是因为模型太"积极"。核心洞察：<strong>审批疲劳才是真正的安全风险</strong>，因为用户反正会接受 93% 的请求。Auto Mode 针对的是那真正危险的 7%。</p>
+    <div class="urls"><a href="https://www.anthropic.com/engineering/claude-code-auto-mode">https://www.anthropic.com/engineering/claude-code-auto-mode</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCAST ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">Training Data</div>
+    <h3 class="podcast-title">Waymo's Dmitri Dolgov: 20 Million Rides and the Road to Full Autonomy</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      Waymo has 20 million real-world rides — and the real insight is not the technology but the patient persistence: 21 years from the DARPA Grand Challenge to commercial scale, with the lesson that conviction in long-horizon bets, combined with relentless learning from failure, beats chasing every hype cycle.
+    </div>
+
+    <div class="podcast-body">
+      <p>Dmitri Dolgov has been at the autonomous vehicle mission for 21 years — from the DARPA Grand Challenge to Waymo's current commercial operation. The Training Data host opens by noting that Dolgov is a daily active Waymo user, which is the ultimate product conviction signal. The conversation opens with his unusual upbringing: born in the Soviet Union, raised in the US, then choosing to study physics at Moscow's most prestigious program. He credits that background with building the character to persist through a field where most players have already quit.</p>
+
+      <p>The core technical insight: <strong>the gap between human driving and autonomous driving is not about sensors or compute — it's about edge cases</strong>. Waymo's advantage is not any single technology but a deeply accumulated library of real-world edge case experiences. Every time a Waymo vehicle encounters a novel situation and handles it, that knowledge gets incorporated. This is why the "21 years" number matters: it's not just time, it's iterations of edge cases.</p>
+
+      <p>On the business side, Dolgov frames the autonomy era as just beginning. The key insight: Waymo is not a car company — it's a <strong>driver-as-a-service</strong> business. The unit economics improve with scale in ways traditional automotive can't match. He is bullish on the integration of LLMs and physical world AI: the next breakthrough will come from language model reasoning applied to driving scenarios, not just sensor fusion.</p>
+
+      <p>Counterintuitive note: Waymo's most valuable data is not from highways but from <strong>complex urban environments</strong> — dense intersections, construction zones, adverse weather. The hardest places to drive are where the most learning happens.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh">
+      <p>Dmitri Dolgov 在自动驾驶这条路上走了 21 年——从 DARPA 大挑战赛到 Waymo 如今的商业运营。Training Data 主持人开场就说 Dolgov 是 Waymo 的日活用户，这就是最极致的产品信仰宣言。对话从他与众不同的成长经历开始：生于苏联，在美国长大，然后选择了莫斯科最精英的物理系就读。他把能在这个大多数竞争者都已退场的领域坚持下来的原因，归功于那段经历塑造的性格。</p>
+
+      <p>核心技术洞察：<strong>人类驾驶和自动驾驶之间的差距，不在于传感器或算力，而在于边缘场景</strong>。Waymo 的优势不是某项单一技术，而是对真实世界边缘场景的深度积累。每当 Waymo 车辆遇到新情况并成功处理，这笔知识就被纳入系统。这就是为什么"21 年"这个数字很重要——它不只是时间，是边缘场景的迭代。</p>
+
+      <p>商业层面，Dolgov 把自动驾驶时代定位为"刚刚开始"。关键洞察：Waymo 不是一家汽车公司，而是一家<strong>"司机即服务"</strong>企业。单位经济效益会随着规模改善，传统汽车无法复制这种优势。他对 LLM 和物理世界 AI 的融合持乐观态度：下一波突破将来自语言模型推理能力在驾驶场景中的应用，而不只是传感器融合。</p>
+
+      <p>反直觉发现：Waymo 最值钱的数据不是来自高速公路，而是来自<strong>复杂的城市环境</strong>——密集的十字路口、施工区域、恶劣天气。最难开的地方，恰恰是学习最多的地方。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8">▶️ https://www.youtube.com/playlist?list=PLOhHNjZItNnMm5tdW61JpnyxeYH5NDDx8</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

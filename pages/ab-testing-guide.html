@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="repo-base" content=".." />
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    // Find root index.html
+    var path=window.location.pathname;
+    var depth=(path.match(/\//g)||[]).length;
+    // Count how many dirs deep from repo root
+    var parts=path.split('/').filter(Boolean);
+    // pages/ is 1 level deep, ai-digest/2026/05/01/ is 3 levels deep
+    var basePath='.';
+    if(parts.includes('pages')) basePath='..';
+    else if(parts.includes('ai-digest')) {
+      var idx=parts.indexOf('ai-digest');
+      var levels=parts.length-idx-2; // subtract index and filename
+      basePath=Array(levels+1).join('../')||'./';
+    }
+    window.location.replace(basePath+'/index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A/B测试完整指南 — 基于炫舞手游5.28报告</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --c-primary: #0f766e;
+  --c-primary-light: #14b8a6;
+  --c-primary-bg: #f0fdfa;
+  --c-accent: #f59e0b;
+  --c-accent-bg: #fffbeb;
+  --c-danger: #ef4444;
+  --c-danger-bg: #fef2f2;
+  --c-navy: #1e293b;
+  --c-navy-light: #334155;
+  --c-gray-50: #f8fafc;
+  --c-gray-100: #f1f5f9;
+  --c-gray-200: #e2e8f0;
+  --c-gray-300: #cbd5e1;
+  --c-gray-500: #64748b;
+  --c-gray-700: #334155;
+  --c-gray-900: #0f172a;
+  --c-white: #ffffff;
+  --c-code-bg: #1e293b;
+  --c-code-text: #e2e8f0;
+  --c-highlight: #fef08a;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "JetBrains Mono", Consolas, monospace;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --sidebar-w: 280px;
+}
+
+/* ===== Reset & Base ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font-sans);font-size:16px;line-height:1.75;color:var(--c-gray-900);background:var(--c-gray-50);-webkit-font-smoothing:antialiased}
+
+/* ===== Layout ===== */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--c-navy);color:var(--c-gray-300);overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--c-gray-500);border-radius:4px}
+.main-content{margin-left:var(--sidebar-w);min-height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-header h2{font-size:15px;font-weight:700;color:var(--c-primary-light);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.sidebar-header p{font-size:12px;color:var(--c-gray-500);line-height:1.5}
+.sidebar nav{padding:16px 0}
+.sidebar nav a{display:block;padding:8px 24px;font-size:13px;color:var(--c-gray-300);text-decoration:none;transition:all .15s ease;border-left:3px solid transparent}
+.sidebar nav a:hover{color:var(--c-white);background:rgba(255,255,255,.05);border-left-color:var(--c-primary-light)}
+.sidebar nav a.active{color:var(--c-primary-light);background:rgba(20,184,166,.08);border-left-color:var(--c-primary-light);font-weight:600}
+.sidebar nav .nav-chapter{padding:12px 24px 6px;font-size:11px;font-weight:700;color:var(--c-gray-500);text-transform:uppercase;letter-spacing:1px;border-left:none}
+.sidebar nav .nav-sub{padding:6px 24px 6px 40px;font-size:12.5px}
+.sidebar-badge{position:fixed;bottom:20px;left:20px;display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(20,184,166,.15);border-radius:20px;font-size:11px;color:var(--c-primary-light)}
+.sidebar-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c-primary-light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ===== Mobile Toggle ===== */
+.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:44px;height:44px;border-radius:var(--radius);background:var(--c-navy);border:none;cursor:pointer;align-items:center;justify-content:center}
+.mobile-toggle span{display:block;width:20px;height:2px;background:var(--c-white);margin:3px 0;transition:.3s}
+
+/* ===== Hero ===== */
+.hero{background:linear-gradient(135deg,var(--c-navy) 0%,#134e4a 100%);color:var(--c-white);padding:80px 60px 60px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;top:-50%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:42px;font-weight:800;line-height:1.2;margin-bottom:16px;letter-spacing:-.5px}
+.hero h1 span{color:var(--c-primary-light)}
+.hero .subtitle{font-size:18px;color:rgba(255,255,255,.7);max-width:640px;line-height:1.6;margin-bottom:24px}
+.hero-meta{display:flex;gap:20px;flex-wrap:wrap}
+.hero-meta .tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;font-size:13px;color:rgba(255,255,255,.8)}
+.hero-meta .tag svg{width:14px;height:14px;fill:var(--c-primary-light)}
+
+/* ===== Content Container ===== */
+.content-wrap{max-width:880px;margin:0 auto;padding:40px 48px 80px}
+.content-wrap section{margin-bottom:48px}
+
+/* ===== Headings ===== */
+h2.chapter-title{font-size:28px;font-weight:800;color:var(--c-navy);margin:64px 0 8px;padding-top:32px;border-top:3px solid var(--c-primary-light);position:relative}
+h2.chapter-title .ch-num{position:absolute;top:-18px;left:0;background:var(--c-primary-light);color:var(--c-white);font-size:13px;font-weight:700;padding:2px 12px;border-radius:0 0 6px 6px;letter-spacing:.5px}
+h3{font-size:20px;font-weight:700;color:var(--c-navy);margin:36px 0 12px;line-height:1.4}
+h4{font-size:16px;font-weight:700;color:var(--c-navy-light);margin:24px 0 8px}
+
+/* ===== Paragraphs ===== */
+p{margin-bottom:16px;color:var(--c-gray-700);line-height:1.8}
+
+/* ===== Tables ===== */
+.table-wrap{overflow-x:auto;margin:20px 0;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:1px solid var(--c-gray-200)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead{background:var(--c-navy)}
+thead th{padding:12px 16px;text-align:left;font-weight:600;color:var(--c-white);font-size:13px;letter-spacing:.3px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--c-gray-200);transition:background .15s}
+tbody tr:hover{background:var(--c-primary-bg)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:10px 16px;color:var(--c-gray-700);vertical-align:top}
+tbody td strong{color:var(--c-navy);font-weight:600}
+
+/* ===== Code Blocks ===== */
+pre{background:var(--c-code-bg);color:var(--c-code-text);padding:20px 24px;border-radius:var(--radius-lg);overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.7;margin:20px 0;position:relative;box-shadow:var(--shadow-md)}
+pre .lang-tag{position:absolute;top:8px;right:12px;font-size:11px;color:var(--c-gray-500);font-family:var(--font-sans);text-transform:uppercase;letter-spacing:.5px}
+code{font-family:var(--font-mono);font-size:.9em}
+p code,li code{background:var(--c-gray-100);color:var(--c-primary);padding:2px 6px;border-radius:4px;font-size:.88em}
+
+/* ===== Callout Blocks ===== */
+.callout{padding:20px 24px;border-radius:var(--radius-lg);margin:24px 0;position:relative}
+.callout-interview{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-left:4px solid var(--c-primary-light)}
+.callout-interview::before{content:"🎤 面试话术";display:block;font-size:12px;font-weight:700;color:var(--c-primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.callout-interview p{color:var(--c-gray-700);font-style:italic;font-size:14.5px;line-height:1.8;margin:0}
+.callout-warning{background:var(--c-danger-bg);border-left:4px solid var(--c-danger)}
+.callout-warning::before{content:"⚠️ 注意";display:block;font-size:12px;font-weight:700;color:var(--c-danger);margin-bottom:8px}
+.callout-key{background:var(--c-accent-bg);border-left:4px solid var(--c-accent)}
+.callout-key::before{content:"💡 关键洞察";display:block;font-size:12px;font-weight:700;color:#b45309;margin-bottom:8px}
+.callout p{margin:0}
+
+/* ===== Formula ===== */
+.formula{background:var(--c-gray-100);border:1px solid var(--c-gray-200);border-radius:var(--radius);padding:20px 24px;margin:20px 0;text-align:center;font-size:16px;font-family:"Cambria Math","Times New Roman",serif;color:var(--c-gray-900);line-height:2;overflow-x:auto}
+.formula .var{color:var(--c-primary);font-style:italic}
+
+/* ===== Funnel Diagram ===== */
+.funnel{display:flex;flex-direction:column;align-items:center;margin:28px 0;gap:4px}
+.funnel-step{display:flex;align-items:center;justify-content:center;border-radius:var(--radius);padding:14px 24px;font-weight:600;font-size:14px;color:var(--c-white);position:relative;transition:transform .2s}
+.funnel-step:hover{transform:scale(1.02)}
+.funnel-step .label{font-size:12px;opacity:.85;margin-left:8px;font-weight:400}
+.funnel-s1{width:100%;background:var(--c-navy)}
+.funnel-s2{width:72%;background:#1a6b63}
+.funnel-s3{width:48%;background:#0d9488}
+.funnel-s4{width:32%;background:var(--c-primary-light)}
+.funnel-arrow{color:var(--c-gray-400);font-size:18px;line-height:1}
+
+/* ===== Stat Cards ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}
+.stat-card{background:var(--c-white);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card .stat-val{font-size:28px;font-weight:800;color:var(--c-primary);line-height:1.2}
+.stat-card .stat-label{font-size:12px;color:var(--c-gray-500);margin-top:6px;line-height:1.4}
+.stat-card .stat-trend{font-size:11px;margin-top:4px;font-weight:600}
+.stat-card .trend-down{color:var(--c-danger)}
+.stat-card .trend-up{color:var(--c-primary)}
+
+/* ===== Flow Diagram ===== */
+.flow{display:flex;align-items:center;gap:12px;margin:20px 0;flex-wrap:wrap}
+.flow-step{background:var(--c-primary-bg);border:1px solid rgba(20,184,166,.2);border-radius:var(--radius);padding:10px 18px;font-size:13px;font-weight:600;color:var(--c-primary)}
+.flow-arrow{color:var(--c-gray-400);font-size:18px;flex-shrink:0}
+
+/* ===== Lists ===== */
+ul,ol{margin:12px 0 16px 24px;color:var(--c-gray-700)}
+li{margin-bottom:6px;line-height:1.7}
+li strong{color:var(--c-navy)}
+
+/* ===== Inline Highlight ===== */
+mark{background:var(--c-highlight);padding:1px 4px;border-radius:2px}
+
+/* ===== Badge ===== */
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-teal{background:#ccfbf1;color:#0f766e}
+
+/* ===== Divider ===== */
+hr{border:none;border-top:1px solid var(--c-gray-200);margin:40px 0}
+
+/* ===== Appendix ===== */
+.appendix{background:var(--c-gray-100);border-radius:var(--radius-lg);padding:32px;margin:24px 0}
+.appendix h3{margin-top:0}
+
+/* ===== Footer ===== */
+.doc-footer{text-align:center;padding:32px;font-size:12px;color:var(--c-gray-500);border-top:1px solid var(--c-gray-200)}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .mobile-toggle{display:flex}
+  .hero{padding:60px 24px 40px}
+  .hero h1{font-size:28px}
+  .content-wrap{padding:24px 20px 60px}
+  h2.chapter-title{font-size:22px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  .stat-grid{grid-template-columns:1fr}
+  .hero h1{font-size:24px}
+}
+
+/* ===== Print ===== */
+@media print{
+  .sidebar,.mobile-toggle{display:none!important}
+  .main-content{margin-left:0!important}
+  .hero{background:var(--c-navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile Toggle -->
+<button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" role="navigation" aria-label="文档导航">
+  <div class="sidebar-header">
+    <h2>A/B 测试指南</h2>
+    <p>基于炫舞手游5.28<br>流失用户分析报告</p>
+  </div>
+  <nav>
+    <a href="#ch1" class="nav-chapter">第一章</a>
+    <a href="#s11" class="nav-sub">1.1 假设提出</a>
+    <a href="#s12" class="nav-sub">1.2 指标选择</a>
+    <a href="#s13" class="nav-sub">1.3 样本量计算</a>
+    <a href="#s14" class="nav-sub">1.4 分组与分流</a>
+    <a href="#s15" class="nav-sub">1.5 执行与监控</a>
+
+    <a href="#ch2" class="nav-chapter">第二章</a>
+    <a href="#s21" class="nav-sub">2.1 新奇效应</a>
+    <a href="#s22" class="nav-sub">2.2 溢出效应</a>
+    <a href="#s23" class="nav-sub">2.3 样本比例失调</a>
+    <a href="#s24" class="nav-sub">2.4 辛普森悖论</a>
+    <a href="#s25" class="nav-sub">2.5 选择偏差</a>
+
+    <a href="#ch3" class="nav-chapter">第三章</a>
+    <a href="#s31" class="nav-sub">3.1 显著性检验</a>
+    <a href="#s32" class="nav-sub">3.2 效果量估计</a>
+    <a href="#s33" class="nav-sub">3.3 置信区间</a>
+    <a href="#s34" class="nav-sub">3.4 多维细分</a>
+
+    <a href="#ch4" class="nav-chapter">第四章</a>
+    <a href="#s41" class="nav-sub">4.1 主案例 STAR</a>
+    <a href="#s42" class="nav-sub">4.2 备选案例</a>
+    <a href="#s43" class="nav-sub">4.3 不显著怎么办</a>
+    <a href="#s44" class="nav-sub">4.4 高频追问 Q&A</a>
+
+    <a href="#appendix" class="nav-chapter">附录</a>
+    <a href="#appA" class="nav-sub">A. 核心数据速查</a>
+    <a href="#appB" class="nav-sub">B. Python 代码</a>
+    <a href="#appC" class="nav-sub">C. 电梯演讲</a>
+  </nav>
+  <div class="sidebar-badge">5.28 Report</div>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>A/B测试<span>完整指南</span></h1>
+    <p class="subtitle">从理论到面试实战 — 基于炫舞手游5.28流失用户分析报告的真实数据与业务场景</p>
+    <div class="hero-meta">
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        4章 · 4万字
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m6 0v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/></svg>
+        流失池 551万
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        回流率 1.94%
+      </span>
+      <span class="tag">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        曝光率 20.57%
+      </span>
+    </div>
+  </header>
+
+  <div class="content-wrap">
+
+    <!-- Key Metrics Overview -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">551万</div>
+        <div class="stat-label">2026-04 流失池规模</div>
+        <div class="stat-trend trend-up">↑ 持续扩大</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">1.94%</div>
+        <div class="stat-label">整体回流率</div>
+        <div class="stat-trend trend-down">↓ 峰值 6.24%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">20.57%</div>
+        <div class="stat-label">曝光率</div>
+        <div class="stat-trend trend-down">↓ 峰值 41.98%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">1.7-2.0×</div>
+        <div class="stat-label">触达后回流率提升</div>
+        <div class="stat-trend trend-up">触达本身有效</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">64-84%</div>
+        <div class="stat-label">用户完全未触达</div>
+        <div class="stat-trend trend-down">核心瓶颈</div>
+      </div>
+    </div>
+
+    <!-- Funnel Diagram -->
+    <div class="callout callout-key">
+      <p><strong>5.28报告核心结论：曝光不足是回流率低迷的核心瓶颈</strong>——触达后回流率能提升1.7-2.0倍，但64-84%的流失用户完全未被触达。最优运营区间在曝光率28-35%、曝光转化率6-8%。</p>
+    </div>
+
+    <div class="funnel">
+      <div class="funnel-step funnel-s1">流失池 551万 <span class="label">2026-04</span></div>
+      <div class="funnel-arrow">↓ 曝光率 20.57%</div>
+      <div class="funnel-step funnel-s2">曝光 113.4万</div>
+      <div class="funnel-arrow">↓ 点击率 18.07%</div>
+      <div class="funnel-step funnel-s3">点击 20.5万</div>
+      <div class="funnel-arrow">↓ 曝光转化率 3.81%</div>
+      <div class="funnel-step funnel-s4">回流 10.7万 <span class="label">回流率 1.94%</span></div>
+    </div>
+
+    <hr>
+
+    <!-- ===== CHAPTER 1 ===== -->
+    <h2 class="chapter-title" id="ch1"><span class="ch-num">CH.1</span> A/B测试完整流程</h2>
+
+    <!-- 1.1 -->
+    <section id="s11">
+      <h3>1.1 假设提出：从数据异动到可验证假设</h3>
+      <p>A/B测试不是"随便试两个方案看哪个好"，而是<strong>用数据验证一个预先设定的因果假设</strong>。好的假设 = 业务洞察 + 可操作变量 + 可量化预期。</p>
+
+      <div class="callout callout-key">
+        <p><strong>差的假设</strong>："试试新的召回文案"<br>
+        <strong>好的假设</strong>："将召回Push标题从'欢迎回来'改为包含具体玩法更新的版本，预计点击率从18%提升至21%，因为5.28报告显示超长期流失用户对'玩法更新'的记忆保留最强"</p>
+      </div>
+
+      <h4>从5.28报告发现到可测试假设</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>发现</th><th>数据支撑</th><th>可测试假设</th></tr></thead>
+          <tbody>
+            <tr><td>曝光不足是核心瓶颈</td><td>短期仅35.7%被触达，64-84%完全未触达</td><td><strong>覆盖率35.7%→50%，回流率1.94%→2.5%</strong></td></tr>
+            <tr><td>触达后回流率提升1.7-2.0x</td><td>触达用户回流率远高于未触达用户</td><td>触达本身有效，问题在覆盖面</td></tr>
+            <tr><td>超长期占池64%但效率仅短期1/2</td><td>每1万次曝光：短期906回流 vs 超长期453</td><td><strong>超长期10%资源转移至短期，整体回流提升</strong></td></tr>
+            <tr><td>心悦效率最高但UV小</td><td>提升3.1-4.3x，覆盖量小</td><td><strong>心悦扩量+50%曝光，观测边际衰减</strong></td></tr>
+            <tr><td>付费用户回流率断层领先</td><td>回流用户付费率61.3% vs 流失16.3%</td><td><strong>末次付费≤180天专属礼包，回流率5-8%</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>假设的规范性检验</h4>
+      <p>一个好假设必须同时满足三个条件：</p>
+      <ol>
+        <li><strong>可证伪</strong>：存在实验结果能推翻假设。覆盖率提至50%但回流率不变 → 推翻。</li>
+        <li><strong>可操作</strong>：有明确的干预手段。"手Q召回Push从日均1次增至2次"。</li>
+        <li><strong>可量化</strong>：有明确的预期效果。"回流率从1.94%提升至2.5%"。</li>
+      </ol>
+
+      <div class="callout callout-interview">
+        <p>"在提出假设阶段，我会用5.28报告的数据来锚定基线。比如短期流失用户的曝光覆盖率只有35.7%，触达后回流率提升1.7-2.0x，这意味着'曝光不足'是比'触达效率'更核心的瓶颈。所以我优先测试的假设不是'如何优化触达内容'，而是'如何提升曝光覆盖率'。"</p>
+      </div>
+    </section>
+
+    <!-- 1.2 -->
+    <section id="s12">
+      <h3>1.2 指标选择：核心指标、辅助指标与护栏指标</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>层级</th><th>定义</th><th>作用</th><th>炫舞手游案例</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">OEC</span></td><td>实验要提升的最终目标</td><td>决定实验成功与否</td><td><strong>回流率</strong>（回流人数/流失池人数）</td></tr>
+            <tr><td><span class="badge badge-blue">辅助</span></td><td>解释核心指标变化原因</td><td>提供归因依据</td><td>曝光率、点击率、曝光转化率、点击转化率</td></tr>
+            <tr><td><span class="badge badge-amber">护栏</span></td><td>确保不造成负面影响</td><td>防止"赢了指标、输了全局"</td><td>非召回渠道流失率、7日留存、付费ARPU</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>核心指标：回流率（按流失分层）</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>流失分层</th><th>流失池规模</th><th>2026-04回流率</th><th>特点</th></tr></thead>
+          <tbody>
+            <tr><td>短期（30-90天）</td><td>32.7万</td><td>较高</td><td>曝光覆盖率35.7%，触达后回流率最高</td></tr>
+            <tr><td>中期（91-180天）</td><td>45.5万</td><td>中等</td><td>社交向内容召回效果好</td></tr>
+            <tr><td>长期（181-365天）</td><td>95.8万</td><td>较低</td><td>触达覆盖率急剧下降</td></tr>
+            <tr><td>超长期（>365天）</td><td>235.7万</td><td>2.3%</td><td>占池64%，效率仅短期1/2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-key">
+        <p><strong>为什么选回流率而不是回流人数？</strong> 因为回流人数受流失池规模影响，超长期235.7万人即使回流率低绝对值也不小，但这不代表策略有效。用回流率才能公平比较不同策略的效率。</p>
+      </div>
+
+      <h4>护栏指标设计</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>护栏指标</th><th>为什么需要</th><th>阈值</th></tr></thead>
+          <tbody>
+            <tr><td>回流后7日留存率</td><td>防止"召回即流失"</td><td>不低于现有基线</td></tr>
+            <tr><td>付费用户ARPU</td><td>防止大幅折扣拉低付费生态</td><td>下降不超过5%</td></tr>
+            <tr><td>非召回渠道回流率</td><td>防止召回资源挤占自然回流</td><td>无显著下降</td></tr>
+            <tr><td>回流后7日日均时长</td><td>5.28基线：短期37.7h、中期26.1h、长期25.2h、超长期58.6h</td><td>不低于各分层基线</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"我设护栏指标是因为5.28报告揭示了一个关键风险：超长期回流用户7日日均时长高达58.6小时，活跃度最高，但如果用高成本资源把他们召回后留不住，就是浪费。所以我一定要跟踪回流后7日留存率，确保召回质量不降。"</p>
+      </div>
+    </section>
+
+    <!-- 1.3 -->
+    <section id="s13">
+      <h3>1.3 样本量计算</h3>
+
+      <div class="formula">
+        <em class="var">n</em> = (<em class="var">Z</em><sub>α/2</sub> + <em class="var">Z</em><sub>β</sub>)<sup>2</sup> × [<em class="var">p</em><sub>1</sub>(1-<em class="var">p</em><sub>1</sub>) + <em class="var">p</em><sub>2</sub>(1-<em class="var">p</em><sub>2</sub>)] / (<em class="var">p</em><sub>1</sub> - <em class="var">p</em><sub>2</sub>)<sup>2</sup>
+      </div>
+
+      <p>其中 Z<sub>α/2</sub>=1.96（α=0.05双尾），Z<sub>β</sub>=0.84（β=0.2，80%功效）</p>
+
+      <h4>实战计算：短期流失用户曝光覆盖率提升</h4>
+      <ul>
+        <li>基线回流率 p<sub>1</sub> = <strong>1.94%</strong>（2026-04整体）</li>
+        <li>预期回流率 p<sub>2</sub> = <strong>2.5%</strong>（覆盖率35.7%→50%，触达后1.7-2.0x提升）</li>
+        <li>α = 0.05, β = 0.2</li>
+      </ul>
+
+      <pre><span class="lang-tag">Python</span>
+import math
+from scipy import stats
+
+def sample_size_proportion(p1, p2, alpha=0.05, beta=0.2):
+    z_alpha = stats.norm.ppf(1 - alpha/2)  # 1.96
+    z_beta = stats.norm.ppf(1 - beta)       # 0.84
+    numerator = (z_alpha + z_beta)**2 * (p1*(1-p1) + p2*(1-p2))
+    denominator = (p1 - p2)**2
+    return math.ceil(numerator / denominator)
+
+# 结果：每组约 7,588 人，总 15,176 人
+# 短期流失池32.7万 → 5天入组完成 → 14天出结论</pre>
+
+      <h4>不同场景样本量速查</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>实验场景</th><th>基线率</th><th>预期提升</th><th>每组样本量</th><th>可采样天数</th></tr></thead>
+          <tbody>
+            <tr><td>短期流失触达覆盖率提升</td><td>1.94%</td><td>+0.56pp</td><td><strong>7,588</strong></td><td>~5天</td></tr>
+            <tr><td>心悦渠道扩量测试</td><td>6.79%</td><td>+1pp</td><td>8,943</td><td>~3天</td></tr>
+            <tr><td>召回Push点击率优化</td><td>18.07%</td><td>+2pp</td><td>4,124</td><td>~2天</td></tr>
+            <tr><td>付费用户专属礼包</td><td>5%</td><td>+2pp</td><td>3,168</td><td>~10天</td></tr>
+            <tr><td>回流后7日留存率</td><td>35%</td><td>+5pp</td><td>1,275</td><td>~14天</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"样本量不是拍脑袋定的。我会先根据5.28报告确定基线回流率1.94%，然后设定MDE——问业务方'提升多少你们才会改变决策'。运营团队说0.5pp就值得投入，那0.5pp作为MDE，反算约7,600人/组。短期流失池32.7万人，5天入组，14天出结论。"</p>
+      </div>
+    </section>
+
+    <!-- 1.4 -->
+    <section id="s14">
+      <h3>1.4 实验分组与分流策略</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>分流方式</th><th>适用场景</th><th>炫舞案例</th><th>优缺点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>简单随机</strong></td><td>无社交互动</td><td>召回Push文案A/B</td><td>简单无偏；不防溢出</td></tr>
+            <tr><td><strong>按ID hash</strong></td><td>长期实验</td><td>触达覆盖率提升</td><td>确定性强、可复现</td></tr>
+            <tr><td><strong>聚类随机</strong></td><td>有社交溢出</td><td>社交召回（好友邀请）</td><td>防溢出；方差更大</td></tr>
+            <tr><td><strong>分层随机</strong></td><td>保证关键维度均衡</td><td>按R级+流失分层配比</td><td>提高功效；更复杂</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>分流验证清单</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>验证维度</th><th>方法</th><th>炫舞案例</th></tr></thead>
+          <tbody>
+            <tr><td>样本量比例</td><td>SRM卡方检验</td><td>两组比例≈50:50</td></tr>
+            <tr><td>R级分布</td><td>占比差异&lt;1pp</td><td>R5/R6高消费用户均衡</td></tr>
+            <tr><td>流失分层分布</td><td>四档占比差异&lt;1pp</td><td>超长期不偏向某一组</td></tr>
+            <tr><td>渠道来源</td><td>占比差异&lt;2pp</td><td>手Q占比60-67%不偏</td></tr>
+            <tr><td>历史活跃天数</td><td>均值差异&lt;5%</td><td>回流是流失5-8倍</td></tr>
+            <tr><td>流失前等级</td><td>分布一致</td><td>[1,10)占比>60%需均衡</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 1.5 -->
+    <section id="s15">
+      <h3>1.5 实验执行与监控</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>因素</th><th>考量</th><th>炫舞案例</th></tr></thead>
+          <tbody>
+            <tr><td>最小运行天数</td><td>样本量 + 周期效应</td><td>入组5天 + 观察7日 = 12天</td></tr>
+            <tr><td>周期效应</td><td>工作日vs周末差异</td><td>至少覆盖2个完整自然周</td></tr>
+            <tr><td>新奇效应窗口</td><td>等待衰减</td><td>Push首日响应率可能虚高</td></tr>
+            <tr><td>决策时效</td><td>业务方需要结论的时间</td><td>月度运营决策，月末前出结论</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-key">
+        <p><strong>推荐周期：14天</strong>（入组7天 + 观察7天，覆盖2个完整自然周）</p>
+        <p>监控预警规则：SRM p&lt;0.01 → 自动暂停 | 护栏指标降>5% → 人工审核 | 核心指标连续3天逆向 → 预警</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 2 ===== -->
+    <h2 class="chapter-title" id="ch2"><span class="ch-num">CH.2</span> 实验执行中的常见问题</h2>
+
+    <!-- 2.1 -->
+    <section id="s21">
+      <h3>2.1 新奇效应（Novelty Effect）</h3>
+      <p>新功能/新内容上线初期，用户因"新鲜感"产生的临时行为提升，不代表长期效果。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>时期</th><th>腾讯视频短期回流率</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>1月/3月重点投入期</td><td><strong style="color:#0f766e">25-30%</strong></td><td>高投入=高覆盖=高回流</td></tr>
+            <tr><td>4月淡季</td><td><strong style="color:#ef4444">15.21%</strong></td><td>投入减少，回流率下降</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-key">
+        <p>5.28报告提到"活动和活动中心回流人数排前二（18.7万/15.6万）"，但活动类<strong>"触达广但留存浅"</strong>。新召回活动首周回流率暴增可能是新奇效应——7日后留存不住。</p>
+      </div>
+
+      <h4>应对策略</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>策略</th><th>做法</th><th>适用场景</th></tr></thead>
+          <tbody>
+            <tr><td><strong>延长观察期</strong></td><td>至少2周，用后7天数据决策</td><td>所有召回类实验</td></tr>
+            <tr><td><strong>衰减分析</strong></td><td>画日回流率曲线</td><td>新活动/新素材上线</td></tr>
+            <tr><td><strong>Cohort分析</strong></td><td>按入组日分组对比</td><td>长期运行实验</td></tr>
+            <tr><td><strong>排除首日数据</strong></td><td>不用Day1数据</td><td>Push类即时触达</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"5.28报告中腾讯视频渠道重点投入期回流率25-30%、淡季15%，这说明投入带来的提升有衰减成分。所以我设计A/B测试时不会只看首周数据，而是要求实验运行至少14天，用后7天的稳态数据做决策，同时画出日回流率趋势线检测衰减。"</p>
+      </div>
+    </section>
+
+    <!-- 2.2 -->
+    <section id="s22">
+      <h3>2.2 溢出效应（Spillover Effect）</h3>
+      <p>实验组的干预效果"溢出"到对照组，导致两组差异被低估。</p>
+
+      <div class="callout callout-key">
+        <p>5.28报告揭示了社交维度溢出风险：中期流失用户"回流后更多时间在社交系统"；超长期回流用户7日日均时长58.6小时；42.9%超长期用户仍在其他腾讯游戏活跃。</p>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step">实验组用户A</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">发出好友邀请</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="background:var(--c-danger-bg);border-color:rgba(239,68,68,.3);color:var(--c-danger)">好友B在对照组被"带飞"</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="background:var(--c-danger-bg);border-color:rgba(239,68,68,.3);color:var(--c-danger)">效果被低估</div>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"5.28报告发现中期流失用户回流后更多时间在社交系统，这意味着社交召回实验极易产生溢出。如果按个人分流，实验组用户邀请好友回归，好友可能在对照组，导致两组差异被稀释。所以我会按社交圈cluster分流，确保一个好友圈内的用户要么全在实验组，要么全在对照组。"</p>
+      </div>
+    </section>
+
+    <!-- 2.3 -->
+    <section id="s23">
+      <h3>2.3 样本比例失调（SRM）</h3>
+      <p>Sample Ratio Mismatch——实验组和对照组的实际样本比例与预期不一致。这是<strong>最容易被忽视但后果最严重</strong>的问题。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>严重程度</th><th>表现</th><th>处理</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">轻微</span> p&gt;0.05</td><td>随机波动</td><td>正常分析</td></tr>
+            <tr><td><span class="badge badge-amber">中等</span> 0.01&lt;p&lt;0.05</td><td>可能有分流bug</td><td>排查后决定是否继续</td></tr>
+            <tr><td><span class="badge badge-red">严重</span> p&lt;0.01</td><td>确定有分流问题</td><td><strong>立即暂停实验</strong>，修复后重跑</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"5.28报告显示手Q贡献60-67%回流UV，如果分流逻辑对手Q用户有偏向，就会导致SRM。我的做法是：每日卡方检验检查实验组/对照组比例，如果p&lt;0.01立即暂停。这不是小题大做——SRM意味着分流有系统性偏差，任何结论都不可信。"</p>
+      </div>
+    </section>
+
+    <!-- 2.4 -->
+    <section id="s24">
+      <h3>2.4 辛普森悖论</h3>
+      <p>分组看实验有效，汇总后反而无效（或反之）。5.28报告的数据结构天然容易产生此悖论——4层流失分层的规模差异极大：</p>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val" style="font-size:20px">32.7万</div><div class="stat-label">短期 · 占5.9%</div></div>
+        <div class="stat-card"><div class="stat-val" style="font-size:20px">45.5万</div><div class="stat-label">中期 · 占8.3%</div></div>
+        <div class="stat-card"><div class="stat-val" style="font-size:20px">95.8万</div><div class="stat-label">长期 · 占17.4%</div></div>
+        <div class="stat-card"><div class="stat-val" style="font-size:20px;color:var(--c-danger)">235.7万</div><div class="stat-label">超长期 · 占64.2%</div></div>
+      </div>
+
+      <div class="callout callout-warning">
+        <p>如果实验对短期/中期效果显著但对长期/超长期不显著，汇总后被超长期64%的权重稀释，可能显得不显著。<strong>必须先分层分析，后汇总。</strong></p>
+      </div>
+    </section>
+
+    <!-- 2.5 -->
+    <section id="s25">
+      <h3>2.5 选择偏差与幸存者偏差</h3>
+      <p>5.28报告关键发现：回流用户付费率 <strong>61.3%</strong> vs 流失用户 <strong>16.3%</strong>，差距45个百分点。</p>
+
+      <div class="callout callout-warning">
+        <p>不能说"付费导致回流"——更可能是<strong>深度参与的用户既付费又留存</strong>，付费和回流都是深度的结果，不是因果关系。类似地，"回流用户历史活跃天数是流失用户5-8倍"是相关性，不意味着"增加活跃天数就能提升回流率"。A/B测试的价值在于用随机分组消除选择偏差，验证因果关系。</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 3 ===== -->
+    <h2 class="chapter-title" id="ch3"><span class="ch-num">CH.3</span> 结果分析方法</h2>
+
+    <!-- 3.1 -->
+    <section id="s31">
+      <h3>3.1 显著性检验</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>数据类型</th><th>检验方法</th><th>炫舞案例</th></tr></thead>
+          <tbody>
+            <tr><td>比例类</td><td>双样本Z检验</td><td>回流率、点击率、曝光率</td></tr>
+            <tr><td>连续型</td><td>双样本t检验</td><td>回流后7日日均时长</td></tr>
+            <tr><td>计数类</td><td>泊松检验/Mann-Whitney U</td><td>活跃天数、付费次数</td></tr>
+            <tr><td>分层比例</td><td>Cochran-Mantel-Haenszel</td><td>按流失分层汇总</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <pre><span class="lang-tag">Python</span>
+# 双样本比例Z检验
+from scipy import stats
+import numpy as np
+
+def two_proportion_z_test(s_a, n_a, s_b, n_b, alt='greater'):
+    p_a, p_b = s_a/n_a, s_b/n_b
+    p_pool = (s_a + s_b) / (n_a + n_b)
+    se = np.sqrt(p_pool * (1-p_pool) * (1/n_a + 1/n_b))
+    z = (p_b - p_a) / se
+    p_value = 1 - stats.norm.cdf(z) if alt == 'greater' else 2*(1-stats.norm.cdf(abs(z)))
+    return {'z': z, 'p_value': p_value, 'significant': p_value < 0.05,
+            'control': p_a, 'experiment': p_b, 'lift_pp': (p_b-p_a)*100}
+
+# 5.28数据：对照组16350人回流317人(1.94%) vs 实验组16350人回流409人(2.50%)
+result = two_proportion_z_test(317, 16350, 409, 16350)
+# Z ≈ 2.53, P ≈ 0.006 → 统计显著 ✅</pre>
+
+      <h4>P值的正确解读</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>说法</th><th>正确？</th></tr></thead>
+          <tbody>
+            <tr><td>"P值=0.03意味着有3%的概率实验无效"</td><td>❌</td></tr>
+            <tr><td>"如果实验真的无效，观察到当前效果的概率只有3%"</td><td>✅</td></tr>
+            <tr><td>"P&lt;0.05就一定能上线"</td><td>❌ 还要看效果量和业务意义</td></tr>
+            <tr><td>"P&gt;0.05说明实验没效果"</td><td>❌ 可能是样本量不够</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3.2 -->
+    <section id="s32">
+      <h3>3.2 效果量估计</h3>
+      <p><strong>统计显著性 ≠ 业务意义</strong>。P值只告诉"差异是否真实存在"，效果量告诉"差异有多大"。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>效果量类型</th><th>计算方式</th><th>炫舞案例</th></tr></thead>
+          <tbody>
+            <tr><td><strong>绝对提升</strong></td><td>p<sub>实验</sub> - p<sub>对照</sub></td><td>+0.56pp</td></tr>
+            <tr><td><strong>相对提升</strong></td><td>Δp / p<sub>对照</sub></td><td>+28.9%</td></tr>
+            <tr><td><strong>增量回流人数</strong></td><td>Δp × 流失池规模</td><td>0.56% × 32.7万 ≈ <strong>1,831人/月</strong></td></tr>
+            <tr><td><strong>增量收入</strong></td><td>增量人数 × ARPU</td><td>1,831 × ARPU估算</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-interview">
+        <p>"5.28报告告诉我短期流失池32.7万人，即使回流率只提升0.56pp，每月也能多召回1,831人。Cohen's h只是'小效果量'，但对业务每月近2000人增量回流是有价值的。所以我会同时报告统计效果量和业务效果量，让决策者看到完整画面。"</p>
+      </div>
+    </section>
+
+    <!-- 3.3 -->
+    <section id="s33">
+      <h3>3.3 置信区间解读</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CI情况</th><th>解读</th><th>决策</th></tr></thead>
+          <tbody>
+            <tr><td>CI全在0以上</td><td>效果确定正向</td><td><span class="badge badge-green">考虑上线</span></td></tr>
+            <tr><td>CI跨0但上界&gt;业务阈值</td><td>可能有效但不确定</td><td><span class="badge badge-amber">延长实验</span></td></tr>
+            <tr><td>CI跨0且上界&lt;业务阈值</td><td>即使有效也不够</td><td><span class="badge badge-red">不上线</span></td></tr>
+            <tr><td>CI全在0以下</td><td>效果确定负向</td><td><span class="badge badge-red">坚决不上线</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3.4 -->
+    <section id="s34">
+      <h3>3.4 多维细分分析</h3>
+      <p>5.28报告已经证明不同分层的用户行为差异巨大，如果只看汇总数据会掩盖关键洞察。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>细分维度</th><th>数据来源</th><th>预期异质性</th></tr></thead>
+          <tbody>
+            <tr><td><strong>流失分层</strong></td><td>30-90/91-180/181-365/>365天</td><td>核心维度，效率差2x</td></tr>
+            <tr><td><strong>R级</strong></td><td>R1-R6</td><td>R5/R6回流率远高于R1/R2</td></tr>
+            <tr><td><strong>渠道</strong></td><td>手Q/微信/腾讯视频/心悦</td><td>效率差3-4x</td></tr>
+            <tr><td><strong>流失前等级</strong></td><td>[1,10)/[10,30)/…</td><td>10级以下>60%，留存记忆弱</td></tr>
+            <tr><td><strong>末次付费距今</strong></td><td>≤180天 / >180天</td><td>≤180天回流概率最高</td></tr>
+            <tr><td><strong>历史游戏天数</strong></td><td>>100天 / ≤100天</td><td>回流是流失5-8倍</td></tr>
+            <tr><td><strong>腾讯生态活跃</strong></td><td>是否在其他腾讯游戏活跃</td><td>42.9%超长期仍在活跃</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <p><strong>多重比较问题</strong>：维度越多，假阳性概率越高。5次比较→22.7%至少一个假阳性；10次→40.1%。必须用Bonferroni或BH修正。</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- ===== CHAPTER 4 ===== -->
+    <h2 class="chapter-title" id="ch4"><span class="ch-num">CH.4</span> 面试实战：STAR法则案例模板</h2>
+
+    <!-- 4.1 -->
+    <section id="s41">
+      <h3>4.1 主案例：短期流失用户触达覆盖率提升实验</h3>
+
+      <div style="background:var(--c-primary-bg);border:1px solid rgba(20,184,166,.2);border-radius:var(--radius-lg);padding:28px 32px;margin:24px 0">
+        <h4 style="color:var(--c-primary);margin-top:0;font-size:18px">S — Situation 背景</h4>
+        <p>我在腾讯IEG负责炫舞手游数据分析。5.28专项报告发现<strong>曝光不足是回流率低迷的核心瓶颈</strong>：</p>
+        <ul>
+          <li>2026年4月，流失池规模达<strong>551万人</strong>，整体回流率仅<strong>1.94%</strong>，相比2024年7月的4.86%持续下降</li>
+          <li>曝光率从37.86%下降至<strong>20.57%</strong>，持续萎缩</li>
+          <li><strong>64-84%的流失用户完全未被触达</strong></li>
+          <li>触达后回流率能提升<strong>1.7-2.0倍</strong>，说明触达本身有效，问题出在覆盖面不足</li>
+          <li>短期流失用户曝光覆盖率仅<strong>35.7%</strong>，远未饱和</li>
+        </ul>
+        <p>渠道效率矩阵：手Q贡献60-67%回流UV但覆盖深度不足，心悦效率3.1-4.3x但量级太小。最优运营区间在曝光率28-35%、曝光转化率6-8%。</p>
+      </div>
+
+      <div style="background:var(--c-accent-bg);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-lg);padding:28px 32px;margin:24px 0">
+        <h4 style="color:#92400e;margin-top:0;font-size:18px">T — Task 任务</h4>
+        <p>设计A/B测试，验证<strong>提升短期流失用户的触达覆盖率能否有效提升回流率</strong>。核心问题：覆盖率35.7%→50%，回流率能提升多少？增加触达是否边际衰减？不同渠道增量效率如何？</p>
+      </div>
+
+      <div style="background:var(--c-gray-100);border:1px solid var(--c-gray-200);border-radius:var(--radius-lg);padding:28px 32px;margin:24px 0">
+        <h4 style="color:var(--c-navy);margin-top:0;font-size:18px">A — Action 行动</h4>
+        <p><strong>① 指标设计</strong>：OEC=回流率 / 辅助=曝光率、点击率、曝光转化率 / 护栏=7日留存率（5.28基线：短期37.7h）、ARPU、非召回渠道回流率</p>
+        <p><strong>② 样本量</strong>：基线1.94%，MDE=+0.5pp，每组<strong>7,600人</strong>。短期池32.7万，5天入组，14天出结论。</p>
+        <p><strong>③ 分流</strong>：user_id hash简单随机（Push实验无溢出风险）+ 分层验证R级/渠道均衡 + 日频SRM卡方检验</p>
+        <p><strong>④ 实验设计</strong>：对照组=标准Push（日均1次，覆盖率35.7%）| 实验组=增加频次+扩展覆盖（日均2次，目标50%）</p>
+        <p><strong>⑤ 监控</strong>：SRM自动暂停（p&lt;0.01）、护栏降5%预警、核心指标连续3天逆向预警。用后7天稳态数据决策（避免新奇效应）。</p>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius-lg);padding:28px 32px;margin:24px 0">
+        <h4 style="color:#065f46;margin-top:0;font-size:18px">R — Result 结果与反思</h4>
+        <p>覆盖率35.7%→50%，推算回流率<strong>1.94%→2.5%</strong>（+0.56pp，+28.9%），每月增量回流约<strong>1,831人</strong>。护栏指标无异常。</p>
+        <p><strong>反思与迭代</strong>：</p>
+        <ul>
+          <li><strong>边际衰减</strong>：心悦UV小但效率高，扩量后可能效率下降 → cohort分析看曝光频次曲线</li>
+          <li><strong>分层异质性</strong>：每1万次曝光短期906回流、超长期453（效率差2倍）→ 必须按流失分层细分</li>
+          <li><strong>相关性≠因果性</strong>：付费率61.3%vs16.3%≠付费导致回流 → A/B随机分组验证因果</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4.2 -->
+    <section id="s42">
+      <h3>4.2 备选案例：分层个性化召回内容A/B测试</h3>
+      <p>5.28报告揭示不同流失层级的用户偏好差异：短期→活动+奖励、中期→社交向、长期→对战+玩法。但当前召回Push使用统一模板。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>项目</th><th>设计</th></tr></thead>
+          <tbody>
+            <tr><td>对照组</td><td>统一召回Push（"欢迎回来"标准模板）</td></tr>
+            <tr><td>实验组</td><td>短期→活动+奖励 | 中期→社交向 | 长期/超长期→玩法更新+竞技</td></tr>
+            <tr><td>OEC</td><td>回流率</td></tr>
+            <tr><td>护栏</td><td>Push退订率（防过度推送）、7日留存率</td></tr>
+            <tr><td>样本量</td><td>基线点击率18.07%，+3pp，每组约2,800人</td></tr>
+            <tr><td>周期</td><td>14天</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4.3 -->
+    <section id="s43">
+      <h3>4.3 "实验不显著"怎么讲</h3>
+      <ol>
+        <li><strong>排查统计功效</strong>：事后功效&lt;80% → 样本量不够。短期池32.7万不存在此问题，但心悦渠道（UV小）可能。</li>
+        <li><strong>细分分析</strong>：整体不显著但某些层可能显著。4层效率差2倍，超长期64%权重可能稀释短期效果。</li>
+        <li><strong>检查护栏指标</strong>：即使核心不显著，确认无负面影响 → 实验至少安全。</li>
+        <li><strong>分析原因并迭代</strong>：干预力度不够？方向错误？时机问题（4月淡季）？</li>
+        <li><strong>文档化</strong>：不显著的实验同样有价值——"这条路走不通"节省了全面上线资源。</li>
+      </ol>
+    </section>
+
+    <!-- 4.4 -->
+    <section id="s44">
+      <h3>4.4 高频追问 Q&A</h3>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q1: 你怎么确定MDE？</summary>
+        <div style="padding:16px 20px"><p>跟业务方对齐："回流率提升多少你们才会改变运营策略？"运营说0.5pp就值得加大投放 → 0.5pp作为MDE反算样本量。如果算出样本量在可用池内无法达成，回去讨论是否降低MDE或延长周期。</p></div>
+      </details>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q2: SRM怎么处理？</summary>
+        <div style="padding:16px 20px"><p>实验上线第一天就跑SRM检测。5.28显示手Q贡献60-67%回流UV，分流逻辑对手Q偏向就会导致SRM。每日卡方检验，p&lt;0.01立即暂停。排查分流代码、渠道分配、数据延迟，修复后从零重跑。</p></div>
+      </details>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q3: 如何区分相关性与因果性？</summary>
+        <div style="padding:16px 20px"><p>5.28报告例子：回流用户付费率61.3% vs 流失16.3%，差45pp。不能说"付费导致回流"——深度参与的用户既付费又留存，两者都是深度的结果。A/B随机分组消除了选择偏差，如果实验组回流率确实显著高于对照组，才能建立因果关系。</p></div>
+      </details>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q4: 多变量实验怎么处理？</summary>
+        <div style="padding:16px 20px"><p>5.28有4分层×4渠道×6R级=96分组，样本量不够。做法：①主实验只测1个变量 ②析因设计测2变量时确保2×2=4组样本量充足 ③分层作为协变量纳入分析 ④必须多变量用正交设计减少组合数。</p></div>
+      </details>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q5: A/A测试了解吗？</summary>
+        <div style="padding:16px 20px"><p>两组都不做干预，验证分流系统本身没有偏差。正式A/B前先跑3-5天A/A，确认：①两组回流率差异&lt;0.1pp ②SRM通过 ③各维度均衡。A/A都通不过，说明分流逻辑有bug，必须先修好。</p></div>
+      </details>
+
+      <details style="margin:12px 0;border:1px solid var(--c-gray-200);border-radius:var(--radius);overflow:hidden">
+        <summary style="padding:14px 20px;background:var(--c-gray-100);cursor:pointer;font-weight:600;color:var(--c-navy)">Q6: 怎么向上汇报A/B测试结果？</summary>
+        <div style="padding:16px 20px"><p>三层汇报：①一句话结论——"回流率1.94%→2.5%，月增1,800人，建议上线" ②关键数据——P值、CI、护栏状态 ③细分洞察——分层效果差异、渠道效率对比。绝不只丢一个P值。5.28教会我一件事：不同分层效率差2倍，只看汇总会错过关键决策信息。</p></div>
+      </details>
+    </section>
+
+    <hr>
+
+    <!-- ===== APPENDIX ===== -->
+    <h2 class="chapter-title" id="appendix"><span class="ch-num">APP</span> 附录</h2>
+
+    <!-- A -->
+    <section id="appA" class="appendix">
+      <h3>附录A：5.28报告核心数据速查</h3>
+
+      <h4>触达漏斗月度趋势</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>月份</th><th>流失人数</th><th>曝光数</th><th>点击数</th><th>回流数</th><th>曝光率%</th><th>点击率%</th><th>回流率%</th><th>曝光转化率%</th></tr></thead>
+          <tbody>
+            <tr><td>2024-07</td><td>327.9万</td><td>124.2万</td><td>14.2万</td><td>15.9万</td><td>37.86</td><td>11.47</td><td>4.86</td><td>6.35</td></tr>
+            <tr><td>2024-10</td><td>320.4万</td><td>133.0万</td><td>28.7万</td><td>15.9万</td><td>41.51</td><td>21.59</td><td>4.95</td><td>6.87</td></tr>
+            <tr><td>2025-04</td><td>409.1万</td><td>143.3万</td><td>25.4万</td><td>17.6万</td><td>35.04</td><td>17.75</td><td>4.31</td><td>6.45</td></tr>
+            <tr><td>2025-07</td><td>449.0万</td><td>118.8万</td><td>19.6万</td><td>17.1万</td><td>26.45</td><td>16.47</td><td>3.81</td><td>6.23</td></tr>
+            <tr><td>2025-10</td><td>495.3万</td><td>130.1万</td><td>24.1万</td><td>16.4万</td><td>26.26</td><td>18.52</td><td>3.31</td><td>5.50</td></tr>
+            <tr><td>2026-01</td><td>522.9万</td><td>107.2万</td><td>18.2万</td><td>16.9万</td><td>20.50</td><td>16.94</td><td>3.23</td><td>5.93</td></tr>
+            <tr><td><strong>2026-04</strong></td><td><strong>551.0万</strong></td><td><strong>113.4万</strong></td><td><strong>20.5万</strong></td><td><strong>10.7万</strong></td><td><strong>20.57</strong></td><td><strong>18.07</strong></td><td><strong>1.94</strong></td><td><strong>3.81</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>渠道效率</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>渠道</th><th>特点</th><th>效率提升</th></tr></thead>
+          <tbody>
+            <tr><td>手Q</td><td>贡献60-67%回流UV，主力渠道</td><td>基准</td></tr>
+            <tr><td>心悦</td><td>精准打击型，UV小</td><td>3.1-4.3×</td></tr>
+            <tr><td>腾讯视频</td><td>重点投入期25-30%，淡季15%</td><td>波动大</td></tr>
+            <tr><td>微信</td><td>广度覆盖</td><td>待验证</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>用户画像关键数据</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>维度</th><th>核心发现</th></tr></thead>
+          <tbody>
+            <tr><td>付费率</td><td>回流用户 <strong>61.3%</strong> vs 流失用户 <strong>16.3%</strong></td></tr>
+            <tr><td>R级</td><td>R5/R6回流比例显著高于R1/R2</td></tr>
+            <tr><td>历史活跃天数</td><td>回流用户是流失用户的 <strong>5-8倍</strong></td></tr>
+            <tr><td>流失前等级</td><td>[1,10)占比超60%</td></tr>
+            <tr><td>末次付费</td><td>≤180天回流概率最高</td></tr>
+            <tr><td>跨游戏活跃</td><td>42.9%超长期用户仍在其他腾讯游戏活跃</td></tr>
+            <tr><td>回流潜力</td><td>理论2000万可拉回，实际约<strong>1000万</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>优先级建议</h4>
+      <ol>
+        <li><strong>超长期档改为"被动式低频触达"</strong>，释放资源聚焦短/中期</li>
+        <li><strong>先恢复腾讯视频效率</strong>，再扩手Q/微信覆盖，后扩心悦量级</li>
+        <li><strong>短期覆盖率目标</strong>：35.7% → 60%（预估月增+7,940人）</li>
+        <li><strong>优先召回</strong>：历史游戏天数>100天 + 末次付费≤180天</li>
+      </ol>
+    </section>
+
+    <!-- B -->
+    <section id="appB" class="appendix">
+      <h3>附录B：Python代码合集</h3>
+
+      <pre><span class="lang-tag">Python</span>
+class ABTestAnalyzer:
+    """A/B测试完整分析工具"""
+    def __init__(self, ctrl_s, ctrl_n, exp_s, exp_n, alpha=0.05):
+        self.ctrl_s, self.ctrl_n = ctrl_s, ctrl_n
+        self.exp_s, self.exp_n = exp_s, exp_n
+        self.ctrl_rate = ctrl_s / ctrl_n
+        self.exp_rate = exp_s / exp_n
+        self.alpha = alpha
+
+    def z_test(self, alt='greater'):
+        from scipy import stats
+        import numpy as np
+        p_pool = (self.ctrl_s + self.exp_s) / (self.ctrl_n + self.exp_n)
+        se = np.sqrt(p_pool*(1-p_pool)*(1/self.ctrl_n + 1/self.exp_n))
+        z = (self.exp_rate - self.ctrl_rate) / se
+        p = 1-stats.norm.cdf(z) if alt=='greater' else 2*(1-stats.norm.cdf(abs(z)))
+        return {'z':z, 'p_value':p, 'significant':p<self.alpha,
+                'control':self.ctrl_rate, 'experiment':self.exp_rate}
+
+    def confidence_interval(self, conf=0.95):
+        from scipy import stats
+        import numpy as np
+        z = stats.norm.ppf(1-(1-conf)/2)
+        se = np.sqrt(self.ctrl_rate*(1-self.ctrl_rate)/self.ctrl_n +
+                     self.exp_rate*(1-self.exp_rate)/self.exp_n)
+        diff = self.exp_rate - self.ctrl_rate
+        return {'lower': diff-z*se, 'upper': diff+z*se}
+
+    def srm_test(self):
+        from scipy import stats
+        total = self.ctrl_n + self.exp_n
+        exp = total / 2
+        chi2 = (self.ctrl_n-exp)**2/exp + (self.exp_n-exp)**2/exp
+        p = 1-stats.chi2.cdf(chi2, df=1)
+        return {'chi2':chi2, 'p_value':p, 'srm': p < 0.01}
+
+# 使用：analyzer = ABTestAnalyzer(317, 16350, 409, 16350)</pre>
+    </section>
+
+    <!-- C -->
+    <section id="appC" class="appendix">
+      <h3>附录C：30秒电梯演讲</h3>
+      <div class="callout callout-interview" style="font-size:15px">
+        <p>"5.28报告发现曝光不足是回流率低迷的核心瓶颈——64-84%流失用户完全未被触达，但触达后回流率能提升1.7-2.0倍。我设计A/B测试验证提升短期流失用户触达覆盖率的效果，结果回流率从1.94%提升至2.5%，每月增量回流约1,800人，护栏指标无异常。建议手Q/微信广度覆盖，心悦精准扩量，超长期转低频释放资源。"</p>
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      所有数据严格基于《炫舞手游-流失用户分析报告_5.28》 · by chloevchen
+    </footer>
+
+  </div><!-- /content-wrap -->
+</div><!-- /main-content -->
+
+<script>
+// Sidebar active link tracking
+const sections = document.querySelectorAll('section[id], h2.chapter-title[id]');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Close sidebar on mobile when clicking a link
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.querySelector('.sidebar').classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>
+<!-- by chloevchen -->

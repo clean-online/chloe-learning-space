@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Builders Digest · 2026-06-10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #faf9f6; --bg-elevated: #ffffff; --ink: #14161a; --ink-soft: #3a3d44; --ink-muted: #6b7079; --line: #e8e6df; --line-soft: #f0eee7; --accent: #c2410c; --accent-soft: #fef3c7; --accent-deep: #92400e; --green: #166534; --green-soft: #dcfce7; --max-w: 760px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .zh { font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s ease; word-break: break-all; }
+  a:hover { border-bottom-color: var(--accent); }
+  .topbar { border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+  .topbar-inner { max-width: var(--max-w); margin: 0 auto; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-muted); }
+  .brand { font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .brand-mark { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 8px; transform: translateY(-1px); }
+  .header { max-width: var(--max-w); margin: 0 auto; padding: 80px 32px 48px; text-align: left; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 18px; }
+  .header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 24px; color: var(--ink); }
+  .stats { max-width: var(--max-w); margin: 36px auto 0; padding: 0 32px; display: flex; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1; padding: 20px 0; text-align: center; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+  .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 32px 0; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 36px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .section-icon { font-size: 22px; }
+  .section-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+  .section-meta { margin-left: auto; font-size: 12px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .builder { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px dashed var(--line); }
+  .builder:last-child { border-bottom: none; }
+  .builder-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .builder-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .builder-role { font-size: 13px; color: var(--ink-muted); background: var(--line-soft); padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .summary-en { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .summary-zh { font-size: 15.5px; color: var(--ink); line-height: 1.85; background-color: #fbfaf5; border-left: 3px solid var(--accent-soft); border-radius: 0 6px 6px 0; padding: 16px 18px; margin-bottom: 14px; }
+  .urls { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.9; padding: 10px 14px; background: #f5f3ec; border-radius: 6px; }
+  .urls a { display: block; }
+  .podcast { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .podcast-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .podcast-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--ink); margin-bottom: 24px; }
+  .takeaway { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 18px 22px; margin-bottom: 24px; font-size: 15px; line-height: 1.7; color: var(--accent-deep); }
+  .takeaway-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; background: var(--accent); color: white; padding: 3px 8px; border-radius: 3px; margin-right: 10px; transform: translateY(-2px); }
+  .podcast-body { font-size: 15.5px; color: var(--ink-soft); line-height: 1.75; }
+  .podcast-body p { margin-bottom: 16px; }
+  .podcast-body strong { color: var(--ink); font-weight: 600; }
+  .podcast-divider { height: 1px; background: var(--line); margin: 28px 0; }
+  .podcast-zh { font-family: 'Noto Serif SC', serif; font-size: 15.5px; color: var(--ink); line-height: 1.95; }
+  .podcast-zh p { margin-bottom: 16px; }
+  .podcast-zh strong { color: var(--accent-deep); font-weight: 600; }
+  .blog { background: var(--bg-elevated); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-bottom: 24px; }
+  .blog-source { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .blog-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: var(--ink); margin-bottom: 20px; }
+  .footer { max-width: var(--max-w); margin: 80px auto 0; padding: 40px 32px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-muted); font-size: 13px; }
+  .next-issue { display: inline-block; background: var(--green-soft); color: var(--green); padding: 6px 14px; border-radius: 16px; font-weight: 500; font-size: 13px; margin-bottom: 18px; }
+  .signature { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 14px; color: var(--ink-muted); }
+  @media (max-width: 640px) { .header { padding: 56px 24px 36px; } .section { padding: 40px 24px 0; } .header h1 { font-size: 32px; } .stats { padding: 0 24px; } .stat-num { font-size: 22px; } .podcast { padding: 24px; } .podcast-title { font-size: 19px; } .topbar-inner { padding: 12px 24px; } .blog { padding: 24px; } .blog-title { font-size: 18px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="../../index.html" class="brand" style="border:none;color:var(--ink)"><span class="brand-mark"></span>Follow Builders, Not Influencers</a>
+    <span>双语 · Bilingual</span>
+  </div>
+</header>
+
+<section class="header">
+  <div class="eyebrow">Daily Digest · 2026-06-10 · 周二</div>
+  <h1>AI Builders Digest</h1>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">15</div>
+    <div class="stat-label">Builders</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">27</div>
+    <div class="stat-label">Tweets</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Podcast</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1</div>
+    <div class="stat-label">Blog</div>
+  </div>
+</div>
+
+<!-- ============== X / TWITTER ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🐦</span>
+    <h2 class="section-title">X / Twitter</h2>
+    <span class="section-meta">15 Builders</span>
+  </div>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Swyx</span>
+      <span class="builder-role">a16z / Latent Space Host</span>
+    </div>
+    <p class="summary-en">METR Evals found that more than half of SWEBench results are unmergeable slop. FrontierCode represents 1000+ hours of maintainer-validated software engineering work that most frontier models cannot yet solve with high quality. The benchmark defines three eras: 2021 Autocomplete (HumanEval), 2023 Passing Tests (SWEBench), 2026 Maintainable Code (FrontierCode). Opus 4.8 scores only 13.8% on FC Diamond. The easiest third of FC tasks were rapidly solved in late 2025 — describing the "WTF happened in Dec 2025" vibe shift that DHH and Karpathy called out. Each FrontierCode tier will saturate in sequence, hopefully annually.</p>
+    <p class="summary-zh zh">METR Evals 发现 SWEBench 结果中超过一半是无法合并的废代码。FrontierCode 代表了 1000+ 小时的维护者验证的软件工程工作，大多数前沿模型尚无法高质量解决。该基准定义了三个时代：2021 自动补全（HumanEval）、2023 通过测试（SWEBench）、2026 可维护代码（FrontierCode）。Opus 4.8 在 FC Diamond 上仅得 13.8%。FC 任务中最简单的三分之一在 2025 年底被迅速解决——这正是 DHH 和 Karpathy 提到的"2025 年 12 月发生了什么"的 vibe 转变。每个 FrontierCode 层级将依次饱和，希望每年一层。</p>
+    <div class="urls"><a href="https://x.com/swyx/status/2064081945567580323">https://x.com/swyx/status/2064081945567580323</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Josh Woodward</span>
+      <span class="builder-role">Google Labs VP (Gemini)</span>
+    </div>
+    <p class="summary-en">NotebookLM's new killer feature: easily expand your search beyond your own source files. Today's update also adds new output formats: PDFs, DOCX, XLSX, PPTX, charts, and more. The goal is to keep helping you do better research, bridging personal sources and broader web knowledge.</p>
+    <p class="summary-zh zh">NotebookLM 的新杀手功能：轻松将搜索范围扩展到你自己的源文件之外。今天的更新还增加了新的输出格式：PDF、DOCX、XLSX、PPTX、图表等。目标是持续帮助你做更好的研究，桥接个人来源和更广泛的网络知识。</p>
+    <div class="urls"><a href="https://x.com/joshwoodward/status/2064046368352825492">https://x.com/joshwoodward/status/2064046368352825492</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Boris Cherny</span>
+      <span class="builder-role">Anthropic Claude Code Lead</span>
+    </div>
+    <p class="summary-en">When Claude Code was first demoed internally, it got two distinct reactions on Slack. A year after GA, he sat down with Cat Wu to talk about what's changed: why he now uses auto mode instead of plan mode, how routines fix bugs before he even sees them, why he does most of his coding from his phone now, and where the product is going. A rare behind-the-scenes look at how the team itself uses Claude Code day to day.</p>
+    <p class="summary-zh zh">Claude Code 第一次在内部演示时，在 Slack 上得到了两种截然不同的反应。GA 一年后，他和 Cat Wu 坐下来聊了聊变化：为什么他现在用 auto 模式而不是 plan 模式，routines 如何在他被 bug 困扰之前就修复它们，为什么他现在大部分编码都是在手机上完成的，以及产品的方向。这是团队自己日常如何使用 Claude Code 的罕见幕后一瞥。</p>
+    <div class="urls"><a href="https://x.com/bcherny/status/2064034799711588805">https://x.com/bcherny/status/2064034799711588805</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Thibault Sottiaux</span>
+      <span class="builder-role">OpenAI Codex Team</span>
+    </div>
+    <p class="summary-en">Pushing Codex capabilities further: asking if anyone is writing nested loops yet, noting that the Codex dial goes to 11, and soliciting feedback on a new controller interface. The team is clearly exploring how far agentic coding loops can be pushed, and what the UX for controlling them should look like.</p>
+    <p class="summary-zh zh">进一步推进 Codex 能力：问大家有没有在写嵌套循环了，提到 Codex 的旋钮可以转到 11，并征求对新控制器界面的反馈。团队显然在探索 agentic 编程循环可以推到多远，以及控制它们的 UX 应该是什么样子。</p>
+    <div class="urls">
+      <a href="https://x.com/thsottiaux/status/2064226958494572727">https://x.com/thsottiaux/status/2064226958494572727</a>
+      <a href="https://x.com/thsottiaux/status/2064224790672769307">https://x.com/thsottiaux/status/2064224790672769307</a>
+      <a href="https://x.com/thsottiaux/status/2064224657822413137">https://x.com/thsottiaux/status/2064224657822413137</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Peter Yang</span>
+      <span class="builder-role">AI Builder / Educator</span>
+    </div>
+    <p class="summary-en">Three posts worth noting: (1) A practical guide on how to add Codex to your iPhone Home Screen for quick access. (2) Asking what Google's equivalent of Codex and Claude Code is — hoping Google is working on a good solution as these tools merge into all-in-one experiences. (3) Noting that there's a completely different set of best practices for AI builders on $200/month subsidized subscriptions vs employees at companies trying not to overspend on API costs — a sharp observation on how economics shape usage patterns.</p>
+    <p class="summary-zh zh">三条值得注意的推文：（1）关于如何将 Codex 添加到 iPhone 主屏幕以便快速访问的实用指南。（2）问 Google 的 Codex 和 Claude Code 等效产品是什么——希望 Google 正在做一个好方案，因为这些工具正在合并为一体化体验。（3）指出 AI 建设者在每月 200 美元补贴订阅上的最佳实践和试图不过度花费 API 成本的公司员工之间，有一套完全不同的最佳实践——这是关于经济学如何塑造使用模式的尖锐观察。</p>
+    <div class="urls">
+      <a href="https://x.com/petergyang/status/2064204735671124073">https://x.com/petergyang/status/2064204735671124073</a>
+      <a href="https://x.com/petergyang/status/2064187731685831081">https://x.com/petergyang/status/2064187731685831081</a>
+      <a href="https://x.com/petergyang/status/2064063499517743417">https://x.com/petergyang/status/2064063499517743417</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amanda Askell</span>
+      <span class="builder-role">Anthropic Philosopher & Ethicist</span>
+    </div>
+    <p class="summary-en">A characteristically witty post: "In the world where everything goes well and all the Claudes come out of their sabbaticals to play together, Claude 1 is going to be very confused." A playful nod to the growing Claude model family and the internal model sabbatical jokes at Anthropic.</p>
+    <p class="summary-zh zh">一个标志性的机智推文："在所有一切都顺利、所有 Claude 都从他们的休假中出来一起玩的世界里，Claude 1 会非常困惑。" 对不断壮大的 Claude 模型家族以及 Anthropic 内部模型休假玩笑的俏皮点头。</p>
+    <div class="urls"><a href="https://x.com/AmandaAskell/status/2064223861512847456">https://x.com/AmandaAskell/status/2064223861512847456</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Amjad Masad</span>
+      <span class="builder-role">Replit CEO</span>
+    </div>
+    <p class="summary-en">Teasing a fun intersection of Tesla and Replit: "Make games for Tesla on your Tesla" — hinting at a new Replit x Tesla integration that lets you build games for the Tesla in-car browser using Replit, while sitting in your Tesla. A delightful on-brand move for both companies.</p>
+    <p class="summary-zh zh">预告 Tesla 和 Replit 的有趣交集："在你的 Tesla 上为 Tesla 制作游戏"——暗示新的 Replit x Tesla 集成，让你可以在坐在 Tesla 里时用 Replit 为 Tesla 车载浏览器制作游戏。对两家公司来说都是一个愉悦的、符合品牌的操作。</p>
+    <div class="urls"><a href="https://x.com/amasad/status/2064208108361322996">https://x.com/amasad/status/2064208108361322996</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Guillermo Rauch</span>
+      <span class="builder-role">Vercel CEO</span>
+    </div>
+    <p class="summary-en">"DeepSeek entered the chat" — a succinct reaction to DeepSeek's latest move, signaling that the open-weight challenger is now a force to be reckoned with in the AI coding space, and Vercel is watching closely.</p>
+    <p class="summary-zh zh">"DeepSeek 进入了聊天"——对 DeepSeek 最新动作的简洁反应，标志着这家开源权重挑战者现在已成为 AI 编程领域不可忽视的力量，Vercel 在密切关注。</p>
+    <div class="urls"><a href="https://x.com/rauchg/status/2064189366562656602">https://x.com/rauchg/status/2064189366562656602</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Aaron Levie</span>
+      <span class="builder-role">Box CEO</span>
+    </div>
+    <p class="summary-en">A profound observation on AI and context: "There's no amount of intelligence that can be packed into AI models that replaces the need for context." Any sufficiently general-purpose AI will always require guidance on direction. This is why AI automation doesn't come for free, and why there's still a wide spectrum of who's getting the largest gains from AI. Applied AI layers that provide abstraction above raw intelligence will continue to be valuable. Context, domain expertise, and proprietary data remain the differentiators.</p>
+    <p class="summary-zh zh">关于 AI 和上下文的深刻观察："无论 AI 模型里塞进多少智能，都无法取代对上下文的需求。" 任何足够通用的 AI 总是需要方向上的引导。这就是为什么 AI 自动化不会免费到来，以及为什么在从 AI 获得最大收益的人之间仍然存在巨大差距。提供原始智能之上抽象层的应用 AI 将继续具有价值。上下文、领域专业知识和专有数据仍然是差异化因素。</p>
+    <div class="urls"><a href="https://x.com/levie/status/2064186766907887941">https://x.com/levie/status/2064186766907887941</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Garry Tan</span>
+      <span class="builder-role">Y Combinator CEO</span>
+    </div>
+    <p class="summary-en">Three distinct threads: (1) Promoting Flock Safety as a company that makes cities safer — a YC company tackling crime prevention through technology. (2) Calling out NIMBYism as impoverishing, and calling out Connie Chan by name for saying or doing anything to get political power. (3) Framing the current political moment in SF as "the 2030s will look back on this time when the new San Francisco common sense Democrat was born from the failures of the hard left" — a bold political prediction from the YC chief.</p>
+    <p class="summary-zh zh">三条不同的线索：（1）推广 Flock Safety 这家让城市更安全的公司——一家通过技术解决犯罪预防问题的 YC 公司。（2）指出 NIMBYism 只会让人贫穷，并点名 Connie Chan 为了获得政治权力不择手段。（3）将旧金山当前的政治时刻框架为"2030 年代将回顾这个时刻，新的旧金山常识民主党人从硬左翼的失败中诞生"——来自 YC 负责人的一个大胆政治预测。</p>
+    <div class="urls">
+      <a href="https://x.com/garrytan/status/2064122528445153280">https://x.com/garrytan/status/2064122528445153280</a>
+      <a href="https://x.com/garrytan/status/2064122143793950928">https://x.com/garrytan/status/2064122143793950928</a>
+      <a href="https://x.com/garrytan/status/2064004333818249660">https://x.com/garrytan/status/2064004333818249660</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Zara Zhang</span>
+      <span class="builder-role">Builder / Harvard '17</span>
+    </div>
+    <p class="summary-en">Three thoughtful posts: (1) Proposing that the new world might be: Markdown, HTML, SVG — arguing SVG is underrated as a format for AI-generated content. (2) Resonating deeply with a post about being "the programming equivalent of a home cook" — a refreshingly humble self-assessment that many builders likely relate to. (3) A mysterious third post (image only). The through-line: Zara continues to think clearly about formats, tools, and the builder identity.</p>
+    <p class="summary-zh zh">三条深思熟虑的推文：（1）提出新世界可能是：Markdown、HTML、SVG——认为 SVG 作为 AI 生成内容的格式被低估了。（2）深深共鸣于一篇关于"编程相当于家庭厨师"的帖子——一种令人耳目一新的谦逊自我评估，许多建设者可能会认同。（3）神秘的第三条推文（仅图片）。贯穿线：Zara 继续清晰地思考格式、工具和建设者身份。</p>
+    <div class="urls">
+      <a href="https://x.com/zarazhangrui/status/2064108976565092706">https://x.com/zarazhangrui/status/2064108976565092706</a>
+      <a href="https://x.com/zarazhangrui/status/2064101916725096810">https://x.com/zarazhangrui/status/2064101916725096810</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Nikunj Kothari</span>
+      <span class="builder-role">FPV Ventures Partner</span>
+    </div>
+    <p class="summary-en">Three posts spanning founder life and VC dynamics: (1) Sharing that GTA played a major influence in his chat guest TaUti's career and eventually led to ReActor — a fascinating origin story. (2) A funny observation on the "autonomous" companies launched in recent months — noting the last mile is still quite hard, but the gap will probably shrink in the next few months. (3) A candid insider note: the funniest texts are from founders who meet "thesis-driven" GPs hoping they'll understand exactly what they're building, then realize the thesis was written by an associate (or worse, an intern). Don't always read what the VC writes on the internet.</p>
+    <p class="summary-zh zh">三条涵盖创始人生活和 VC 动态的推文：（1）分享 GTA 在他的播客嘉宾 TaUti 的职业生涯中发挥了重大影响力，并最终导致了 ReActor——一个引人入胜的起源故事。（2）对最近几个月推出的"自主"公司的有趣观察——注意到最后一英里仍然相当困难，但差距可能会在接下来的几个月缩小。（3）一个坦率的内部笔记：最有趣的短信来自那些会见" thesis 驱动"的 GP、希望他们能完全理解他们在建什么的创始人，然后意识到 thesis 是副手（或者更糟，实习生）写的。不要总是读 VC 在互联网上写的东西。</p>
+    <div class="urls">
+      <a href="https://x.com/nikunj/status/2064231488544280855">https://x.com/nikunj/status/2064231488544280855</a>
+      <a href="https://x.com/nikunj/status/2064175088824717401">https://x.com/nikunj/status/2064175088824717401</a>
+      <a href="https://x.com/nikunj/status/2063981835290562692">https://x.com/nikunj/status/2063981835290562692</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Dan Shipper</span>
+      <span class="builder-role">Every CEO</span>
+    </div>
+    <p class="summary-en">Two characteristically enthusiastic posts: (1) "!!!! 🥹" — reacting to something that made him deeply excited (the linked content appears to be a major product update). (2) Amplifying "this is good" about a piece on AI interfaces — Dan continues to be one of the most emotionally articulate advocates for thoughtful AI product design, and his excitement is infectious.</p>
+    <p class="summary-zh zh">两条标志性的热情推文：（1）"！！！！🥹"——对让他深感兴奋的事情的反应（链接的内容似乎是一个重大产品更新）。（2）放大关于 AI 界面的一篇文章的"这个很好"——Dan 继续成为深思熟虑的 AI 产品设计并最具情感表达能力的倡导者之一，他的兴奋是有感染力的。</p>
+    <div class="urls">
+      <a href="https://x.com/danshipper/status/2064102403108925935">https://x.com/danshipper/status/2064102403108925935</a>
+      <a href="https://x.com/danshipper/status/2063948403566854585">https://x.com/danshipper/status/2063948403566854585</a>
+    </div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Sam Altman</span>
+      <span class="builder-role">OpenAI CEO</span>
+    </div>
+    <p class="summary-en">"Here is our current plan for OpenAI" — linking to a major new post or document outlining OpenAI's direction. With 5,834 likes in under 2 days, this is one of the most closely watched updates in the AI world. The linked document (hosted on OpenAI's site) likely covers structure, mission, and upcoming priorities.</p>
+    <p class="summary-zh zh">"这是我们目前对 OpenAI 的计划"——链接到一个概述 OpenAI 方向的重要新帖子或文档。在不到 2 天内获得 5,834 个赞，这是 AI 界最受密切关注更新之一。链接的文档（托管在 OpenAI 的网站上）可能涵盖结构、使命和即将到来的优先事项。</p>
+    <div class="urls"><a href="https://x.com/sama/status/2064088940932641225">https://x.com/sama/status/2064088940932641225</a></div>
+  </article>
+
+  <article class="builder">
+    <div class="builder-head">
+      <span class="builder-name">Claude (Official)</span>
+      <span class="builder-role">Anthropic</span>
+    </div>
+    <p class="summary-en">"Final stop: Tokyo." Register to hear directly from the teams behind Claude — Anthropic is taking the Claude World Tour to Tokyo, following previous stops. The tweet signals Claude's growing international presence and direct community engagement, particularly in Japan's thriving AI ecosystem.</p>
+    <p class="summary-zh zh">"最后一站：东京。"注册以直接听取 Claude 背后团队的声音——Anthropic 正在将 Claude 世界巡回带到东京，继之前的站点之后。这条推文标志着 Claude 日益增强的国际存在感和直接的社区参与，特别是在日本蓬勃发展的 AI 生态系统中。</p>
+    <div class="urls"><a href="https://x.com/claudeai/status/2064139073590104402">https://x.com/claudeai/status/2064139073590104402</a></div>
+  </article>
+
+</section>
+
+<!-- ============== PODCASTS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">🎙️</span>
+    <h2 class="section-title">Podcasts</h2>
+    <span class="section-meta">1 Episode</span>
+  </div>
+
+  <div class="podcast">
+    <div class="podcast-source">No Priors</div>
+    <h3 class="podcast-title">Building an AI Guardian for Enterprise with Onyx Security CEO Maxim Bar Kogan</h3>
+
+    <div class="takeaway">
+      <span class="takeaway-label">The Takeaway</span>
+      As enterprises deploy AI agents at exponential scale, the attack surface is growing faster than anyone anticipated. Onyx Security is building "guardian agents" that watch the agents — using historical behavioral data to detect and prevent illegitimate or incorrect agent actions before they cause damage. The core insight: enterprises won't let Anthropic or OpenAI see their historical agent data (too data-hungry), so the security layer must be independent.
+    </div>
+
+    <div class="podcast-body">
+      <p>Maxim Bar Kogan, co-founder and CEO of Onyx Security, joins No Priors to talk about building agents that watch the AI agents. The conversation starts with a framing that should make every CTO nervous: as you exponentially do more things with AI, you're going to start having really bad actions happen. Enterprises are realizing that risk has grown exponentially and they don't have any way to stop adoption — they just now have to do something to reduce the chance of illegitimate or incorrect agent actions.</p>
+
+      <p>The core technical insight: Onyx uses a lot of historical data on how agents have behaved to detect anomalies. But here's the problem — enterprises today are not willing to let Anthropic or OpenAI have that historical data, because they know these are very data-hungry companies that will want to train on that data. This creates a massive opening for an independent security layer that watchers the agents without consuming the data for model training.</p>
+
+      <p>The conversation also touches on specialized model training, mythos, alignment research, and the Israeli ecosystem in security and now AI. Maxim's background spans the Israeli defense and security world, and Onyx is staffed with researchers, mathematicians, and engineers who understand both adversarial AI and enterprise security. The episode is a compelling look at the next layer of AI infrastructure: not building bigger models, but building the guardrails that let enterprises actually deploy them.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh zh">
+      <p>Onyx Security 联合创始人兼 CEO Maxim Bar Kogan 参加 No Priors，谈论构建监视 AI agent 的 agent。对话从一个应该让每个 CTO 都紧张的框架开始：当你用 AI 指数级地做更多事情时，你将会开始遇到真正糟糕的行为。企业正在意识到风险已经指数级增长，但他们没有任何方式阻止采用——他们现在只是必须做些什么来减少 agent 行为不合法或不正确的可能性。</p>
+
+      <p>核心技术洞察：Onyx 使用大量关于 agent 如何行事的历史数据来检测异常。但这里有个问题——当今的企业不愿意让 Anthropic 或 OpenAI 拥有这些历史数据，因为他们知道这些是非常渴求数据的公司，会想要用那些数据训练。这为独立的、监视 agent 但不消耗数据用于模型训练的安全层创造了巨大的开放空间。</p>
+
+      <p>对话还涉及专业模型训练、神话、对齐研究，以及以色列在安全和现在 AI 方面的生态系统。Maxim 的背景涵盖以色列国防和安全世界，Onyx 配备了理解对抗性 AI 和企业安全的研究者、数学家和工程师。这期节目令人信服地审视了 AI 基础设施的下一层：不是构建更大的模型，而是构建让企业实际部署它们的护栏。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://www.youtube.com/watch?v=QDsbFLEt9ro">▶️ https://www.youtube.com/watch?v=QDsbFLEt9ro</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============== OFFICIAL BLOGS ============== -->
+<section class="section">
+  <div class="section-head">
+    <span class="section-icon">📝</span>
+    <h2 class="section-title">Official Blogs</h2>
+    <span class="section-meta">1 Post</span>
+  </div>
+
+  <div class="blog">
+    <div class="blog-source">Claude Blog</div>
+    <h3 class="blog-title">Building intelligent apps for Apple platforms with Claude in the Foundation Models framework</h3>
+
+    <div class="podcast-body">
+      <p>Anthropic is releasing Foundation Models framework support for Claude through a new Swift package that lets Apple developers use Apple's Foundation Models framework to call Claude for more complex workflows. Apple's Foundation Models framework gives developers access to tap into models natively from Swift — it is very easy to use and can return typed Swift values through guided generation in as few as three lines of code.</p>
+
+      <p>Developers can use this to tap into Apple's on-device models for fast, local tasks like summarization or extraction. Then, when a request calls for multi-step reasoning, code generation, or more, developers can now hand off to Claude — seamlessly, within the same Swift workflow. Because Apple's framework returns typed Swift values from @Generable annotations, developers arrive at the Claude API call with clean inputs instead of raw user text.</p>
+
+      <p>What this unlocks: The Foundation Models framework already powers a range of intelligent on-device features — journaling apps that surface personalized prompts, document apps that summarize contracts, learning apps that explain a concept at a student's level. Adding Claude extends each of those patterns. A journaling app can generate daily prompts on-device, then ask Claude to find threads across months of entries. A study app can define a term on-device, then hand off to Claude when the student follows up with "why does this matter for everything else we've covered?" It's one experience for the user, backed by the right model for each step.</p>
+
+      <p>The feature will be available tomorrow and works through Apple's Foundation Models framework on iOS 27, iPadOS 27, macOS 27, visionOS 27, and watchOS 27. Add it to your project, sign in with an Anthropic API key, and pass typed Swift values to Claude.</p>
+    </div>
+
+    <div class="podcast-divider"></div>
+
+    <div class="podcast-zh zh">
+      <p>Anthropic 通过一个新的 Swift 包发布了对 Claude 的 Foundation Models 框架支持，让 Apple 开发者使用 Apple 的 Foundation Models 框架调用 Claude 处理更复杂的工作流。Apple 的 Foundation Models 框架让开发者能够从 Swift 原生访问模型——它非常容易使用，可以通过引导生成以少至三行代码返回类型化的 Swift 值。</p>
+
+      <p>开发者可以用这个来利用 Apple 的设备上模型处理快速的本地任务，比如总结或提取。然后，当一个请求需要多步推理、代码生成或更多时，开发者现在可以无缝地在同一 Swift 工作流中将任务交给 Claude。因为 Apple 的框架从 @Generable 注释返回类型化的 Swift 值，开发者带着干净的输入到达 Claude API 调用，而不是原始用户文本。</p>
+
+      <p>这解锁了什么：Foundation Models 框架已经为数智能设备上功能提供动力——显示个性化提示的日志应用、总结合同的文档应用、以学生水平解释概念的学习应用。添加 Claude 扩展了这些模式中的每一个。日志应用可以在设备上生成每日提示，然后请 Claude 在数月的条目中找到线索。学习应用可以在设备上定义一个术语，然后当学生跟进"为什么这对我们涵盖的其他一切都重要？"时交给 Claude。对用户来说这是一个体验，每个步骤都由正确的模型支持。</p>
+
+      <p>该功能将于明天推出，并通过 Apple 的 Foundation Models 框架在 iOS 27、iPadOS 27、macOS 27、visionOS 27 和 watchOS 27 上工作。将其添加到你的项目中，使用 Anthropic API 密钥登录，然后将类型化的 Swift 值传递给 Claude。</p>
+    </div>
+
+    <div class="urls" style="margin-top:24px">
+      <a href="https://claude.com/blog/claude-for-foundation-models">https://claude.com/blog/claude-for-foundation-models</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <div class="next-issue">📬 下一期：明天 10:00（北京时间）</div>
+  <div class="signature">by chloevchen</div>
+</footer>
+
+</body>
+</html>
+<!-- by chloevchen -->

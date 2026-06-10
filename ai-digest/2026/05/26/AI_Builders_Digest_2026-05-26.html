@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Auth Guard -->
+<script>
+(function(){
+  var AUTH_KEY='chloe_ls_auth';
+  var AUTH_TS_KEY='chloe_ls_auth_ts';
+  var SESSION_DURATION=86400000;
+  var token=localStorage.getItem(AUTH_KEY);
+  var ts=localStorage.getItem(AUTH_TS_KEY);
+  if(!token||!ts||(Date.now()-parseInt(ts)>SESSION_DURATION)){
+    var path=window.location.pathname;
+    var parts=path.split('/').filter(Boolean);
+    var idx=parts.indexOf('ai-digest');
+    var levels=parts.length-idx-2;
+    var basePath=Array(levels+1).join('../')||'./';
+    window.location.replace(basePath+'index.html');
+  }
+})();
+</script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Builders Digest — 2026-05-26</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Noto Serif SC', 'PingFang SC', sans-serif;
+      background: #faf9f6;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid #e8e4de;
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: #888;
+    }
+    .topbar .logo { font-weight: 700; color: #c2410c; font-size: 15px; }
+    .container { max-width: 760px; margin: 0 auto; padding: 24px 20px 60px; }
+    .digest-title {
+      font-size: 28px; font-weight: 800;
+      color: #c2410c;
+      margin: 16px 0 6px;
+      letter-spacing: -0.5px;
+    }
+    .digest-date { color: #888; font-size: 14px; margin-bottom: 20px; }
+    .stats-strip {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 28px; padding: 12px 16px;
+      background: #fff; border-radius: 10px;
+      border: 1px solid #e8e4de;
+      font-size: 13px; color: #555;
+    }
+    .stats-strip span { white-space: nowrap; }
+    .stats-strip strong { color: #c2410c; }
+
+    .section-title {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: #c2410c;
+      margin: 28px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #f0ebe4;
+    }
+
+    .builder-card {
+      background: #fff;
+      border: 1px solid #e8e4de;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .builder-name {
+      font-size: 15px; font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    .builder-role {
+      font-size: 12px; color: #888;
+      margin-bottom: 10px;
+    }
+    .builder-summary {
+      font-size: 14px; line-height: 1.75;
+      color: #333;
+    }
+    .builder-summary a {
+      color: #c2410c; text-decoration: none;
+      font-size: 12px;
+    }
+    .builder-summary a:hover { text-decoration: underline; }
+    .tweet-block {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #faf9f6;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+    }
+    .tweet-meta {
+      font-size: 11px; color: #aaa;
+      margin-top: 4px;
+    }
+
+    .podcast-card {
+      background: #fff;
+      border: 1px solid #e8e4de;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .podcast-title {
+      font-size: 15px; font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    .podcast-source {
+      font-size: 12px; color: #888;
+      margin-bottom: 10px;
+    }
+    .podcast-summary {
+      font-size: 14px; line-height: 1.75;
+      color: #333;
+    }
+    .podcast-summary a { color: #c2410c; text-decoration: none; font-size: 12px; }
+    .takeaway {
+      background: #fff7f0;
+      border-left: 3px solid #c2410c;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 16px;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #333;
+    }
+    .takeaway strong { color: #c2410c; }
+    .footer {
+      text-align: center;
+      font-size: 12px; color: #aaa;
+      margin-top: 40px; padding-top: 16px;
+      border-top: 1px solid #e8e4de;
+    }
+    .lang-label {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      color: #c2410c;
+      background: #fef3ec;
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-bottom: 4px;
+    }
+    .zh-text { color: #333; }
+    @media (max-width: 600px) {
+      .container { padding: 16px 12px 40px; }
+      .digest-title { font-size: 22px; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">AI Builders Digest</span>
+  <span>bilingual · 2026-05-26</span>
+</div>
+
+<div class="container">
+
+  <div class="digest-title">AI Builders Digest — 2026-05-26</div>
+  <div class="digest-date">追踪 24 位 AI Builder 的 X/Twitter + YouTube 动态 · 双语版</div>
+
+  <div class="stats-strip">
+    <span>👷 <strong>10</strong> Builders</span>
+    <span>🐦 <strong>23</strong> Tweets</span>
+    <span>🎙️ <strong>1</strong> Podcast</span>
+    <span>📝 <strong>0</strong> Blog</span>
+  </div>
+
+  <!-- ==================== X / TWITTER ==================== -->
+  <div class="section-title">🐦 X / Twitter</div>
+
+  <!-- Peter Yang -->
+  <div class="builder-card">
+    <div class="builder-name">Peter Yang</div>
+    <div class="builder-role">Roblox Product Lead · 140K+ newsletter readers</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Peter Yang 分享了与 Ryan Carson 的对话：Ryan 以单人创始人身份用 AI agents 运营初创公司，融了 $2M 种子轮却暂不招人。他的逻辑是：在雇佣任何人之前，自己先做完每份工作、感受痛点，而 agent 的上手速度远快于人类员工，且训练成果可累积。</p>
+      <p style="margin-top:8px">核心框架：先用 AI 搭建 skills + 文档系统，相当于"先建能造 MVP 的系统"；把 agent 当真实员工对待（给真实邮箱、日历、GitHub 账号）；请设计师先搭好设计系统，之后所有品牌素材交给 AI 生成。</p>
+      <div class="tweet-block">
+        "We used to say build the MVP. Now you should build the system that builds the MVP first." — Ryan Carson
+        <div class="tweet-meta">🔗 <a href="https://x.com/petergyang/status/2058555226479866312" target="_blank">x.com/petergyang/status/2058555226479866312</a> · 164 likes · 13 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Peter Yang 分享了与 Ryan Carson 的对话：Ryan 以单人创始人身份用 AI agents 运营初创公司，融了 $2M 种子轮却暂不招人。他的逻辑是：在雇佣任何人之前，自己先做完每份工作、感受痛点，而 agent 的上手速度远快于人类员工，且训练成果可累积。</p>
+      <p style="margin-top:8px">核心框架：先用 AI 搭建 skills + 文档系统，相当于"先建能造 MVP 的系统"；把 agent 当真实员工对待（给真实邮箱、日历、GitHub 账号）；请设计师先搭好设计系统，之后所有品牌素材交给 AI 生成。</p>
+    </div>
+  </div>
+
+  <!-- Madhu Guru -->
+  <div class="builder-card">
+    <div class="builder-name">Madhu Guru</div>
+    <div class="builder-role">Google Gemini Product Lead</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Madhu Guru 精准指出了企业 AI 失败的真正原因：CEO 们感受到 AI FOMO，但长期"远距离领导"让他们失去了亲自动手的能力，于是只能下达粗糙的 AI 指令。这导致员工做出表演性、低质量的 demo 来应付，两年过去毫无实质进展，最终被领导力亲历亲为的初创公司颠覆。</p>
+      <div class="tweet-block">
+        "CEOs feel AI FOMO, but many of them and their lieutenants have gotten used to arms-length leadership and lack the muscle to get hands-on with AI."
+        <div class="tweet-meta">🔗 <a href="https://x.com/realmadhuguru/status/2058591611245011157" target="_blank">x.com/realmadhuguru/status/2058591611245011157</a> · 23 likes · 3 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Madhu Guru 精准指出了企业 AI 失败的真正原因：CEO 们感受到 AI FOMO，但长期"远距离领导"让他们失去了亲自动手的能力，于是只能下达粗糙的 AI 指令。这导致员工做出表演性、低质量的 demo 来应付，两年过去毫无实质进展，最终被领导力亲历亲为的初创公司颠覆。</p>
+    </div>
+  </div>
+
+  <!-- Thariq -->
+  <div class="builder-card">
+    <div class="builder-name">Thariq</div>
+    <div class="builder-role">Claude Code @ Anthropic · YC W20 alum</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Thariq 关于 Bun 用 AI 重写的观察引爆了讨论（1413 likes）：他认为 legacy codebase 将成为"蒸馏"新形式代码的宝贵资源——每一款游戏都应该是跨平台的，所有 legacy 软件都应该能在 Web 上运行，我们不再需要 COBOL。同时他指出当前模型还没完全做到这一点，但"会做到的"。</p>
+      <div class="tweet-block">
+        "my main takeaway from the Bun rewrite is that legacy codebases will be incredibly valuable as a source for 'distilling' code into new forms. Every game should be crossplatform, all legacy software should work on the web, we don't need COBOL anymore."
+        <div class="tweet-meta">🔗 <a href="https://x.com/trq212/status/2058576195000660319" target="_blank">x.com/trq212/status/2058576195000660319</a> · 1413 likes · 45 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Thariq 关于 Bun 用 AI 重写的观察引爆了讨论（1413 likes）：他认为 legacy codebase 将成为"蒸馏"新形式代码的宝贵资源——每一款游戏都应该是跨平台的，所有 legacy 软件都应该能在 Web 上运行，我们不再需要 COBOL。同时他指出当前模型还没完全做到这一点，但"会做到的"。</p>
+    </div>
+  </div>
+
+  <!-- Guillermo Rauch -->
+  <div class="builder-card">
+    <div class="builder-name">Guillermo Rauch</div>
+    <div class="builder-role">Vercel CEO</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Guillermo Rauch 分享了品牌建设的极简哲学："如何打造伟大品牌？打造伟大产品。"同时推广了 BJJ（巴西柔术）作为"巅峰运动追求"，引发大量讨论（357 likes）。</p>
+      <div class="tweet-block">
+        "BJJ is the peak athletic pursuit. Nothing I've tried comes close. Join the cult"
+        <div class="tweet-meta">🔗 <a href="https://x.com/rauchg/status/2058628992631193657" target="_blank">x.com/rauchg/status/2058628992631193657</a> · 357 likes · 11 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Guillermo Rauch 分享了品牌建设的极简哲学："如何打造伟大品牌？打造伟大产品。"同时推广了 BJJ（巴西柔术）作为"巅峰运动追求"，引发大量讨论。</p>
+    </div>
+  </div>
+
+  <!-- Aaron Levie -->
+  <div class="builder-card">
+    <div class="builder-name">Aaron Levie</div>
+    <div class="builder-role">Box CEO</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Aaron Levie 的"AI psychosis"推文引爆了全场（4865 likes）：CEO 们特别容易患 AI 精神病，因为他们离 AI 产生实际价值所需的最终一公里工作足够远，只看到"happy path"的结果，却不考虑接下来 10~20 件让 agent 在企业中可持续运行必须做的事。</p>
+      <p style="margin-top:8px">经典比喻：CEO 说"看，我做出了这个超棒的产品原型"——是的，但你怎么没在生产前 review 代码、修复一堆问题？"看，我生成了一份合同"——是的，但你怎么没验证所有条款、没把过往合同都接入？CEO 最该做的事是用 AI 大量实践，才能真正理解 agent 在企业中的真实含义。</p>
+      <div class="tweet-block">
+        "CEOs are uniquely prone to AI psychosis because they're sufficiently distant from the last mile of work that still has to happen to generate most value with AI."
+        <div class="tweet-meta">🔗 <a href="https://x.com/levie/status/2058582370253701432" target="_blank">x.com/levie/status/2058582370253701432</a> · 4865 likes · 509 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Aaron Levie 的"AI psychosis"推文引爆了全场（4865 likes）：CEO 们特别容易患 AI 精神病，因为他们离 AI 产生实际价值所需的最终一公里工作足够远，只看到"happy path"的结果，却不考虑接下来 10~20 件让 agent 在企业中可持续运行必须做的事。</p>
+      <p style="margin-top:8px">经典比喻：CEO 说"看，我做出了这个超棒的产品原型"——是的，但你怎么没在生产前 review 代码、修复一堆问题？"看，我生成了一份合同"——是的，但你怎么没验证所有条款？CEO 最该做的事是用 AI 大量实践，才能真正理解 agent 在企业中的真实含义。</p>
+    </div>
+  </div>
+
+  <!-- Garry Tan -->
+  <div class="builder-card">
+    <div class="builder-name">Garry Tan</div>
+    <div class="builder-role">Y Combinator President & CEO · G-Brain creator</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Garry Tan 继续推广"high agency high taste"作为这个时代的核心解锁能力，并分享了朋友们都在 edge 上构建的兴奋感。他说"坦白说，我正享受人生中最快乐的时光"。</p>
+      <div class="tweet-block">
+        "High agency high taste is the unlock these days"
+        <div class="tweet-meta">🔗 <a href="https://x.com/garrytan/status/2058769355916411099" target="_blank">x.com/garrytan/status/2058769355916411099</a> · 334 likes · 17 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Garry Tan 继续推广"high agency high taste"作为这个时代的核心解锁能力，并分享了朋友们都在 edge 上构建的兴奋感。他说"坦白说，我正享受人生中最快乐的时光"。</p>
+    </div>
+  </div>
+
+  <!-- Matt Turck -->
+  <div class="builder-card">
+    <div class="builder-name">Matt Turck</div>
+    <div class="builder-role">FirstMark Capital VC · MAD Podcast host</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Matt Turck 引用 OpenAI 的 Yann Dubois 的观点引发思考：如果冻结当前所有模型，只专注于改进 harness（代理框架/工具链），人们会在每一个领域都感受到 AGI。"I think if we froze the models that we have right now and you really worked on the harness... I think people would really feel the AGI in every single domain."</p>
+      <div class="tweet-block">
+        "Is AGI already here? 'I think if we froze the models... and worked on the harness, I think people would really feel the AGI in every single domain' - Yann Dubois of OpenAI"
+        <div class="tweet-meta">🔗 <a href="https://x.com/mattturck/status/2058659995311358332" target="_blank">x.com/mattturck/status/2058659995311358332</a> · 12 likes · 5 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Matt Turck 引用 OpenAI 的 Yann Dubois 的观点引发思考：如果冻结当前所有模型，只专注于改进 harness（代理框架/工具链），人们会在每一个领域都感受到 AGI。"我认为如果我们冻结现有的模型，真正致力于改进 harness……我认为人们会在每一个领域都真正感受到 AGI。"</p>
+    </div>
+  </div>
+
+  <!-- Zara Zhang -->
+  <div class="builder-card">
+    <div class="builder-name">Zara Zhang</div>
+    <div class="builder-role">Builder · Harvard '17 · follow-builders creator</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Zara Zhang 发现了改变人生的 Mac 应用 Amphetamine（保持 Mac 合盖不睡眠），比终端的 caffeinate 命令更可靠易用（699 likes）。她还提到遇到了一位从 EM 转回 IC 的女性，对方说从未如此快乐，因为终于可以亲手构建了。最后她注意到 Codex 是开源的，OpenAI 正在变得更加开放。</p>
+      <div class="tweet-block">
+        "I recently discovered a life-changing Mac app — Amphetamine — which keeps your Mac awake even when lid is closed. Much more reliable & easier to use than the caffeinate command in the terminal."
+        <div class="tweet-meta">🔗 <a href="https://x.com/zarazhangrui/status/2058643577421631538" target="_blank">x.com/zarazhangrui/status/2058643577421631538</a> · 699 likes · 45 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Zara Zhang 发现了改变人生的 Mac 应用 Amphetamine（保持 Mac 合盖不睡眠），比终端的 caffeinate 命令更可靠易用（699 likes）。她还提到遇到了一位从 EM 转回 IC 的女性，对方说从未如此快乐，因为终于可以亲手构建了。最后她注意到 Codex 是开源的，OpenAI 正在变得更加开放。</p>
+    </div>
+  </div>
+
+  <!-- Nikunj Kothari -->
+  <div class="builder-card">
+    <div class="builder-name">Nikunj Kothari</div>
+    <div class="builder-role">FPV Ventures Partner · ex-OpenDoor / Atlassian early hire</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Nikunj Kothari 分享了用 Claude Code 逆向工程 API 的绝佳技巧：通过 browser_harness（或原生 Playwright）让 Claude Code 监听网络请求，直接搞清楚 API 结构、认证方式和限速规则，然后用程序化方式获取数据。他预测：每个网站很快都需要变成 headless，我们还需要 tools.txt 让 agent 知道有哪些工具可以调用（就像今天的 llms.txt）。</p>
+      <p style="margin-top:8px">另外，他花了一个周末做了一个旅行 CLI 产品，正在公开测试，邀请有即将出行计划且拥有大量积分的粉丝来试用。</p>
+      <div class="tweet-block">
+        "Reverse engineering APIs through network requests is one of the most fun things you can do with Claude Code to automate tasks... Every website will soon need to be headless, and we'll need to figure out mechanisms for how we have our agents pay these websites programmatically as well."
+        <div class="tweet-meta">🔗 <a href="https://x.com/nikunj/status/2058783316753686558" target="_blank">x.com/nikunj/status/2058783316753686558</a> · 57 likes · 2 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Nikunj Kothari 分享了用 Claude Code 逆向工程 API 的绝佳技巧：通过 browser_harness（或原生 Playwright）让 Claude Code 监听网络请求，直接搞清楚 API 结构、认证方式和限速规则，然后用程序化方式获取数据。他预测：每个网站很快都需要变成 headless，我们还需要 tools.txt 让 agent 知道有哪些工具可以调用。</p>
+      <p style="margin-top:8px">另外，他花了一个周末做了一个旅行 CLI 产品，正在公开测试。</p>
+    </div>
+  </div>
+
+  <!-- Dan Shipper -->
+  <div class="builder-card">
+    <div class="builder-name">Dan Shipper</div>
+    <div class="builder-role">Every CEO · AI Daily Brief subscriber</div>
+    <div class="builder-summary">
+      <span class="lang-label">EN</span>
+      <p>Dan Shipper 推荐了 NLW 的 AI Daily Brief 中关于 After Automation 的精彩解读，并询问大家对 Every 的看法（正在做产品定位梳理）。</p>
+      <div class="tweet-block">
+        "Fantastic breakdown of After Automation in today's AI Daily Brief. Thanks for such a thoughtful episode @nlw!"
+        <div class="tweet-meta">🔗 <a href="https://x.com/danshipper/status/2058723492355252490" target="_blank">x.com/danshipper/status/2058723492355252490</a> · 25 likes · 2 retweets</div>
+      </div>
+    </div>
+    <div class="builder-summary zh-text" style="margin-top:12px">
+      <span class="lang-label">中文</span>
+      <p>Dan Shipper 推荐了 NLW 的 AI Daily Brief 中关于 After Automation 的精彩解读，并询问大家对 Every 的看法（正在做产品定位梳理）。</p>
+    </div>
+  </div>
+
+  <!-- ==================== PODCASTS ==================== -->
+  <div class="section-title">🎙️ Podcasts</div>
+
+  <div class="podcast-card">
+    <div class="podcast-title">Unsupervised Learning Ep 86: Yann LeCun on Leaving Meta, Breaking The LLM Paradigm, & Why Hinton is Wrong</div>
+    <div class="podcast-source">Unsupervised Learning · Published 2026-05-15</div>
+    <div class="podcast-summary">
+      <span class="lang-label">EN</span>
+      <p><strong>The Takeaway:</strong> Yann LeCun 离开 Meta 创立 AMI，目标是在五年内实现"世界 domination"——但他指的不是 LLM 式的 domination，而是 JEPA（联合嵌入预测架构）路线对 LLM 的根本性突破。</p>
+      <p style="margin-top:8px">LeCun 在 2023 年开始与 Meta 内部对 AI 研究方向的看法产生分歧。他认为 LLM 本质上是"下一个词预测器"，无法真正理解世界物理规律，而 JEPA 架构才是通往真正世界模型的路径。他与 Hinton、Bengio 自 2023 年起分道扬镳——这两位更倾向 LLM Scaling Law 路线。</p>
+      <p style="margin-top:8px">关于如何获得突破性研究，他的答案直白得惊人："最好的方式是雇佣最优秀的人，然后他妈的别挡他们的路。"（原话："The best way to get breakthrough research is you hire the best people, and you get the fuck out of the way."）</p>
+      <p style="margin-top:8px">他对自己新公司 AMI 的野心毫不掩饰：五年内，JEPA 路线将证明自己比 LLM 更强大。这期播客是理解当前 AI 研究两大路线之争的绝佳窗口。</p>
+      <div class="tweet-meta" style="margin-top:10px">🔗 <a href="https://www.youtube.com/@RedpointAI" target="_blank">youtube.com/@RedpointAI</a></div>
+    </div>
+    <div class="podcast-summary zh-text" style="margin-top:14px">
+      <span class="lang-label">中文</span>
+      <p><strong>核心要点：</strong>Yann LeCun 离开 Meta 创立 AMI，目标是在五年内实现"世界 domination"——但他指的不是 LLM 式的 domination，而是 JEPA（联合嵌入预测架构）路线对 LLM 的根本性突破。</p>
+      <p style="margin-top:8px">LeCun 在 2023 年开始与 Meta 内部对 AI 研究方向的看法产生分歧。他认为 LLM 本质上是"下一个词预测器"，无法真正理解世界物理规律，而 JEPA 架构才是通往真正世界模型的路径。他与 Hinton、Bengio 自 2023 年起分道扬镳。</p>
+      <p style="margin-top:8px">关于如何获得突破性研究，他的答案直白得惊人："最好的方式是雇佣最优秀的人，然后他妈的别挡他们的路。"</p>
+      <p style="margin-top:8px">他对自己新公司 AMI 的野心毫不掩饰：五年内，JEPA 路线将证明自己比 LLM 更强大。这期播客是理解当前 AI 研究两大路线之争的绝佳窗口。</p>
+    </div>
+  </div>
+
+  <!-- ==================== TAKEAWAY ==================== -->
+  <div class="section-title">💡 Takeaway</div>
+  <div class="takeaway">
+    <strong>今日最核心洞察：</strong>AI 行业的真正分化正在浮出水面——不是"OpenAI vs Anthropic"这种公司层面的竞争，而是 <strong>研究路线层面的根本分歧</strong>。Yann LeCun（JEPA/世界模型）与 Hinton/Bengio（LLM Scaling）的路线之争，将决定下一代 AI 系统的形态。与此同时，企业侧的真正瓶颈不是模型能力，而是 CEO 们对"AI 能做什么"的幻觉与最后一公里的落地现实之间的鸿沟——Aaron Levie 的"AI psychosis"概念精准捕捉了这一点。对于 builder 而言，用 AI 亲自动手做一件事，比任何战略讨论都更有价值。
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  AI Builders Digest · 2026-05-26 · Bilingual Edition<br>
+  Sources: X/Twitter + YouTube Podcasts · Generated by follow-builders skill<br>
+  <!-- by chloevchen -->
+</div>
+
+</body>
+</html>
